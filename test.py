@@ -9,7 +9,8 @@ with open('commits_data.csv', mode='w', newline='', encoding='utf-8') as file:
     writer = csv.writer(file)
     
     # Write the header row in the CSV file
-    writer.writerow(['Commit Hash', 'Commit Message', 'Author', 'Modified File', 'Change Type'])
+    # writer.writerow(['Commit Hash', 'Commit Message', 'Author', 'Modified File', 'Change Type'])
+    writer.writerow(['Commit Hash', 'Commit Message', 'Author', 'Modified File', 'Change Type','Commit Date'])
 
     # Initialize the Repository object with the desired repository URL
     for commit in Repository(repo_url).traverse_commits():
@@ -17,6 +18,7 @@ with open('commits_data.csv', mode='w', newline='', encoding='utf-8') as file:
         commit_hash = commit.hash
         commit_msg = commit.msg
         commit_author = commit.author.name
+        commit_date = commit.author_date
 
         # List of test files and production files in the commit
         test_files = []
@@ -36,7 +38,8 @@ with open('commits_data.csv', mode='w', newline='', encoding='utf-8') as file:
                 prod_files.append((file_name, change_type))
 
             # Write the commit data for each modified file
-            writer.writerow([commit_hash, commit_msg, commit_author, file_name, change_type])
+            # writer.writerow([commit_hash, commit_msg, commit_author, file_name, change_type])
+            writer.writerow([commit_hash, commit_msg, commit_author, file_name, change_type, commit_date])
 
         # Check if the commit follows TDD or TFD
         # tdd_tfd_label = ""
@@ -51,7 +54,8 @@ with open('commits_data.csv', mode='w', newline='', encoding='utf-8') as file:
         #     tdd_tfd_label = "TDD" if test_first_commit else "TFD"
 
         # Add the TDD/TFD label to the CSV
-        writer.writerow([commit_hash, commit_msg, commit_author, '', ''])
+        # writer.writerow([commit_hash, commit_msg, commit_author, '', ''])
+        writer.writerow([commit_hash, commit_msg, commit_author, '', '', commit_date])
 
 print("Data export completed! The data is saved in 'commits_data.csv'.")
 
