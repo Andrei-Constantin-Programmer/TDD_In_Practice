@@ -39,16 +39,16 @@ with open('commits_data.csv', mode='w', newline='', encoding='utf-8') as file:
             writer.writerow([commit_hash, commit_msg, commit_author, file_name, change_type])
 
         # Check if the commit follows TDD or TFD
-        tdd_tfd_label = ""
-        if test_files and prod_files:
-            # If a test file appears before a production file in the commit, it's likely TDD
-            test_first_commit = False
-            for test_file, _ in test_files:
-                for prod_file, _ in prod_files:
-                    if test_file < prod_file:  # If the test file comes before the production file
-                        test_first_commit = True
-                        break
-            tdd_tfd_label = "TDD" if test_first_commit else "TFD"
+        # tdd_tfd_label = ""
+        # if test_files and prod_files:
+        #     # If a test file appears before a production file in the commit, it's likely TDD
+        #     test_first_commit = False
+        #     for test_file, _ in test_files:
+        #         for prod_file, _ in prod_files:
+        #             if test_file < prod_file:  # If the test file comes before the production file
+        #                 test_first_commit = True
+        #                 break
+        #     tdd_tfd_label = "TDD" if test_first_commit else "TFD"
 
         # Add the TDD/TFD label to the CSV
         writer.writerow([commit_hash, commit_msg, commit_author, '', ''])
