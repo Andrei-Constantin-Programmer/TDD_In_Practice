@@ -27,6 +27,7 @@ def main():
                         print(f"Test File: {file.filename} --> No corresponding implementation file found.")
                         lone_files += 1
 
+    print("Total number of test files: " + str(no_test_files))
     print("Test files with corresponding implementation files: " + str(found_files))
     print("Test files with NO corresponding implementation files: " + str(lone_files))
 
