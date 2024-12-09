@@ -1,3 +1,0 @@
-Sequence Step,Commit Hash,Commit Message,Commit Date,Type,TDD Approach
-Step 1,eccc054a548b525fa8ad1f060703699fd7d09724,Update test.py,2024-12-05 14:01:31+00:00,Test-Only,No
-Step 2,da507af72856aaf0a6d6d981e9970ba29fa960d7,Added date for the commits,2024-12-05 14:51:21+00:00,Mixed,Yes
