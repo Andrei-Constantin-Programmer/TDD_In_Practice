@@ -38,6 +38,3 @@ def main():
     print("Test files with NO corresponding implementation files: " + str(lone_files))
 
 main()
-
-# we need to remove test or tests
-#
