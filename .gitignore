@@ -11,3 +11,6 @@ env/
 
 # IDE/Editor configurations
 *.vscode/
+
+# Results
+results/
