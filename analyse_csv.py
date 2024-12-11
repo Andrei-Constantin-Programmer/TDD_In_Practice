@@ -1,6 +1,7 @@
 import csv
 
-input_file = 'neutral_mapped_tdd_analysis.csv'
+input_file = './results/kafka_tdd_analysis.csv'
+
 
 try:
     tdd_count = 0
@@ -12,9 +13,9 @@ try:
         
         for row in reader:
             total_count += 1
-            if row['Type'] == 'TDD':
+            if row['Commit Type'] == 'TDD':
                 tdd_count += 1
-            elif row['Type'] == 'Mixed':
+            elif row['Commit Type'] == 'Mixed':
                 mixed_count += 1
 
     # Calculate the percentage of TDD
