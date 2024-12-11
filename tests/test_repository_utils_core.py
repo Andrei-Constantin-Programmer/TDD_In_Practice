@@ -65,8 +65,7 @@ class TestRepositoryUtilsCore(unittest.TestCase):
         self.assertEqual(result[0].hash, "abc123")
         self.assertEqual(result[0].msg, "Initial commit")
         self.assertEqual(result[0].author_date, "2024-12-11")
-        mock_repository.assert_called_once_with(repo_url)
-
+        mock_repository.assert_called_once_with(repo_url, only_modifications_with_file_types=['.java'])
 
 
 if __name__ == "__main__":
