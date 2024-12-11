@@ -75,7 +75,7 @@
 
 # print("TDD analysis completed. Results saved in 'tdd_commits.csv'.")
 
-import read_write
+import repository_utils
 import re
 
 url = "https://github.com/apache/zookeeper.git"
@@ -93,11 +93,11 @@ output_file = 'neutral_mapped_tdd_analysis.csv'
 csv_header = ['Commit Hash', 'Commit Message', 'Commit Date', 'Author', 'Test File', 'Implementation File', 'Type']
 rows = []
 
-repositories = read_write.read_repository_names("java")[:1]
+repositories = repository_utils.read_repository_names("java")[:1]
 prev_test_commits = {}
 
 for repo in repositories:
-    for commit in read_write.read_commits(repo):
+    for commit in repository_utils.read_commits(repo):
         test_files = [file.filename for file in commit.modified_files if "test" in file.filename.lower()]
         code_files = [file.filename for file in commit.modified_files if "test" not in file.filename.lower()]
 
@@ -137,5 +137,5 @@ for repo in repositories:
         # Print progress
         print(f"Processed commit {commit.hash[:7]} by {author}: {commit.msg.strip()[:50]}")
 
-read_write.write_csv([csv_header] + rows, output_file)
+repository_utils.write_csv([csv_header] + rows, output_file)
 print(f"Neutral TDD analysis completed. Results saved in 'results/{output_file}.csv'.")
