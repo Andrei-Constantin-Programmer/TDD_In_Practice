@@ -24,6 +24,21 @@ def read_repository_names(language, count=None):
 def read_commits(repository_url):
     return Repository(repository_url).traverse_commits()
 
+def read_csv(file_name):
+    if not isinstance(file_name, str):
+        raise ValueError("File name must be a string.")
+    
+    file_path = os.path.join(RESULTS_PATH, f"{file_name}.csv")
+    
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"The file '{file_path}' does not exist.")
+    
+    with open(file_path, mode="r", encoding="utf-8") as file:
+        reader = csv.DictReader(file)
+        content = [row for row in reader]
+    
+    return content
+
 def write_csv(content, file_name):
     if not isinstance(content, list) or not all(isinstance(row, list) for row in content):
         raise ValueError("Content must be a list of lists.")
