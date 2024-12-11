@@ -1,5 +1,5 @@
 import csv
-import read_write
+import repository_utils
 
 input_file = 'neutral_mapped_tdd_analysis.csv'
 
@@ -7,7 +7,7 @@ tdd_count = 0
 total_count = 0
 mixed_count = 0
 
-rows = read_write.read_csv(input_file)
+rows = repository_utils.read_csv(input_file)
 
 for row in rows:
     total_count += 1
