@@ -75,8 +75,7 @@
 
 # print("TDD analysis completed. Results saved in 'tdd_commits.csv'.")
 
-import csv
-from pydriller import Repository
+import read_write
 import re
 
 url = "https://github.com/apache/zookeeper.git"
@@ -91,54 +90,52 @@ def map_test_to_code(test_file_name):
     return test_file_name
 
 output_file = 'neutral_mapped_tdd_analysis.csv'
-try:
-    with open(output_file, mode='w', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
-        writer.writerow(['Commit Hash', 'Commit Message', 'Commit Date', 'Author', 'Test File', 'Implementation File', 'Type'])
+csv_header = ['Commit Hash', 'Commit Message', 'Commit Date', 'Author', 'Test File', 'Implementation File', 'Type']
+rows = []
 
-        prev_test_commits = {}
+repositories = read_write.read_repository_names("java")[:1]
+prev_test_commits = {}
 
-        for commit in Repository(url).traverse_commits():
+for repo in repositories:
+    for commit in read_write.read_commits(repo):
+        test_files = [file.filename for file in commit.modified_files if "test" in file.filename.lower()]
+        code_files = [file.filename for file in commit.modified_files if "test" not in file.filename.lower()]
 
-            test_files = [file.filename for file in commit.modified_files if "test" in file.filename.lower()]
-            code_files = [file.filename for file in commit.modified_files if "test" not in file.filename.lower()]
+        author = commit.author.name
 
-            author = commit.author.name
-
-            # Process each test file and map to likely implementation files
-            for test_file in test_files:
-                implementation_file = map_test_to_code(test_file)
-                
-                if test_file and implementation_file:
-                    if implementation_file in code_files:
-                        commit_type = "Mixed"  # Neutral for now
-                    elif implementation_file in prev_test_commits.get(author, {}):
-                        commit_type = "TDD"  # Test file preceded implementation
-                    else:
-                        commit_type = "Not TDD"
+        # Process each test file and map to likely implementation files
+        for test_file in test_files:
+            implementation_file = map_test_to_code(test_file)
+            
+            if test_file and implementation_file:
+                if implementation_file in code_files:
+                    commit_type = "Mixed"  # Neutral for now
+                elif implementation_file in prev_test_commits.get(author, {}):
+                    commit_type = "TDD"  # Test file preceded implementation
                 else:
-                    commit_type = "Mixed"
+                    commit_type = "Not TDD"
+            else:
+                commit_type = "Mixed"
 
-                # Update the last test only commit for this implementation file and author
-                if test_file and commit_type == "TDD":
-                    if author not in prev_test_commits:
-                        prev_test_commits[author] = {}
-                    prev_test_commits[author][implementation_file] = commit
+            # Update the last test-only commit for this implementation file and author
+            if test_file and commit_type == "TDD":
+                if author not in prev_test_commits:
+                    prev_test_commits[author] = {}
+                prev_test_commits[author][implementation_file] = commit
 
-                writer.writerow([
-                    commit.hash,
-                    commit.msg.strip(),
-                    commit.author_date.strftime("%Y-%m-%d %H:%M:%S"),
-                    author,
-                    test_file,
-                    implementation_file,
-                    commit_type
-                ])
+            # Append row to rows list
+            rows.append([
+                commit.hash,
+                commit.msg.strip(),
+                commit.author_date.strftime("%Y-%m-%d %H:%M:%S"),
+                author,
+                test_file,
+                implementation_file,
+                commit_type
+            ])
 
-            # Print progress
-            print(f"Processed commit {commit.hash[:7]} by {author}: {commit.msg.strip()[:50]}")
+        # Print progress
+        print(f"Processed commit {commit.hash[:7]} by {author}: {commit.msg.strip()[:50]}")
 
-    print(f"Neutral TDD analysis completed. Results saved in '{output_file}'.")
-
-except Exception as e:
-    print(f"An error occurred: {e}")
+read_write.write_csv([csv_header] + rows, output_file)
+print(f"Neutral TDD analysis completed. Results saved in 'results/{output_file}.csv'.")
