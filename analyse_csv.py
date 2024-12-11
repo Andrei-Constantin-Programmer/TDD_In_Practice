@@ -1,6 +1,6 @@
 import csv
 
-input_file = 'mapped_tdd_analysis.csv'
+input_file = 'neutral_mapped_tdd_analysis.csv'
 
 try:
     tdd_count = 0
