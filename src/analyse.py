@@ -78,8 +78,6 @@
 import repository_utils
 import re
 
-url = "https://github.com/apache/zookeeper.git"
-
 # Function to determine the corresponding implementation file from a test file name
 
 def map_test_to_code(test_file_name):

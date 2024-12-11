@@ -24,4 +24,5 @@ def write_csv(content: List[List[Any]], file_obj: IO[str]) -> None:
     writer.writerows(content)
 
 def read_commits(repository_url: str) -> Generator[Commit, None, None]:
-    return Repository(repository_url).traverse_commits()
+    # Repository(repository_url, only_in_branch="main", only_no_merge=True, only_modifications_with_file_types=['.java']
+    return Repository(repository_url, only_modifications_with_file_types=['.java']).traverse_commits()

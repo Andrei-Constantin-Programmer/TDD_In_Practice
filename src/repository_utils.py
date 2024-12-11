@@ -25,18 +25,6 @@ def read_repository_names(language: str, count: Optional[int] = None) -> List[st
     with open(file_path, "r", encoding="utf-8") as file:
         return core.read_repository_names(file, count)
 
-def read_commits(repository_url: str) -> Generator[Commit, None, None]:
-    """
-    Reads commits from a repository using PyDriller.
-
-    Args:
-        repository_url (str): The URL of the repository.
-
-    Returns:
-        Generator[Commit, None, None]: A generator of Commit objects.
-    """
-    return core.read_commits(repository_url)
-
 
 def read_csv(file_name: str) -> List[Dict[str, Any]]:
     """
@@ -72,3 +60,16 @@ def write_csv(content: List[List[Any]], file_name: str) -> None:
 
     with open(file_path, mode="w", encoding="utf-8", newline="") as file:
         core.write_csv(content, file)
+
+
+def read_commits(repository_url: str) -> Generator[Commit, None, None]:
+    """
+    Reads commits from a repository using PyDriller.
+
+    Args:
+        repository_url (str): The URL of the repository.
+
+    Returns:
+        Generator[Commit, None, None]: A generator of Commit objects.
+    """
+    return core.read_commits(repository_url)
