@@ -1,6 +1,6 @@
 import csv
 
-input_file = './results/kafka_tdd_analysis.csv'
+input_file = 'kafka_tdd_analysis.csv'
 
 
 try:

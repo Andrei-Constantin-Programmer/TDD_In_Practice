@@ -1,0 +1,2 @@
+zookeeper
+bigtop-manager
