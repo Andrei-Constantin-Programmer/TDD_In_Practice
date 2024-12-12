@@ -12,16 +12,17 @@ def main():
         # If a test file appears in multiple commits, we store multiple tuples with the same commit
 
         test_files = []
-        commits = [commit for commit in repository_utils.read_commits(repo)]
 
         # For each commit
-        for commit_number in range(0, len(commits)-1):
+        for counter, commit in enumerate(repository_utils.read_commits(repo)):
             # Look through each file in the commit
-            for file in commits[commit_number].modified_files:
+            for file in commit.modified_files:
                 # Identify test files
                 if "Test" in file.filename:
-                    test_files.append((file.filename, commits[commit_number].hash, commit_number))
+                    test_files.append((counter, file.filename, commit.hash))
 
         print("DONE")
+        for tuple in test_files:
+            print(tuple)
 
 main()
