@@ -1,4 +1,3 @@
-import csv
 import repository_utils
 
 input_file = 'neutral_mapped_tdd_analysis.csv'
