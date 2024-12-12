@@ -10,11 +10,11 @@ class CustomCommit:
 
     def __str__(self):
         print("\n")
-        print("COMMIT - " + commit.hash)
-        print("MODIFIED - " + commit.modified_files)
-        print("AUTHOR - " + commit.author)
-        print("DATE - " + commit.date)
-        print("\n")
+        print("COMMIT - " + self.commit_hash)
+        print("MODIFIED - " + str(self.modified_files))
+        print("AUTHOR - " + str(self.author))
+        print("DATE - " + str(self.date))
+        return ""
 
 
 def main():
