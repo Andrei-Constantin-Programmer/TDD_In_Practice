@@ -1,7 +1,40 @@
 from pydriller import Repository
 import repository_utils
 
+class CustomCommit:
+    def __init__(self, commit_hash, modified_files, author, date):
+        self.commit_hash = commit_hash
+        self.modified_files = modified_files
+        self.author = author
+        self.date = date
+
+    def __str__(self):
+        print("\n")
+        print("COMMIT - " + commit.hash)
+        print("MODIFIED - " + commit.modified_files)
+        print("AUTHOR - " + commit.author)
+        print("DATE - " + commit.date)
+        print("\n")
+
+
 def main():
+
+    repositories = repository_utils.read_repository_names("java")[1:2]
+
+    for repo in repositories:
+        my_list = []
+        for commit in repository_utils.read_commits(repo):
+            files = []
+            for file in commit.modified_files:
+                if "Test" in file.filename:
+                    files.append(file.filename)
+            my_list.append(CustomCommit(commit.hash, files, commit.author, commit.author_date))
+
+        print(my_list[0])
+
+    quit()
+    #######
+
     repositories = repository_utils.read_repository_names("java")[1:2]
 
     for repo in repositories:
