@@ -22,40 +22,19 @@ def main():
     repositories = repository_utils.read_repository_names("java")[1:2]
 
     for repo in repositories:
-        my_list = []
+        commits = []
         for commit in repository_utils.read_commits(repo):
             files = []
             for file in commit.modified_files:
                 if "Test" in file.filename:
                     files.append(file.filename)
-            my_list.append(CustomCommit(commit.hash, files, commit.author, commit.author_date))
-
-        print(my_list[0])
-
-    quit()
-    #######
-
-    repositories = repository_utils.read_repository_names("java")[1:2]
-
-    for repo in repositories:
-        print("Running on " + repo.split('/')[-1].strip('.git') + '\n')
-
-        # Loop though all commits and create an array of tuples
-        # The tuples store all the test files and their corresponding commits
-        # If a test file appears in multiple commits, we store multiple tuples with the same commit
+            commits.append(CustomCommit(commit.hash, files, commit.author, commit.author_date))
 
         test_files = []
+        for i in range(0, len(commits)):
+            for file in commits[i].modified_files:
+                test_files.append((i, file))
 
-        # For each commit
-        for counter, commit in enumerate(repository_utils.read_commits(repo)):
-            # Look through each file in the commit
-            for file in commit.modified_files:
-                # Identify test files
-                if "Test" in file.filename:
-                    test_files.append((counter, file.filename, commit.hash))
-
-        print("DONE")
-        for tuple in test_files:
-            print(tuple)
+        print(test_files)
 
 main()
