@@ -55,7 +55,7 @@ def main():
         # Get the commits or the repo this is an array of CustomCommit objects
         commits = retrieve_commits(repo)
 
-        # For teach test file, create a tuple with the filename and its index in the commits array
+        # For each test file, create a tuple with the filename and its index in the commits array
         test_files = []
         for i in range(0, len(commits)):
             for file in commits[i].modified_files:
