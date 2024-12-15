@@ -46,6 +46,16 @@ def retrieve_commits(repo):
     # Return the array
     return commits
 
+def find_nearest_after():
+    '''
+    Function to take a file and its commit hash and find the next commit in the future
+    which has a corresponding implementation file
+    '''
+    pass
+
+def find_nearest_before():
+    pass
+
 def main():
     # Use repository_utils to get an array from the list of allowed repositories
     repositories = repository_utils.read_repository_names("java")[1:2]
@@ -62,7 +72,19 @@ def main():
                 test_files.append((i, file))
 
         # Output Some Data
+        # The array "commits" stores all the commits and the details for each commit, the elements are CustomCommit objects
         print(commits[0])
+        # The array "test_files" is an array of test files and the index that the files commit is in the "commits" array
         print(test_files)
+
+        '''
+        to search for the nearest commit we first take a test file from the test_files array
+        we then strip tests from the string
+        
+        we then search the commits after and before the commit separately to find a commit with the relevant implementation file
+        
+        the same test file can occur multiple times in the test_files array so we must take this into account
+          
+        '''
 
 main()
