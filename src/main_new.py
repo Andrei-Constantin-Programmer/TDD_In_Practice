@@ -150,13 +150,3 @@ def main():
 
 
 main()
-
-'''
-to search for the nearest commit we first take a test file from the test_files array
-we then strip tests from the string
-
-we then search the commits after and before the commit separately to find a commit with the relevant implementation file
-
-the same test file can occur multiple times in the test_files array so we must take this into account
-
-'''
