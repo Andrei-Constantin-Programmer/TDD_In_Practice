@@ -1,5 +1,7 @@
 from pydriller import Repository
 import repository_utils
+import matplotlib.pyplot as plt
+
 
 class CustomCommit:
     def __init__(self, commit_hash, modified_files, author, date):
@@ -88,9 +90,6 @@ def find_nearest_implementation(test_file, commits):
     after = find_nearest_after(test_file, commits)
     before = find_nearest_before(test_file, commits)
 
-    print("Nearest After: " + str(after))
-    print("Nearest Before: " + str(before))
-
     if after == before:
         # The implementation file was committed in the same commit as the test file, OR was not found (None)
         # Therefore either 'after' or 'before' can be returned as they are the same
@@ -132,6 +131,26 @@ def gather_commits_and_tests(repo):
 
     return commits, test_files
 
+def plot_bar_graph(test_before, test_during, test_after):
+    """
+    Function to plot a bar chart showing the order of commits for test files
+    """
+    # Specify the bars names
+    categories = ['Test Before Impl.', 'Same Time', 'Impl. Before Test']
+    # Match the values for each bar
+    values = [test_before, test_during, test_after]
+    # Give each bar a different color
+    plt.bar(categories, values, color=['blue', 'green', 'red'])
+    # Assign the plot a title, x, and y label
+    plt.title('Relative Introduction Times of Test and Implementation Files')
+    plt.xlabel('Introduction Timing')
+    plt.ylabel('Number of Matched Pairs')
+    # Basic Formatting
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    # Plot the plot
+    plt.show()
+
 def main():
     # Use repository_utils to get an array from the list of allowed repositories
     repositories = repository_utils.read_repository_names("java")[1:2]
@@ -147,12 +166,31 @@ def main():
         print("Length of test_files: " + str(len(test_files)))
         print(test_files)
 
-        for test_file in test_files:
-            print("\n")
-            print("Test File: " + str(test_file))
-            nearest_implementation = find_nearest_implementation(test_file, commits)
-            print("Nearest Implementation: " + str(nearest_implementation))
-            print("\n")
+        # Initialize Counters
+        test_after = 0
+        test_before = 0
+        test_during = 0
 
+        # Iterate over each test file tuple and assess whether tests are committed before, after or during the implementation files
+        for test_file in test_files:
+            nearest_implementation = find_nearest_implementation(test_file, commits)
+            if nearest_implementation is not None:
+                if test_file[0] < nearest_implementation:
+                    # Test was committed before the implementation
+                    test_before += 1
+                if test_file[0] > nearest_implementation:
+                    # Test was committed after the implementation
+                    test_after += 1
+                if test_file[0] == nearest_implementation:
+                    # Test was committed in the same commit as the implementation
+                    test_during += 1
+
+        # Output our results in the console
+        print("Test before Implementation: " + str(test_before))
+        print("Test after Implementation: " + str(test_after))
+        print("Test during Implementation: " + str(test_during))
+
+        # Plot the bar graph using the function
+        plot_bar_graph(test_before, test_during, test_after)
 
 main()

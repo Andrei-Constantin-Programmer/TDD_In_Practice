@@ -1,2 +1,3 @@
-pydriller
+pydriller~=2.7
 pytest
+matplotlib~=3.9.4
