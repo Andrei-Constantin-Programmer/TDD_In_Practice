@@ -118,21 +118,27 @@ def find_nearest_implementation(test_file, commits):
         # Return the close commit 'before'
         return before
 
+
+def gather_commits_and_tests(repo):
+    # Get the commits or the repo this is an array of CustomCommit objects
+    commits = retrieve_commits(repo)
+
+    # For each test file, create a tuple with the filename and its index in the commits array
+    test_files = []
+    for i in range(0, len(commits)):
+        for file in commits[i].modified_files:
+            if "Test" in file:
+                test_files.append((i, file))
+
+    return commits, test_files
+
 def main():
     # Use repository_utils to get an array from the list of allowed repositories
     repositories = repository_utils.read_repository_names("java")[1:2]
 
     # For each repo on the list of allowed repositories
     for repo in repositories:
-        # Get the commits or the repo this is an array of CustomCommit objects
-        commits = retrieve_commits(repo)
-
-        # For each test file, create a tuple with the filename and its index in the commits array
-        test_files = []
-        for i in range(0, len(commits)):
-            for file in commits[i].modified_files:
-                if "Test" in file:
-                    test_files.append((i, file))
+        commits, test_files = gather_commits_and_tests(repo)
 
         # Output Some Data
         # The array "commits" stores all the commits and the details for each commit, the elements are CustomCommit objects
