@@ -2,7 +2,6 @@ from pydriller import Repository
 import repository_utils
 import matplotlib.pyplot as plt
 
-
 class CustomCommit:
     def __init__(self, commit_hash, modified_files, author, date):
         self.commit_hash = commit_hash
@@ -18,23 +17,27 @@ class CustomCommit:
 
 def retrieve_files(modified_files):
     """
-    Function to take a modified_files attribute from a Pydriller Commit object and return a simple array of Filenames
-    modified_files: array from Commit.modified_files from Pydriller, contains file objects.
+    Function to take the 'modified_files' attribute of a Pydriller Commit object and return a simple array of filename strings
+    @param modified_files: An array of ModifiedFile objects taken from the Commit object of pydriller
+    @return: An array of filename strings
     """
     # Initialise an empty list to store filenames
     files = []
+
     # Iterate through all file objects from the Pydriller modified_files passed in
     for file in modified_files:
         if ".java" in file.filename:
-            # If the filename has "Test" in it, then append the filename to the files array - CHANGE COMMENTS HERE
+            # If the filename has ".java" in it, then append the file name to the files array
             files.append(file.filename)
+
     # Return the files array
     return files
 
 def retrieve_commits(repo):
     """
     Function to take a repo name and convert commits into a "CustomCommit" object.
-    Repo: A String representing the repository name to search and retrieve commits from
+    @param repo: A String representing the repository which we will search and retrieve commits from
+    @return: An Array containing CustomCommit objects, one CustomCommit object is appended per commit
     """
     # Initialize an empty list to store commits
     commits = []
@@ -45,13 +48,38 @@ def retrieve_commits(repo):
         files = retrieve_files(commit.modified_files)
         # Append a CustomCommit object to the commits array
         commits.append(CustomCommit(commit.hash, files, commit.author, commit.author_date))
+
     # Return the array
     return commits
 
+
+def gather_commits_and_tests(repo):
+    """
+    Retrieve Commits from GitHub using the retrieve_commits, and analyse tests to produce a test_files array
+    @param repo: A String representing the repository which we will search and retrieve commits from
+    @return: An Array containing CustomCommit objects, one CustomCommit object is appended per commit
+    @return: An Array containing Tuples holding the tests file name and the index in 'Commits' it can be found at
+    """
+    # Get the commits of the repo this is an array of CustomCommit objects
+    commits = retrieve_commits(repo)
+
+    # For each test file, create a tuple with the filename and its index in the commits array
+    test_files = []
+    for i in range(0, len(commits)):
+        for file in commits[i].modified_files:
+            if "Test" in file:
+                test_files.append((i, file))
+
+    return commits, test_files
+
+
 def find_nearest_after(test_file, commits):
     """
-    Function to take a test_file tuple and list of commits and find the nearest commit in the future
-    which contains the corresponding implementation filename
+    Function to take a 'test_file' tuple and list of CustomCommit objects and find the nearest commit in the FUTURE
+    containing the corresponding implementation filename
+    @param test_file: A Tuple holding the tests file name and the index in 'Commits' it can be found
+    @param commits: An Array containing CustomCommit objects with one CustomCommit object per commit
+    @return: Integer index where the tests nearest implementation file is (only searching future commits) or None.
     """
     # Strip 'Tests' or 'Test' from the test file's filename
     implementation_file_name = test_file[1].replace("Tests", "").replace("Test", "")
@@ -68,8 +96,11 @@ def find_nearest_after(test_file, commits):
 
 def find_nearest_before(test_file, commits):
     """
-    Function to take a test_file tuple and list of commits and find the nearest commit in the past
-    which contains the corresponding implementation filename
+    Function to take a 'test_file' tuple and list of CustomCommit objects and find the nearest commit in the PAST
+    containing the corresponding implementation filename
+    @param test_file: A Tuple holding the tests file name and the index in 'Commits' it can be found
+    @param commits: An Array containing CustomCommit objects with one CustomCommit object per commit
+    @return: Integer index where the tests nearest implementation file is (only searching past commits) or None.
     """
     # Strip 'Tests' or 'Test' from the test file's filename
     implementation_file_name = test_file[1].replace("Tests", "").replace("Test", "")
@@ -83,10 +114,15 @@ def find_nearest_before(test_file, commits):
     # If we get here, no implementation file was found, so return None
     return None
 
+
 def find_nearest_implementation(test_file, commits):
     """
     Function to take a test_file tuple and list of commits and find the nearest commit taking before and after into account
+    @param test_file: A Tuple holding the tests file name and the index in 'Commits' it can be found
+    @param commits: An Array containing CustomCommit objects with one CustomCommit object per commit
+    @return: Integer index where the tests nearest implementation file is (only searching future commits) or None.
     """
+    # Find the location of the nearest implementation files, separately, both before and after the test files position
     after = find_nearest_after(test_file, commits)
     before = find_nearest_before(test_file, commits)
 
@@ -118,37 +154,29 @@ def find_nearest_implementation(test_file, commits):
         return before
 
 
-def gather_commits_and_tests(repo):
-    # Get the commits or the repo this is an array of CustomCommit objects
-    commits = retrieve_commits(repo)
-
-    # For each test file, create a tuple with the filename and its index in the commits array
-    test_files = []
-    for i in range(0, len(commits)):
-        for file in commits[i].modified_files:
-            if "Test" in file:
-                test_files.append((i, file))
-
-    return commits, test_files
-
-def plot_bar_graph(test_before, test_during, test_after):
+def plot_bar_graph(test_before, test_during, test_after, repo):
     """
     Function to plot a bar chart showing the order of commits for test files
+    @param test_before: An Integer representing the number of tests that were committed BEFORE their corresponding implementation
+    @param test_during: An Integer representing the number of tests that were committed TOGETHER with their corresponding implementation
+    @param test_after: An Integer representing the number of tests that were committed AFTER their corresponding implementation
+    @param repo: A String representing the repository which we will search and retrieve commits from
     """
     # Specify the bars names
     categories = ['Test Before Impl.', 'Same Time', 'Impl. Before Test']
     # Match the values for each bar
     values = [test_before, test_during, test_after]
     # Give each bar a different color
-    plt.bar(categories, values, color=['blue', 'green', 'red'])
+    plt.bar(categories, values, color=["#1984c5", "#22a7f0", "#63bff0"])
     # Assign the plot a title, x, and y label
-    plt.title('Relative Introduction Times of Test and Implementation Files')
-    plt.xlabel('Introduction Timing')
-    plt.ylabel('Number of Matched Pairs')
+    plt.title('Test and Implementation commit order. Repo: ' + repo)
+    plt.xlabel('Test/Implementation Commit Order')
+    plt.ylabel('Number of Test/Implementation Pairs')
     # Basic Formatting
     plt.xticks(rotation=45)
     plt.tight_layout()
-    # Plot the plot
+    # Save the plot
+    plt.savefig("./../plots/" + repo + "_plot.jpg")
     plt.show()
 
 def main():
@@ -186,11 +214,12 @@ def main():
                     test_during += 1
 
         # Output our results in the console
+        print("\n")
         print("Test before Implementation: " + str(test_before))
         print("Test after Implementation: " + str(test_after))
         print("Test during Implementation: " + str(test_during))
 
         # Plot the bar graph using the function
-        plot_bar_graph(test_before, test_during, test_after)
+        plot_bar_graph(test_before, test_during, test_after, repo.split("/")[-1].split(".")[0])
 
 main()
