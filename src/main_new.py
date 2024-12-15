@@ -47,18 +47,17 @@ def retrieve_commits(repo):
     return commits
 
 def find_nearest_after(test_file, commits):
-    '''
-    Function to take a file and its commit hash and find the same or nearest commit in the future
-    which has a corresponding implementation file
-    '''
+    """
+    Function to take a test_file tuple and list of commits and find the nearest commit in the future
+    which contains the corresponding implementation filename
+    """
     # Strip 'Tests' or 'Test' from the test file's filename
     implementation_file_name = test_file[1].replace("Tests", "").replace("Test", "")
 
-    # Look through every commit AFTER the commit that committed the test file
+    # Look through every commit including or AFTER the commit that committed the test file working forwards
     for i in range(test_file[0], len(commits)):
         # Check if the implementation file is in the commit
         if implementation_file_name in commits[i].modified_files:
-            # We have found the nearest implementation file AFTER the commit of the test file
             # Return the index where the implementation file was found
             return i
     # If we get here, no implementation file was found, so return None
@@ -66,22 +65,40 @@ def find_nearest_after(test_file, commits):
 
 
 def find_nearest_before(test_file, commits):
-    '''
-    Function to take a file and its commit hash and find the nearest commit in the past
-    which has a corresponding implementation file
-    '''
+    """
+    Function to take a test_file tuple and list of commits and find the nearest commit in the past
+    which contains the corresponding implementation filename
+    """
     # Strip 'Tests' or 'Test' from the test file's filename
     implementation_file_name = test_file[1].replace("Tests", "").replace("Test", "")
 
-    # Look through every commit AFTER the commit that committed the test file
-    for i in range(0, test_file[0]):
+    # Look through every commit including or BEFORE the commit that committed the test file working backwards
+    for i in range(test_file[0], -1, -1):
         # Check if the implementation file is in the commit
         if implementation_file_name in commits[i].modified_files:
-            # We have found the nearest implementation file AFTER the commit of the test file
             # Return the index where the implementation file was found
             return i
     # If we get here, no implementation file was found, so return None
     return None
+
+def find_nearest_implementation(test_file, commits):
+    after = find_nearest_after(test_file, commits)
+    before = find_nearest_before(test_file, commits)
+
+    if after == before:
+        # The implementation file was committed in the same commit as the test file, OR was not found (None)
+        return after
+
+    distance_after = after - test_file[0]
+    distance_before = test_file[0] - before
+
+    if distance_after < distance_before:
+        # The commit at index 'after' is closer than the commit at index 'before'
+        return after
+
+    if distance_before < distance_after:
+        # The commit at index 'before' is closer than the commit at index 'after'
+        return before
 
 def main():
     # Use repository_utils to get an array from the list of allowed repositories
@@ -103,15 +120,17 @@ def main():
         # The array "commits" stores all the commits and the details for each commit, the elements are CustomCommit objects
         print(commits[0])
         # The array "test_files" is an array of test files and the index that the files commit is in the "commits" array
+        print("Length of test_files: " + str(len(test_files)))
         print(test_files)
 
-        print("\n\nTestingCode")
-        index = 9
-        print("Test File: " + str(test_files[index]))
-        print("Nearest After: " + str(find_nearest_after(test_files[index], commits)))
-        print("Nearest Before: " + str(find_nearest_before(test_files[index], commits)))
-
-
+        for test_file in test_files:
+            after = find_nearest_after(test_file, commits)
+            before = find_nearest_before(test_file, commits)
+            print("\n")
+            print("Test File: " + str(test_file))
+            print("Nearest After: " + str(after))
+            print("Nearest Before: " + str(before))
+            print("\n")
 
 main()
 
