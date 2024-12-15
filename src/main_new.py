@@ -23,8 +23,8 @@ def retrieve_files(modified_files):
     files = []
     # Iterate through all file objects from the Pydriller modified_files passed in
     for file in modified_files:
-        if "Test" in file.filename:
-            # If the filename has "Test" in it, then append the filename to the files array
+        if ".java" in file.filename:
+            # If the filename has "Test" in it, then append the filename to the files array - CHANGE COMMENTS HERE
             files.append(file.filename)
     # Return the files array
     return files
@@ -46,15 +46,42 @@ def retrieve_commits(repo):
     # Return the array
     return commits
 
-def find_nearest_after():
+def find_nearest_after(test_file, commits):
     '''
-    Function to take a file and its commit hash and find the next commit in the future
+    Function to take a file and its commit hash and find the same or nearest commit in the future
     which has a corresponding implementation file
     '''
-    pass
+    # Strip 'Tests' or 'Test' from the test file's filename
+    implementation_file_name = test_file[1].replace("Tests", "").replace("Test", "")
 
-def find_nearest_before():
-    pass
+    # Look through every commit AFTER the commit that committed the test file
+    for i in range(test_file[0], len(commits)):
+        # Check if the implementation file is in the commit
+        if implementation_file_name in commits[i].modified_files:
+            # We have found the nearest implementation file AFTER the commit of the test file
+            # Return the index where the implementation file was found
+            return i
+    # If we get here, no implementation file was found, so return None
+    return None
+
+
+def find_nearest_before(test_file, commits):
+    '''
+    Function to take a file and its commit hash and find the nearest commit in the past
+    which has a corresponding implementation file
+    '''
+    # Strip 'Tests' or 'Test' from the test file's filename
+    implementation_file_name = test_file[1].replace("Tests", "").replace("Test", "")
+
+    # Look through every commit AFTER the commit that committed the test file
+    for i in range(0, test_file[0]):
+        # Check if the implementation file is in the commit
+        if implementation_file_name in commits[i].modified_files:
+            # We have found the nearest implementation file AFTER the commit of the test file
+            # Return the index where the implementation file was found
+            return i
+    # If we get here, no implementation file was found, so return None
+    return None
 
 def main():
     # Use repository_utils to get an array from the list of allowed repositories
@@ -69,7 +96,8 @@ def main():
         test_files = []
         for i in range(0, len(commits)):
             for file in commits[i].modified_files:
-                test_files.append((i, file))
+                if "Test" in file:
+                    test_files.append((i, file))
 
         # Output Some Data
         # The array "commits" stores all the commits and the details for each commit, the elements are CustomCommit objects
@@ -77,14 +105,22 @@ def main():
         # The array "test_files" is an array of test files and the index that the files commit is in the "commits" array
         print(test_files)
 
-        '''
-        to search for the nearest commit we first take a test file from the test_files array
-        we then strip tests from the string
-        
-        we then search the commits after and before the commit separately to find a commit with the relevant implementation file
-        
-        the same test file can occur multiple times in the test_files array so we must take this into account
-          
-        '''
+        print("\n\nTestingCode")
+        index = 9
+        print("Test File: " + str(test_files[index]))
+        print("Nearest After: " + str(find_nearest_after(test_files[index], commits)))
+        print("Nearest Before: " + str(find_nearest_before(test_files[index], commits)))
+
+
 
 main()
+
+'''
+to search for the nearest commit we first take a test file from the test_files array
+we then strip tests from the string
+
+we then search the commits after and before the commit separately to find a commit with the relevant implementation file
+
+the same test file can occur multiple times in the test_files array so we must take this into account
+
+'''
