@@ -1,3 +1,4 @@
+import os
 from pydriller import Repository
 import repository_utils
 import matplotlib.pyplot as plt
@@ -177,7 +178,10 @@ def plot_bar_graph(test_before, test_during, test_after, repo):
     plt.xticks(rotation=45)
     plt.tight_layout()
     # Save the plot
-    plt.savefig("./../plots/" + repo + "_plot.jpg")
+    output_dir = "./../plots/"
+    os.makedirs(output_dir, exist_ok=True)
+    plt.savefig(output_dir + repo + "_plot.jpg")
+    
     plt.show()
 
 def main():
