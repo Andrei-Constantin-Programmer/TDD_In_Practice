@@ -245,6 +245,10 @@ def main():
         '''
 
 
+        '''
+        ADD SIZE STUFF HERE TOO - LOOK AT the 3 arrays and monitor commit sizes when TDD is or isnt used
+        '''
+
 
 main()
 
