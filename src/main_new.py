@@ -1,3 +1,4 @@
+from collections import defaultdict
 import os
 import repository_utils
 import matplotlib.pyplot as plt
@@ -60,82 +61,49 @@ def gather_commits_and_tests(repo):
 
     return commits, test_files
 
-
-def find_nearest_after(test_file, commits):
+def precompute_commit_map(commits):
     """
-    Function to take a 'test_file' tuple and list of CustomCommit objects and find the nearest commit in the FUTURE
-    containing the corresponding implementation filename
-    @param test_file: A Tuple holding the tests file name and the index in 'Commits' it can be found
-    @param commits: An Array containing CustomCommit objects with one CustomCommit object per commit
-    @return: Integer index where the tests nearest implementation file is (only searching future commits) or None.
+    Precompute a mapping from filenames to their commit indices.
     """
-    # Strip 'Tests' or 'Test' from the test file's filename
-    implementation_file_name = test_file[1].replace("Tests", "").replace("Test", "")
-
-    # Look through every commit including or AFTER the commit that committed the test file working forwards
-    for i in range(test_file[0], len(commits)):
-        # Check if the implementation file is in the commit
-        if implementation_file_name in commits[i].modified_files:
-            # Return the index where the implementation file was found
-            return i
-    # If we get here, no implementation file was found, so return None
-    return None
+    file_to_commit_map = defaultdict(list)
+    for i, commit in enumerate(commits):
+        for file in commit.modified_files:
+            file_to_commit_map[file].append(i)
+    return file_to_commit_map
 
 
-def find_nearest_before(test_file, commits):
-    """
-    Function to take a 'test_file' tuple and list of CustomCommit objects and find the nearest commit in the PAST
-    containing the corresponding implementation filename
-    @param test_file: A Tuple holding the tests file name and the index in 'Commits' it can be found
-    @param commits: An Array containing CustomCommit objects with one CustomCommit object per commit
-    @return: Integer index where the tests nearest implementation file is (only searching past commits) or None.
-    """
-    # Strip 'Tests' or 'Test' from the test file's filename
-    implementation_file_name = test_file[1].replace("Tests", "").replace("Test", "")
-
-    # Look through every commit including or BEFORE the commit that committed the test file working backwards
-    for i in range(test_file[0], -1, -1):
-        # Check if the implementation file is in the commit
-        if implementation_file_name in commits[i].modified_files:
-            # Return the index where the implementation file was found
-            return i
-    # If we get here, no implementation file was found, so return None
-    return None
-
-def find_nearest_implementation(test_file, commits):
+def find_nearest_implementation(test_file, commits, commit_map):
     """
     Function to take a test_file tuple and list of commits and find the nearest commit taking before and after into account
     @param test_file: A Tuple holding the tests file name and the index in 'Commits' it can be found
     @param commits: An Array containing CustomCommit objects with one CustomCommit object per commit
     @return: Integer index where the tests nearest implementation file is (only searching future commits) or None.
     """
-    # Find the location of the nearest implementation files, separately, both before and after the test files position
-    after_index = find_nearest_after(test_file, commits)
-    before_index = find_nearest_before(test_file, commits)
+    implementation_file = test_file[1].replace("Tests", "").replace("Test", "")
+
+    candidate_indices = commit_map.get(implementation_file, [])
+    if not candidate_indices:
+        return None
+    
+    test_index = test_file[0]
+    before_candidates = [i for i in candidate_indices if i < test_index]
+    after_candidates = [i for i in candidate_indices if i >= test_index]
+
+    before_index = max(before_candidates, default=None)
+    after_index = min(after_candidates, default=None)
 
     if after_index == before_index:
-        # The implementation file was committed in the same commit as the test file, OR was not found (None)
-        # Therefore either 'after' or 'before' can be returned as they are the same
         return after_index
-
-    # If either 'after' or 'before' is None, then the other option can be returned
-    # We know at this point that they are not both none
     if after_index is None:
         return before_index
     if before_index is None:
         return after_index
 
-    # We know that at this point, 'after' and 'before' both exist
-    # We therefore calculate their time distances from the test file
-    distance_after = commits[after_index].date - commits[test_file[0]].date
-    distance_before = commits[test_file[0]].date - commits[before_index].date
+    distance_before = commits[test_index].date - commits[before_index].date
+    distance_after = commits[after_index].date - commits[test_index].date
 
-    if distance_after < distance_before:
-        # The commit at index 'after' is closer than the commit at index 'before'
-        # Return the close commit 'after'
-        return after_index
+    return before_index if distance_before <= distance_after else after_index
 
-    return before_index
 
 def plot_bar_graph(test_before, test_during, test_after, repo):
     """
@@ -172,6 +140,7 @@ def main():
     # For each repo on the list of allowed repositories
     for repo in repositories:
         commits, test_files = gather_commits_and_tests(repo)
+        commit_map = precompute_commit_map(commits)
 
         # Output Some Data
         # The array "commits" stores all the commits and the details for each commit, the elements are CustomCommit objects
@@ -187,7 +156,7 @@ def main():
 
         # Iterate over each test file tuple and assess whether tests are committed before, after or during the implementation files
         for test_file in test_files:
-            nearest_implementation = find_nearest_implementation(test_file, commits)
+            nearest_implementation = find_nearest_implementation(test_file, commits, commit_map)
             if nearest_implementation is not None:
                 if test_file[0] < nearest_implementation:
                     # Test was committed before the implementation
