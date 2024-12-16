@@ -115,6 +115,7 @@ def find_nearest_before(test_file, commits):
     return None
 
 
+### MODIFY THIS TO LOOK AT DATE AND TIME OF COMMITS IN ALL INSTANCES FROM LINE 135
 def find_nearest_implementation(test_file, commits):
     """
     Function to take a test_file tuple and list of commits and find the nearest commit taking before and after into account
@@ -222,4 +223,15 @@ def main():
         # Plot the bar graph using the function
         plot_bar_graph(test_before, test_during, test_after, repo.split("/")[-1].split(".")[0])
 
+
 main()
+
+
+'''
+WE MUST LOOK AT COMMITS
+'''
+
+
+'''
+COMPACT occurrences where a test file has multiple instances in different commits
+'''
