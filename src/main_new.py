@@ -102,8 +102,6 @@ def find_nearest_before(test_file, commits):
     # If we get here, no implementation file was found, so return None
     return None
 
-
-### MODIFY THIS TO LOOK AT DATE AND TIME OF COMMITS IN ALL INSTANCES FROM LINE 135
 def find_nearest_implementation(test_file, commits):
     """
     Function to take a test_file tuple and list of commits and find the nearest commit taking before and after into account
@@ -112,36 +110,32 @@ def find_nearest_implementation(test_file, commits):
     @return: Integer index where the tests nearest implementation file is (only searching future commits) or None.
     """
     # Find the location of the nearest implementation files, separately, both before and after the test files position
-    after = find_nearest_after(test_file, commits)
-    before = find_nearest_before(test_file, commits)
+    after_index = find_nearest_after(test_file, commits)
+    before_index = find_nearest_before(test_file, commits)
 
-    if after == before:
+    if after_index == before_index:
         # The implementation file was committed in the same commit as the test file, OR was not found (None)
         # Therefore either 'after' or 'before' can be returned as they are the same
-        return after
+        return after_index
 
     # If either 'after' or 'before' is None, then the other option can be returned
     # We know at this point that they are not both none
-    if after is None:
-        return before
-    if before is None:
-        return after
+    if after_index is None:
+        return before_index
+    if before_index is None:
+        return after_index
 
-    # We know that at this point, 'after' and 'before' are both numbers
-    # We therefore calculate their distances from the test file
-    distance_after = after - test_file[0]
-    distance_before = test_file[0] - before
+    # We know that at this point, 'after' and 'before' both exist
+    # We therefore calculate their time distances from the test file
+    distance_after = commits[after_index].date - commits[test_file[0]].date
+    distance_before = commits[test_file[0]].date - commits[before_index].date
 
     if distance_after < distance_before:
         # The commit at index 'after' is closer than the commit at index 'before'
         # Return the close commit 'after'
-        return after
+        return after_index
 
-    if distance_before < distance_after:
-        # The commit at index 'before' is closer than the commit at index 'after'
-        # Return the close commit 'before'
-        return before
-
+    return before_index
 
 def plot_bar_graph(test_before, test_during, test_after, repo):
     """
