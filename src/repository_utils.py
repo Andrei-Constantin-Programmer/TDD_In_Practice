@@ -7,6 +7,11 @@ ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 RESOURCES_PATH = os.path.join(ROOT_PATH, "resources", "repositories")
 RESULTS_PATH = os.path.join(ROOT_PATH, "results")
 
+def create_resource_folder(name: str):
+    path = os.path.join(RESULTS_PATH, name)
+    os.makedirs(path, exist_ok=True)
+    return path
+
 def read_repository_names(language: str, count: Optional[int] = None) -> List[str]:
     """
     Reads repository names from a file under 'resources/repositories/' and formats them
