@@ -3,8 +3,10 @@ import os
 import repository_utils
 import matplotlib.pyplot as plt
 from models.CustomCommit import CustomCommit
+from models.JavaFileHandler import JavaFileHandler
+from models.LanguageFileHandler import LanguageFileHandler
 
-def retrieve_files(modified_files):
+def retrieve_files(modified_files, file_handler: LanguageFileHandler):
     """
     Function to take the 'modified_files' attribute of a Pydriller Commit object and return a simple array of filename strings
     @param modified_files: An array of ModifiedFile objects taken from the Commit object of pydriller
@@ -15,14 +17,12 @@ def retrieve_files(modified_files):
 
     # Iterate through all file objects from the Pydriller modified_files passed in
     for file in modified_files:
-        if ".java" in file.filename:
-            # If the filename has ".java" in it, then append the file name to the files array
+        if file_handler.file_extension in file.filename:
             files.append(file.filename)
 
-    # Return the files array
     return files
 
-def retrieve_commits(repo):
+def retrieve_commits(repo, file_handler: LanguageFileHandler):
     """
     Function to take a repo name and convert commits into a "CustomCommit" object.
     @param repo: A String representing the repository which we will search and retrieve commits from
@@ -34,7 +34,7 @@ def retrieve_commits(repo):
     # Iterate through all the commits from the specified Repo
     for commit in repository_utils.read_commits(repo):
         # Retrieve an array of filenames for the commit
-        files = retrieve_files(commit.modified_files)
+        files = retrieve_files(commit.modified_files, file_handler)
         # Append a CustomCommit object to the commits array
         commits.append(CustomCommit(commit.hash, files, commit.author, commit.author_date))
 
@@ -42,7 +42,7 @@ def retrieve_commits(repo):
     return commits
 
 
-def gather_commits_and_tests(repo):
+def gather_commits_and_tests(repo, file_handler: LanguageFileHandler):
     """
     Retrieve Commits from GitHub using the retrieve_commits, and analyse tests to produce a test_files array
     @param repo: A String representing the repository which we will search and retrieve commits from
@@ -50,13 +50,13 @@ def gather_commits_and_tests(repo):
     @return: An Array containing Tuples holding the tests file name and the index in 'Commits' it can be found at
     """
     # Get the commits of the repo this is an array of CustomCommit objects
-    commits = retrieve_commits(repo)
+    commits = retrieve_commits(repo, file_handler)
 
     # For each test file, create a tuple with the filename and its index in the commits array
     test_files = []
     for i in range(0, len(commits)):
         for file in commits[i].modified_files:
-            if "Test" in file:
+            if file_handler.is_test_file(file):
                 test_files.append((i, file))
 
     return commits, test_files
@@ -72,14 +72,14 @@ def precompute_commit_map(commits):
     return file_to_commit_map
 
 
-def find_nearest_implementation(test_file, commits, commit_map):
+def find_nearest_implementation(test_file, commits, commit_map, file_handler: LanguageFileHandler):
     """
     Function to take a test_file tuple and list of commits and find the nearest commit taking before and after into account
     @param test_file: A Tuple holding the tests file name and the index in 'Commits' it can be found
     @param commits: An Array containing CustomCommit objects with one CustomCommit object per commit
     @return: Integer index where the tests nearest implementation file is (only searching future commits) or None.
     """
-    implementation_file = test_file[1].replace("Tests", "").replace("Test", "")
+    implementation_file = file_handler.get_implementation_file(test_file[1])
 
     candidate_indices = commit_map.get(implementation_file, [])
     if not candidate_indices:
@@ -137,9 +137,10 @@ def main():
     # Use repository_utils to get an array from the list of allowed repositories
     repositories = repository_utils.read_repository_names("java")[1:2]
 
+    java_file_handler = JavaFileHandler()
     # For each repo on the list of allowed repositories
     for repo in repositories:
-        commits, test_files = gather_commits_and_tests(repo)
+        commits, test_files = gather_commits_and_tests(repo, java_file_handler)
         commit_map = precompute_commit_map(commits)
 
         # Output Some Data
@@ -156,7 +157,7 @@ def main():
 
         # Iterate over each test file tuple and assess whether tests are committed before, after or during the implementation files
         for test_file in test_files:
-            nearest_implementation = find_nearest_implementation(test_file, commits, commit_map)
+            nearest_implementation = find_nearest_implementation(test_file, commits, commit_map, java_file_handler)
             if nearest_implementation is not None:
                 if test_file[0] < nearest_implementation:
                     # Test was committed before the implementation
