@@ -1,6 +1,5 @@
 from collections import defaultdict
 import repository_utils
-import matplotlib.pyplot as plt
 from models.CustomCommit import CustomCommit
 from models.JavaFileHandler import JavaFileHandler
 from models.LanguageFileHandler import LanguageFileHandler

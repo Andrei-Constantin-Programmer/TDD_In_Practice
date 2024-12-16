@@ -1,6 +1,6 @@
 import os
 from matplotlib import pyplot as plt
-
+import repository_utils
 
 def plot_bar_graph(test_before, test_during, test_after, repo):
     """
@@ -24,8 +24,8 @@ def plot_bar_graph(test_before, test_during, test_after, repo):
     plt.xticks(rotation=45)
     plt.tight_layout()
     # Save the plot
-    output_dir = "./../plots/"
-    os.makedirs(output_dir, exist_ok=True)
-    plt.savefig(output_dir + repo + "_plot.jpg")
+    path = repository_utils.create_resource_folder("plots")
+    file_path = os.path.join(path, repo + "_plot.jpg")
+    plt.savefig(file_path)
     
     plt.show()
