@@ -3,17 +3,19 @@ import repository_utils
 import matplotlib.pyplot as plt
 
 class CustomCommit:
-    def __init__(self, commit_hash, modified_files, author, date):
+    def __init__(self, commit_hash, modified_files, author, date, no_files):
         self.commit_hash = commit_hash
         self.modified_files = modified_files
         self.author = author
         self.date = date
+        self.size = no_files
 
     def __str__(self):
         return ("\nCOMMIT - " + self.commit_hash +
                 "\nMODIFIED - " + str(self.modified_files) +
                 "\nAUTHOR - " + str(self.author) +
-                "\nDATE - " + str(self.date) + "\n")
+                "\nDATE - " + str(self.date) + "\n" +
+                "\nSIZE - " + str(self.size))
 
 def retrieve_files(modified_files):
     """
@@ -47,7 +49,7 @@ def retrieve_commits(repo):
         # Retrieve an array of filenames for the commit
         files = retrieve_files(commit.modified_files)
         # Append a CustomCommit object to the commits array
-        commits.append(CustomCommit(commit.hash, files, commit.author, commit.author_date))
+        commits.append(CustomCommit(commit.hash, files, commit.author, commit.author_date, len(files)))
 
     # Return the array
     return commits
@@ -71,6 +73,27 @@ def gather_commits_and_tests(repo):
                 test_files.append((i, file))
 
     return commits, test_files
+
+
+def get_avg_commit_size(filenames, commits):
+    """
+
+    @param filenames:
+    @param commits:
+    @return:
+    """
+    # use python sets to get a set of commits to scan
+    commits_to_search = set()
+    for filename in filenames:
+        commits_to_search.add(filename[0])
+
+    total = 0
+    counter = 0
+    for commit in commits_to_search:
+        total += commits[commit].size
+        counter += 1
+
+    return total / counter
 
 
 def find_nearest_after(test_file, commits):
@@ -230,10 +253,19 @@ def main():
         # Plot the bar graph using the function
         plot_bar_graph(test_before, test_during, test_after, repo.split("/")[-1].split(".")[0])
 
+        # COMMIT SIZE WORK
+        avg_before = get_avg_commit_size(array_before, commits)
+        avg_after = get_avg_commit_size(array_after, commits)
+        avg_during = get_avg_commit_size(array_during, commits)
+
+        print("Average Before Size: " + str(avg_before))
+        print("Average After Size: " + str(avg_after))
+        print("Average During Size: " + str(avg_during))
+
+        # AUTHOR WORK
         for test_file in array_during:
             # get the author of the commit
             author = commits[test_file[0]].author.name
-
 
         '''
         PLAN
@@ -243,12 +275,6 @@ def main():
         at the end of the search - analyse authors work ect...
 
         '''
-
-
-        '''
-        ADD SIZE STUFF HERE TOO - LOOK AT the 3 arrays and monitor commit sizes when TDD is or isnt used
-        '''
-
 
 main()
 
