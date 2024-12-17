@@ -58,6 +58,7 @@ def gather_commits_and_tests(repo, file_handler: LanguageFileHandler):
 
     return commits, test_files
 
+
 def precompute_commit_map(commits):
     """
     Precompute a mapping from filenames to their commit indices.

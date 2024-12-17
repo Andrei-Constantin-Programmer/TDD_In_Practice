@@ -3,12 +3,12 @@ import repository_utils
 import matplotlib.pyplot as plt
 
 class CustomCommit:
-    def __init__(self, commit_hash, modified_files, author, date, no_files):
+    def __init__(self, commit_hash, modified_files, author, date):
         self.commit_hash = commit_hash
         self.modified_files = modified_files
         self.author = author
         self.date = date
-        self.size = no_files
+        self.size = len(modified_files)
 
     def __str__(self):
         return ("\nCOMMIT - " + self.commit_hash +
@@ -49,7 +49,7 @@ def retrieve_commits(repo):
         # Retrieve an array of filenames for the commit
         files = retrieve_files(commit.modified_files)
         # Append a CustomCommit object to the commits array
-        commits.append(CustomCommit(commit.hash, files, commit.author, commit.author_date, len(files)))
+        commits.append(CustomCommit(commit.hash, files, commit.author, commit.author_date))
 
     # Return the array
     return commits
