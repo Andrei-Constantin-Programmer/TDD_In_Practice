@@ -62,7 +62,7 @@ def main():
         os.remove('../results/author_data.csv')
 
     # Use repository_utils to get an array from the list of allowed repositories
-    repositories = repository_utils.read_repository_names("java")[1:2]
+    repositories = repository_utils.read_repository_names("java")
 
     java_file_handler = JavaFileHandler()
     # For each repo on the list of allowed repositories
@@ -158,7 +158,7 @@ updated over each repo
 
 INFORMATION PER AUTHOR CAN BE DONE OVER MULTIPLE REPOSITORIES
 RUN CODE ONCE WITHOUT LOOKING AT AUTHOR
-RUN AUTHOR ANAYLSIS OVER COMPLETELY ANALYSED DATA AFTER TO GENERATE A 2nd CSV
+RUN AUTHOR ANALYSIS OVER COMPLETELY ANALYSED DATA AFTER TO GENERATE A 2nd CSV
 '''
 
 
