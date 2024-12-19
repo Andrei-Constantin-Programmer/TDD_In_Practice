@@ -6,35 +6,35 @@ import graphs
 import commit_processing as process
 import os.path, csv
 
-def write_repo_data(repo_data_file_path, data_for_repo_csv):
-    repo_name = data_for_repo_csv[0]
+def update_csv_data(file_path, data, headers):
+    row_name = data[0]
 
     # If the CSV does not exist, create an empty CSV
-    if not os.path.isfile(repo_data_file_path):
-        with open(repo_data_file_path, 'w', newline='') as csv_file:
+    if not os.path.isfile(file_path):
+        with open(file_path, 'w', newline='') as csv_file:
             writer = csv.writer(csv_file)
-            writer.writerow(["Repo Name", "Language", "Test Before", "Test After", "Test During"])
+            writer.writerow(headers)
 
-    # Open the CSV and check if the repo already has a row in the CSV
-    with open(repo_data_file_path, 'r', newline='') as csv_file:
+    # Open the CSV and check if the repo/author already has a row in the CSV
+    with open(file_path, 'r', newline='') as csv_file:
         csv_data = list(csv.reader(csv_file))
 
-    # Set a token to see if we can find the current repo in the CSV file
-    found_repo = False
+    # Set a token to see if we can find the current repo/author in the CSV file
+    found_row = False
     for row_index in range(0, len(csv_data)):
-        if csv_data[row_index][0] == repo_name:
-            # We have found the repo in the CSV
-            found_repo = True
+        if csv_data[row_index][0] == row_name:
+            # We have found the repo/author in the CSV
+            found_row = True
             # Update the row in the CSV
-            csv_data[row_index] = data_for_repo_csv
+            csv_data[row_index] = data
 
-    if not found_repo:
-        # We have not found the repo
+    if not found_row:
+        # We have not found the repo/author
         # Create a new row in the CSV
-        csv_data.append(data_for_repo_csv)
+        csv_data.append(data)
 
     # Write updated data back to the CSV
-    with open(repo_data_file_path, 'w', newline='', encoding='utf-8') as csv_file:
+    with open(file_path, 'w', newline='', encoding='utf-8') as csv_file:
         writer = csv.writer(csv_file)
         writer.writerows(csv_data)
 
@@ -93,7 +93,8 @@ def main():
         # Prepare data to write to the CSV
         data_for_repo_csv = [repo_name, 'java', test_before, test_after, test_during]
         repo_data_file_path = "../results/repo_data.csv"
-        write_repo_data(repo_data_file_path, data_for_repo_csv)
+        headers = ["Repo Name", "Language", "Test Before", "Test After", "Test During"]
+        update_csv_data(repo_data_file_path, data_for_repo_csv, headers)
 
 
 main()
