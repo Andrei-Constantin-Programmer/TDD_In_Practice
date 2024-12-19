@@ -5,7 +5,7 @@ import commit_processing as process
 
 def main():
     # Use repository_utils to get an array from the list of allowed repositories
-    repositories = repository_utils.read_repository_names("java")[1:2]
+    repositories = repository_utils.read_repository_names("java")[0:2]
 
     java_file_handler = JavaFileHandler()
     # For each repo on the list of allowed repositories

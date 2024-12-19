@@ -55,6 +55,21 @@ def update_author_count(commits, author_counts, test_files, index_to_update):
         author_counts[author][index_to_update] += 1
 
 
+def calculate_average_commit_size(commits, test_files):
+    total = 0
+    counter = 0
+    complete_indexs = []
+
+    for test_file in test_files:
+        if test_file[0] not in complete_indexs:
+            total += commits[test_file[0]].size
+            counter += 1
+            complete_indexs.append(test_file[0])
+
+    return round(total/counter, 1)
+
+
+
 def main():
     # initial setup
     # ../results/author_data.csv needs to be deleted if it already exists
@@ -62,7 +77,7 @@ def main():
         os.remove('../results/author_data.csv')
 
     # Use repository_utils to get an array from the list of allowed repositories
-    repositories = repository_utils.read_repository_names("java")
+    repositories = repository_utils.read_repository_names("java")[1:2]
 
     java_file_handler = JavaFileHandler()
     # For each repo on the list of allowed repositories
@@ -102,6 +117,10 @@ def main():
                     array_during.append(test_file)
 
         duration = round((timeit.default_timer() - start_time), 1)
+        avg_size_before = calculate_average_commit_size(commits, array_before)
+        avg_size_after = calculate_average_commit_size(commits, array_after)
+        avg_size_during = calculate_average_commit_size(commits, array_during)
+        avg_size_total = round((avg_size_before + avg_size_after + avg_size_during)/3, 1)
 
         # Output our results in the console
         print("\n")
@@ -114,9 +133,11 @@ def main():
         #graphs.plot_bar_graph(test_before, test_during, test_after, repo_name)
 
         # Prepare data to write to the repo CSV
-        repo_headers = ["Repo Name", "Language", "Test Before", "Test After", "Test During", "Duration (s)"]
+        repo_headers = ["Repo Name", "Language", "Test Before", "Test After", "Test During", "Duration (s)",
+                        "Avg Before Commit Size", "Avg After Commit Size", "Avg During Commit Size", "Avg Commit Size"]
         repo_data_file_path = "../results/repo_data.csv"
-        data_for_repo_csv = [repo_name, 'java', test_before, test_after, test_during, duration]
+        data_for_repo_csv = [repo_name, 'java', test_before, test_after, test_during, duration,
+                             avg_size_before, avg_size_after, avg_size_during, avg_size_total]
         update_csv_data(repo_data_file_path, data_for_repo_csv, repo_headers, 'repo')
 
         # Prepare data to write to the author CSV
