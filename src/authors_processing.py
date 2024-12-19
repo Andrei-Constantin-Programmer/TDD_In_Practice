@@ -4,7 +4,7 @@ import repository_utils
 from models.JavaFileHandler import JavaFileHandler
 import graphs
 import commit_processing as process
-import os.path, csv
+import os.path, csv, timeit
 
 def update_csv_data(file_path, data, headers, type_flag):
     row_name = data[0]
@@ -49,9 +49,14 @@ def main():
     java_file_handler = JavaFileHandler()
     # For each repo on the list of allowed repositories
     for repo in repositories:
-        commits, test_files = process.gather_commits_and_tests(repo, java_file_handler)
-        commit_map = process.precompute_commit_map(commits)
+        # Initialise a timer
+        start_time = timeit.default_timer()
+        # get repo name
         repo_name = repo.split("/")[-1].split(".")[0]
+        # gather data
+        commits, test_files = process.gather_commits_and_tests(repo, java_file_handler)
+        # preprocess commits
+        commit_map = process.precompute_commit_map(commits)
 
         # Output Some Data
         # The array "commits" stores all the commits and the details for each commit, the elements are CustomCommit objects
@@ -85,8 +90,11 @@ def main():
                     test_during += 1
                     array_during.append(test_file)
 
+        duration = round((timeit.default_timer() - start_time), 1)
+
         # Output our results in the console
         print("\n")
+        print("Completed Running on " + repo_name + " in " + str(duration) + " seconds")
         print("Test before Implementation: " + str(test_before))
         print("Test after Implementation: " + str(test_after))
         print("Test during Implementation: " + str(test_during))
@@ -95,9 +103,9 @@ def main():
         #graphs.plot_bar_graph(test_before, test_during, test_after, repo_name)
 
         # Prepare data to write to the repo CSV
-        headers = ["Repo Name", "Language", "Test Before", "Test After", "Test During"]
+        headers = ["Repo Name", "Language", "Test Before", "Test After", "Test During", "Duration (s)"]
         repo_data_file_path = "../results/repo_data.csv"
-        data_for_repo_csv = [repo_name, 'java', test_before, test_after, test_during]
+        data_for_repo_csv = [repo_name, 'java', test_before, test_after, test_during, duration]
         update_csv_data(repo_data_file_path, data_for_repo_csv, headers, 'repo')
 
         # Prepare data to write to the author CSV
