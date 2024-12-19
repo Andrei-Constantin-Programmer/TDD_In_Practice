@@ -6,6 +6,38 @@ import graphs
 import commit_processing as process
 import os.path, csv
 
+def write_repo_data(repo_data_file_path, data_for_repo_csv):
+    repo_name = data_for_repo_csv[0]
+
+    # If the CSV does not exist, create an empty CSV
+    if not os.path.isfile(repo_data_file_path):
+        with open(repo_data_file_path, 'w', newline='') as csv_file:
+            writer = csv.writer(csv_file)
+            writer.writerow(["Repo Name", "Language", "Test Before", "Test After", "Test During"])
+
+    # Open the CSV and check if the repo already has a row in the CSV
+    with open(repo_data_file_path, 'r', newline='') as csv_file:
+        csv_data = list(csv.reader(csv_file))
+
+    # Set a token to see if we can find the current repo in the CSV file
+    found_repo = False
+    for row_index in range(0, len(csv_data)):
+        if csv_data[row_index][0] == repo_name:
+            # We have found the repo in the CSV
+            found_repo = True
+            # Update the row in the CSV
+            csv_data[row_index] = data_for_repo_csv
+
+    if not found_repo:
+        # We have not found the repo
+        # Create a new row in the CSV
+        csv_data.append(data_for_repo_csv)
+
+    # Write updated data back to the CSV
+    with open(repo_data_file_path, 'w', newline='', encoding='utf-8') as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerows(csv_data)
+
 def main():
     # Use repository_utils to get an array from the list of allowed repositories
     repositories = repository_utils.read_repository_names("java")[1:2]
@@ -56,40 +88,13 @@ def main():
         print("Test during Implementation: " + str(test_during))
 
         # Plot the bar graph using the function
-        graphs.plot_bar_graph(test_before, test_during, test_after, repo_name)
+        #graphs.plot_bar_graph(test_before, test_during, test_after, repo_name)
 
         # Prepare data to write to the CSV
         data_for_repo_csv = [repo_name, 'java', test_before, test_after, test_during]
         repo_data_file_path = "../results/repo_data.csv"
+        write_repo_data(repo_data_file_path, data_for_repo_csv)
 
-        # If the CSV does not exist, create an empty CSV
-        if not os.path.isfile(repo_data_file_path):
-            with open(repo_data_file_path, 'w', newline='') as csv_file:
-                writer = csv.writer(csv_file)
-                writer.writerow(["Repo Name", "Language", "Test Before", "Test After", "Test During"])
-
-        # Open the CSV and check if the repo already has a row in the CSV
-        with open(repo_data_file_path, 'r', newline='') as csv_file:
-            csv_data = list(csv.reader(csv_file))
-
-        # Set a token to see if we can find the current repo in the CSV file
-        found_repo = False
-        for row_index in range(0, len(csv_data)):
-            if csv_data[row_index][0] == repo_name:
-                # We have found the repo in the CSV
-                found_repo = True
-                # Update the row in the CSV
-                csv_data[row_index] = data_for_repo_csv
-
-        if not found_repo:
-            # We have not found the repo
-            # Create a new row in the CSV
-            csv_data.append(data_for_repo_csv)
-
-        # Write updated data back to the CSV
-        with open(repo_data_file_path, 'w', newline='', encoding='utf-8') as csv_file:
-            writer = csv.writer(csv_file)
-            writer.writerows(csv_data)
 
 main()
 
