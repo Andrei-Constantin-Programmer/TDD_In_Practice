@@ -113,11 +113,6 @@ def main():
         # Plot the bar graph using the function
         #graphs.plot_bar_graph(test_before, test_during, test_after, repo_name)
 
-        '''
-        ADD STORAGE OF AVERAGE COMMIT, BEFORE, AFTER, DURING and ALL into this CSV
-        Caluclate this from the 3 arrays above
-        Units = number of files
-        '''
         # Prepare data to write to the repo CSV
         repo_headers = ["Repo Name", "Language", "Test Before", "Test After", "Test During", "Duration (s)"]
         repo_data_file_path = "../results/repo_data.csv"
@@ -137,7 +132,6 @@ def main():
 
         #file_path, data, headers, type_flag
         for key in author_counts.keys():
-            print(key)
             update_csv_data(author_data_file_path, [key] + author_counts[key], author_headers, 'author')
 
 
@@ -148,12 +142,13 @@ main()
 # if author is not already in the csv, create new row for the author
 
 '''
-ONCE CSV WITH EVERYTHING (ONE CSV PER LANGUAGE)
-WE CAN GENERATE THE GRAPHS FROM THE CSV FILE ON DEMAND
-ROWS - REPO - LANGUAGE - ONE ROW FOR EACH METRIC
+WORK ON METHODOLOGY OF REPORT
 
-THIS MEANS WE MUST RETHINK HOW WE STORE AUTHOR INFORMATION - this is once csv for every single repo - 
-updated over each repo
+
+ADD STORAGE OF AVERAGE COMMIT, BEFORE, AFTER, DURING and ALL into this CSV
+Caluclate this from the 3 arrays above
+Units = number of files
+
 
 INFORMATION PER AUTHOR CAN BE DONE OVER MULTIPLE REPOSITORIES
 RUN CODE ONCE WITHOUT LOOKING AT AUTHOR
