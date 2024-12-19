@@ -42,7 +42,25 @@ def update_csv_data(file_path, data, headers, type_flag):
         writer = csv.writer(csv_file)
         writer.writerows(csv_data)
 
+
+def update_author_count(commits, author_counts, test_files, index_to_update):
+    for test_file in test_files:
+        # for each test file, get the author
+        author = str(commits[test_file[0]].author).split(',')[0]
+        # check if the author is in the dictionary
+        if author not in author_counts.keys():
+            # the author is not in the dictionary, create the element
+            author_counts[author] = [0, 0, 0]
+        # now that the author is known to exist in the dictionary, increment the correct value
+        author_counts[author][index_to_update] += 1
+
+
 def main():
+    # initial setup
+    # ../results/author_data.csv needs to be deleted if it already exists
+    if os.path.isfile('../results/author_data.csv'):
+        os.remove('../results/author_data.csv')
+
     # Use repository_utils to get an array from the list of allowed repositories
     repositories = repository_utils.read_repository_names("java")[1:2]
 
@@ -103,14 +121,26 @@ def main():
         #graphs.plot_bar_graph(test_before, test_during, test_after, repo_name)
 
         # Prepare data to write to the repo CSV
-        headers = ["Repo Name", "Language", "Test Before", "Test After", "Test During", "Duration (s)"]
+        repo_headers = ["Repo Name", "Language", "Test Before", "Test After", "Test During", "Duration (s)"]
         repo_data_file_path = "../results/repo_data.csv"
         data_for_repo_csv = [repo_name, 'java', test_before, test_after, test_during, duration]
-        update_csv_data(repo_data_file_path, data_for_repo_csv, headers, 'repo')
+        update_csv_data(repo_data_file_path, data_for_repo_csv, repo_headers, 'repo')
 
         # Prepare data to write to the author CSV
-        headers = ["Author", "Test Before", "Test After", "Test During"]
+        author_headers = ["Author", "Test Before", "Test After", "Test During"]
         author_data_file_path = "../results/author_data.csv"
+
+        # calculate the counts for each author
+        # dictionary key:authors name, element:[test_before, test_after, test_during]
+        author_counts = {}
+        update_author_count(commits, author_counts, array_before, 0)
+        update_author_count(commits, author_counts, array_after, 1)
+        update_author_count(commits, author_counts, array_during, 2)
+
+        #file_path, data, headers, type_flag
+        for key in author_counts.keys():
+            update_csv_data(author_data_file_path, [key] + author_counts[key], author_headers, 'author')
+
 
 main()
 
