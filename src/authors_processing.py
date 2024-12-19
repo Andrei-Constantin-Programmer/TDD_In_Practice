@@ -1,3 +1,5 @@
+from fileinput import close
+
 import repository_utils
 from models.JavaFileHandler import JavaFileHandler
 import graphs
@@ -56,39 +58,44 @@ def main():
         # Plot the bar graph using the function
         graphs.plot_bar_graph(test_before, test_during, test_after, repo_name)
 
-        # WRITE REPO SPECIFIC DATA TO A CSV
-            # if the repo is already in the csv, overwrite the values
-            # if the repo is not in the csv, create a new row
-            # write one row, with REPO, LANGUAGE, TESTBEFORE, TESTAFTER, TESTDURING
-
         # Prepare data to write to the CSV
         data_for_repo_csv = [repo_name, 'java', test_before, test_after, test_during]
+        repo_data_file_path = "../results/repo_data.csv"
 
         # If the CSV does not exist, create an empty CSV
-        if not os.path.isfile("../results/repo_data.csv"):
-            with open('../results/repo_data.csv', 'w') as csv_file:
-                pass
+        if not os.path.isfile(repo_data_file_path):
+            with open(repo_data_file_path, 'w', newline='') as csv_file:
+                writer = csv.writer(csv_file)
+                writer.writerow(["Repo Name", "Language", "Test Before", "Test After", "Test During"])
 
-        # Open the CSV
-        with open('../results/repo_data.csv', 'rw') as csv_file:
-            csv_data = csv.reader(csv_file)
-            # Set a token to see if we can find the current repo in the CSV file
-            found_repo = False
-            for row in csv_data:
-                if row[0] == repo_name:
-                    # We have found the repo in the CSV
-                    found_repo = True
-                    # Now update the values in that row
+        # Open the CSV and check if the repo already has a row in the CSV
+        with open(repo_data_file_path, 'r', newline='') as csv_file:
+            csv_data = list(csv.reader(csv_file))
 
-            if not found_repo:
-                # We have not found the repo, so we want to create a new row in the CSV
-                pass
+        # Set a token to see if we can find the current repo in the CSV file
+        found_repo = False
+        for row_index in range(0, len(csv_data)):
+            if csv_data[row_index][0] == repo_name:
+                # We have found the repo in the CSV
+                found_repo = True
+                # Update the row in the CSV
+                csv_data[row_index] = data_for_repo_csv
 
-        # WRITE AUTHOR SPECIFIC DATA TO THE AUTHORS CSV
-            # if author is already in the csv, update their values
-            # if author is not already in the csv, create new row for the author
+        if not found_repo:
+            # We have not found the repo
+            # Create a new row in the CSV
+            csv_data.append(data_for_repo_csv)
+
+        # Write updated data back to the CSV
+        with open(repo_data_file_path, 'w', newline='', encoding='utf-8') as csv_file:
+            writer = csv.writer(csv_file)
+            writer.writerows(csv_data)
 
 main()
+
+# WRITE AUTHOR SPECIFIC DATA TO THE AUTHORS CSV
+# if author is already in the csv, update their values
+# if author is not already in the csv, create new row for the author
 
 '''
 ONCE CSV WITH EVERYTHING (ONE CSV PER LANGUAGE)
