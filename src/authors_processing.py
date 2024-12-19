@@ -6,7 +6,7 @@ import graphs
 import commit_processing as process
 import os.path, csv
 
-def update_csv_data(file_path, data, headers):
+def update_csv_data(file_path, data, headers, type_flag):
     row_name = data[0]
 
     # If the CSV does not exist, create an empty CSV
@@ -25,8 +25,12 @@ def update_csv_data(file_path, data, headers):
         if csv_data[row_index][0] == row_name:
             # We have found the repo/author in the CSV
             found_row = True
-            # Update the row in the CSV
-            csv_data[row_index] = data
+            if type_flag == 'repo':
+                # Update the row in the CSV
+                csv_data[row_index] = data
+            if type_flag == 'author':
+                # re calculate data and then update the row in the CSV
+                pass
 
     if not found_row:
         # We have not found the repo/author
@@ -90,12 +94,15 @@ def main():
         # Plot the bar graph using the function
         #graphs.plot_bar_graph(test_before, test_during, test_after, repo_name)
 
-        # Prepare data to write to the CSV
-        data_for_repo_csv = [repo_name, 'java', test_before, test_after, test_during]
-        repo_data_file_path = "../results/repo_data.csv"
+        # Prepare data to write to the repo CSV
         headers = ["Repo Name", "Language", "Test Before", "Test After", "Test During"]
-        update_csv_data(repo_data_file_path, data_for_repo_csv, headers)
+        repo_data_file_path = "../results/repo_data.csv"
+        data_for_repo_csv = [repo_name, 'java', test_before, test_after, test_during]
+        update_csv_data(repo_data_file_path, data_for_repo_csv, headers, 'repo')
 
+        # Prepare data to write to the author CSV
+        headers = ["Author", "Test Before", "Test After", "Test During"]
+        author_data_file_path = "../results/author_data.csv"
 
 main()
 
