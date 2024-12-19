@@ -10,5 +10,5 @@ class CustomCommit:
         return ("\nCOMMIT - " + self.hash +
                 "\nMODIFIED - " + str(self.modified_files) +
                 "\nAUTHOR - " + str(self.author) +
-                "\nDATE - " + str(self.date) + "\n" +
+                "\nDATE - " + str(self.date) +
                 "\nSIZE - " + str(self.size))

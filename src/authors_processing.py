@@ -11,12 +11,12 @@ def update_csv_data(file_path, data, headers, type_flag):
 
     # If the CSV does not exist, create an empty CSV
     if not os.path.isfile(file_path):
-        with open(file_path, 'w', newline='') as csv_file:
+        with open(file_path, 'w', newline='', encoding='utf-8') as csv_file:
             writer = csv.writer(csv_file)
             writer.writerow(headers)
 
     # Open the CSV and check if the repo/author already has a row in the CSV
-    with open(file_path, 'r', newline='') as csv_file:
+    with open(file_path, 'r', newline='', encoding='utf-8') as csv_file:
         csv_data = list(csv.reader(csv_file))
 
     # Set a token to see if we can find the current repo/author in the CSV file
@@ -76,13 +76,6 @@ def main():
         # preprocess commits
         commit_map = process.precompute_commit_map(commits)
 
-        # Output Some Data
-        # The array "commits" stores all the commits and the details for each commit, the elements are CustomCommit objects
-        print(commits[0])
-        # The array "test_files" is an array of test files and the index that the files commit is in the "commits" array
-        print("Length of test_files: " + str(len(test_files)))
-        print(test_files)
-
         # Initialize Counters
         test_after = 0
         test_before = 0
@@ -120,6 +113,11 @@ def main():
         # Plot the bar graph using the function
         #graphs.plot_bar_graph(test_before, test_during, test_after, repo_name)
 
+        '''
+        ADD STORAGE OF AVERAGE COMMIT, BEFORE, AFTER, DURING and ALL into this CSV
+        Caluclate this from the 3 arrays above
+        Units = number of files
+        '''
         # Prepare data to write to the repo CSV
         repo_headers = ["Repo Name", "Language", "Test Before", "Test After", "Test During", "Duration (s)"]
         repo_data_file_path = "../results/repo_data.csv"
@@ -139,6 +137,7 @@ def main():
 
         #file_path, data, headers, type_flag
         for key in author_counts.keys():
+            print(key)
             update_csv_data(author_data_file_path, [key] + author_counts[key], author_headers, 'author')
 
 
