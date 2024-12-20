@@ -12,14 +12,13 @@ def create_resource_folder(name: str):
     os.makedirs(path, exist_ok=True)
     return path
 
-def read_repository_names(language: str, count: Optional[int] = None) -> List[str]:
+def read_repository_names(language: str) -> List[str]:
     """
     Reads repository names from a file under 'resources/repositories/' and formats them
     as GitHub URLs from Apache (e.g., 'https://github.com/apache/{repo}.git').
 
     Args:
         language (str): The programming language (e.g., "java", "kotlin").
-        count (Optional[int]): The number of repos to read. If not provided, all repos are read.
 
     Returns:
         List[str]: A list of formatted GitHub repository URLs.
@@ -28,7 +27,7 @@ def read_repository_names(language: str, count: Optional[int] = None) -> List[st
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"The file '{file_path}' does not exist.")
     with open(file_path, "r", encoding="utf-8") as file:
-        return core.read_repository_names(file, count)
+        return core.read_repository_names(file)
 
 
 def read_csv(file_name: str) -> List[Dict[str, Any]]:
