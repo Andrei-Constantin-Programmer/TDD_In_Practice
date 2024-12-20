@@ -20,7 +20,7 @@ def retrieve_files(modified_files, file_handler: LanguageFileHandler):
     return files
 
 
-def retrieve_commits(repo, file_handler: LanguageFileHandler):
+def retrieve_commits(repo, file_handler: LanguageFileHandler, final_date = None):
     """
     Function to take a repo name and convert commits into a "CustomCommit" object.
     @param repo: A String representing the repository which we will search and retrieve commits from
@@ -29,7 +29,7 @@ def retrieve_commits(repo, file_handler: LanguageFileHandler):
     """
     commits = []
 
-    for commit in repository_utils.read_commits(repo):
+    for commit in repository_utils.read_commits(repo, final_date):
         files = retrieve_files(commit.modified_files, file_handler)
         commits.append(CustomCommit(commit.hash, files, commit.author, commit.author_date))
 
@@ -37,14 +37,14 @@ def retrieve_commits(repo, file_handler: LanguageFileHandler):
     return commits
 
 
-def gather_commits_and_tests(repo, file_handler: LanguageFileHandler):
+def gather_commits_and_tests(repo, file_handler: LanguageFileHandler, final_date = None):
     """
     Retrieve Commits from GitHub using the retrieve_commits, and analyse tests to produce a test_files array
     @param repo: A String representing the repository which we will search and retrieve commits from
     @param file_handler: Object containing information required to retrieve commits that modify files of a particular programming language
     @return: A tuple containing an Array with CustomCommit objects and an Array of tuples of the form (test file name, commit index)
     """
-    commits = retrieve_commits(repo, file_handler)
+    commits = retrieve_commits(repo, file_handler, final_date)
 
     # For each test file, create a tuple with the filename and its index in the commits array
     test_files = []

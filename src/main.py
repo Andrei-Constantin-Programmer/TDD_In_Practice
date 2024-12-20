@@ -1,7 +1,10 @@
+from datetime import datetime
 import repository_utils
 from models.JavaFileHandler import JavaFileHandler
 import graphs
 import commit_processing as process
+
+date_of_experiment = datetime(2024, 12, 1, 0, 0, 0)
 
 def main():
     # Use repository_utils to get an array from the list of allowed repositories
@@ -10,7 +13,7 @@ def main():
     java_file_handler = JavaFileHandler()
     # For each repo on the list of allowed repositories
     for repo in repositories:
-        commits, test_files = process.gather_commits_and_tests(repo, java_file_handler)
+        commits, test_files = process.gather_commits_and_tests(repo, java_file_handler, final_date=date_of_experiment)
         commit_map = process.precompute_commit_map(commits)
 
         # Output Some Data

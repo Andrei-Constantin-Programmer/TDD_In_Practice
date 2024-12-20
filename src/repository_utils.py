@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 from typing import List, Optional, Generator, Dict, Any
 from pydriller import Commit
@@ -66,14 +67,15 @@ def write_csv(content: List[List[Any]], file_name: str) -> None:
         core.write_csv(content, file)
 
 
-def read_commits(repository_url: str) -> Generator[Commit, None, None]:
+def read_commits(repository_url: str, final_date: Optional[datetime] = None) -> Generator[Commit, None, None]:
     """
     Reads commits from a repository using PyDriller.
 
     Args:
         repository_url (str): The URL of the repository.
+        final_date (datetime): Date to read commits up until from the given repository.
 
     Returns:
         Generator[Commit, None, None]: A generator of Commit objects.
     """
-    return core.read_commits(repository_url)
+    return core.read_commits(repository_url, final_date)

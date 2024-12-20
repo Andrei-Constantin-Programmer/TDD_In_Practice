@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import unittest
 from unittest.mock import MagicMock, mock_open, patch
 from src.repository_utils_core import read_repository_names, read_csv, write_csv, read_commits
@@ -48,14 +49,18 @@ class TestRepositoryUtilsCore(unittest.TestCase):
         handle.write.assert_any_call("val3,val4\r\n")
 
     @patch("src.repository_utils_core.Repository")
-    def test_read_commits(self, mock_repository):
+    @patch("src.repository_utils_core.datetime")
+    def test_read_commits(self, mock_datetime, mock_repository):
         # Arrange
+        fake_now = datetime(2024, 12, 12, 0, 0, 0)
+
         repo_url = "https://github.com/apache/repo1.git"
         mock_commit = MagicMock()
         mock_commit.hash = "abc123"
         mock_commit.msg = "Initial commit"
         mock_commit.author_date = "2024-12-11"
         mock_repository.return_value.traverse_commits.return_value = [mock_commit]
+        mock_datetime.now.return_value = fake_now
 
         # Act
         result = list(read_commits(repo_url))
@@ -65,7 +70,62 @@ class TestRepositoryUtilsCore(unittest.TestCase):
         self.assertEqual(result[0].hash, "abc123")
         self.assertEqual(result[0].msg, "Initial commit")
         self.assertEqual(result[0].author_date, "2024-12-11")
-        mock_repository.assert_called_once_with(repo_url, only_modifications_with_file_types=['.java'])
+        mock_repository.assert_called_once_with(repo_url, only_modifications_with_file_types=['.java'], to=fake_now)
+
+    @patch("src.repository_utils_core.Repository")
+    @patch("src.repository_utils_core.datetime")
+    def test_read_commits_with_no_commits_in_the_past(self, mock_datetime, mock_repository):
+        # Arrange
+        fake_now = datetime(2024, 1, 1, 0, 0, 0)
+
+        repo_url = "https://github.com/apache/repo1.git"
+        mock_repository.return_value.traverse_commits.return_value = []
+        mock_datetime.now.return_value = fake_now
+
+        # Act
+        result = list(read_commits(repo_url))
+
+        # Assert
+        self.assertEqual(len(result), 0)
+
+    @patch("src.repository_utils_core.Repository")
+    @patch("src.repository_utils_core.datetime")
+    def test_read_commits_when_datetime_is_in_the_future(self, mock_datetime, mock_repository):
+        # Arrange
+        fake_now = datetime(2024, 12, 12, 0, 0, 0)
+        fake_tomorrow = fake_now + timedelta(days=1)
+
+        repo_url = "https://github.com/apache/repo1.git"
+        mock_commit = MagicMock()
+        mock_commit.hash = "abc123"
+        mock_commit.msg = "Initial commit"
+        mock_commit.author_date = "2024-12-11"
+        mock_repository.return_value.traverse_commits.return_value = [mock_commit]
+        mock_datetime.now.return_value = fake_now
+
+        # Act, Assert
+        with self.assertRaises(ValueError):
+            _ = list(read_commits(repo_url, fake_tomorrow))
+
+    @patch("src.repository_utils_core.Repository")
+    @patch("src.repository_utils_core.datetime")
+    def test_read_commits_when_datetime_is_correct(self, mock_datetime, mock_repository):
+        # Arrange
+        fake_now = datetime(2024, 12, 15, 0, 0, 0)
+        test_date = datetime(2024, 12, 12, 0, 0, 0)
+
+        repo_url = "https://github.com/apache/repo1.git"
+        mock_commit = MagicMock(hash="abc123", msg="Initial commit", author_date="2024-12-11")
+        mock_repository.return_value.traverse_commits.return_value = [mock_commit]
+        mock_datetime.now.return_value = fake_now
+
+        # Act
+        result = list(read_commits(repo_url, test_date))
+
+        # Assert
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0].hash, "abc123")
+        mock_repository.assert_called_once_with(repo_url, only_modifications_with_file_types=['.java'], to=test_date)
 
 
 if __name__ == "__main__":

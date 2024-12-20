@@ -79,6 +79,26 @@ class TestCommitProcessing(unittest.TestCase):
         self.assertEqual(result[0].author, "Author1")
         self.assertEqual(result[0].date, test_date)
 
+    @patch("repository_utils.read_commits")
+    def test_retrieve_commits_with_final_date(self, mock_read_commits):
+        # Arrange
+        mock_read_commits.return_value = [
+            MagicMock(
+                hash="abc123",
+                modified_files=[MagicMock(filename="TestFile1.java")],
+                author="Author1",
+                author_date=datetime(2023, 1, 1),
+            )
+        ]
+
+        final_date = datetime(2024, 1, 1, 0, 0, 0)
+
+        # Act
+        _ = retrieve_commits("mock_repo", self.java_file_handler, final_date)
+
+        # Assert
+        mock_read_commits.assert_called_once_with("mock_repo", final_date)
+
     @patch("repository_utils.read_commits", return_value=[])
     def test_retrieve_commits_with_no_commits(self, _):
         # Act
@@ -197,6 +217,25 @@ class TestCommitProcessing(unittest.TestCase):
         # Ensure that the returned commits and test files are empty
         self.assertEqual(commits, [])
         self.assertEqual(test_files, [])
+
+    @patch("repository_utils.read_commits")
+    def test_gather_commits_and_tests_with_final_date(self, mock_read_commits):
+        # Arrange
+        mock_read_commits.return_value = [
+            MagicMock(
+                hash="abc123",
+                modified_files=[MagicMock(filename="TestFile1.java"), MagicMock(filename="File1.java")],
+                author="Author1",
+                date=datetime(2023, 1, 1),
+            )
+        ]
+        final_date = datetime(2024, 1, 1, 0, 0, 0)
+
+        # Act
+        _ = gather_commits_and_tests("mock_repo", self.java_file_handler, final_date=final_date)
+
+        # Assert
+        mock_read_commits.assert_called_once_with("mock_repo", final_date)
 
 
 if __name__ == "__main__":
