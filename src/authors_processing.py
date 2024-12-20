@@ -7,6 +7,13 @@ import commit_processing as process
 import os.path, csv, timeit
 
 def update_csv_data(file_path, data, headers, type_flag):
+    '''
+    Update the author's CSV file with the new information
+    @param file_path: Path to the CSV file
+    @param data: The data to be updated
+    @param headers: The headers of the CSV file
+    @param type_flag: Flag explaining what should be updated (either 'repo' or 'author')
+    '''
     row_name = data[0]
 
     # If the CSV does not exist, create an empty CSV
@@ -44,6 +51,13 @@ def update_csv_data(file_path, data, headers, type_flag):
 
 
 def update_author_count(commits, author_counts, test_files, index_to_update):
+    '''
+    Update all commit author's counts for a particular test file array
+    @param commits: An Array containing CustomCommit objects
+    @param author_counts: A map of authors to an array of commit types (before, after, during), each with the number of commits of that type for this author
+    @param test_files: The test files to iterate over
+    @index_to_update: The index of the commit type to update (before, after, during)
+    '''
     for test_file in test_files:
         # for each test file, get the author
         author = str(commits[test_file[0]].author).split(',')[0]
@@ -56,15 +70,21 @@ def update_author_count(commits, author_counts, test_files, index_to_update):
 
 
 def calculate_average_commit_size(commits, test_files):
+    '''
+    Calculate the average commit size for commits containing tests
+    @param commits: An Array containing CustomCommit objects
+    @param test_files: The test files to iterate over
+    @return: The average commit size
+    '''
     total = 0
     counter = 0
-    complete_indexs = []
+    complete_indexes = []
 
     for test_file in test_files:
-        if test_file[0] not in complete_indexs:
+        if test_file[0] not in complete_indexes:
             total += commits[test_file[0]].size
             counter += 1
-            complete_indexs.append(test_file[0])
+            complete_indexes.append(test_file[0])
 
     return round(total/counter, 1)
 

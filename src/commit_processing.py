@@ -7,9 +7,9 @@ def retrieve_files(modified_files, file_handler: LanguageFileHandler):
     """
     Function to take the 'modified_files' attribute of a Pydriller Commit object and return a simple array of filename strings
     @param modified_files: An array of ModifiedFile objects taken from the Commit object of pydriller
+    @param file_handler: Object containing the extension of a particular programming language
     @return: An array of filename strings
     """
-    # Initialise an empty list to store filenames
     files = []
 
     # Iterate through all file objects from the Pydriller modified_files passed in
@@ -19,20 +19,18 @@ def retrieve_files(modified_files, file_handler: LanguageFileHandler):
 
     return files
 
+
 def retrieve_commits(repo, file_handler: LanguageFileHandler):
     """
     Function to take a repo name and convert commits into a "CustomCommit" object.
     @param repo: A String representing the repository which we will search and retrieve commits from
+    @param file_handler: Object containing information required to retrieve files specific to the a particular programming language
     @return: An Array containing CustomCommit objects, one CustomCommit object is appended per commit
     """
-    # Initialize an empty list to store commits
     commits = []
 
-    # Iterate through all the commits from the specified Repo
     for commit in repository_utils.read_commits(repo):
-        # Retrieve an array of filenames for the commit
         files = retrieve_files(commit.modified_files, file_handler)
-        # Append a CustomCommit object to the commits array
         commits.append(CustomCommit(commit.hash, files, commit.author, commit.author_date))
 
     # Return the array
@@ -43,10 +41,9 @@ def gather_commits_and_tests(repo, file_handler: LanguageFileHandler):
     """
     Retrieve Commits from GitHub using the retrieve_commits, and analyse tests to produce a test_files array
     @param repo: A String representing the repository which we will search and retrieve commits from
-    @return: An Array containing CustomCommit objects, one CustomCommit object is appended per commit
-    @return: An Array containing Tuples holding the tests file name and the index in 'Commits' it can be found at
+    @param file_handler: Object containing information required to retrieve commits that modify files of a particular programming language
+    @return: A tuple containing an Array with CustomCommit objects and an Array of tuples of the form (test file name, commit index)
     """
-    # Get the commits of the repo this is an array of CustomCommit objects
     commits = retrieve_commits(repo, file_handler)
 
     # For each test file, create a tuple with the filename and its index in the commits array
@@ -62,6 +59,8 @@ def gather_commits_and_tests(repo, file_handler: LanguageFileHandler):
 def precompute_commit_map(commits):
     """
     Precompute a mapping from filenames to their commit indices.
+    @param commits: An Array containing CustomCommit objects
+    @return: A map of files to commit indexes where they are modified
     """
     file_to_commit_map = defaultdict(list)
     for i, commit in enumerate(commits):
@@ -74,7 +73,8 @@ def find_nearest_implementation(test_file, commits, commit_map, file_handler: La
     """
     Function to take a test_file tuple and list of commits and find the nearest commit taking before and after into account
     @param test_file: A Tuple holding the tests file name and the index in 'Commits' it can be found
-    @param commits: An Array containing CustomCommit objects with one CustomCommit object per commit
+    @param commits: An Array containing CustomCommit objects
+    @param commit_map: A map of files to commit indexes where they are modified
     @return: Integer index where the tests nearest implementation file is (only searching future commits) or None.
     """
     implementation_file = file_handler.get_implementation_file(test_file[1])
