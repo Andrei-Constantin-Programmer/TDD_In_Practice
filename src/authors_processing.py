@@ -1,10 +1,10 @@
 from fileinput import close
-
 import repository_utils
 from models.JavaFileHandler import JavaFileHandler
 import graphs
 import commit_processing as process
-import os.path, csv, timeit, tqdm
+import os.path, csv, timeit, tqdm, logging
+from functools import partial, partialmethod
 
 def update_csv_data(file_path, data, headers, type_flag):
     '''
@@ -91,24 +91,29 @@ def calculate_average_commit_size(commits, test_files):
 
 
 def main():
+    # Add message to the log
+    logging.notify("Program 'main()' has started")
     # initial setup
     # ../results/author_data.csv needs to be deleted if it already exists
     if os.path.isfile('../results/author_data.csv'):
         os.remove('../results/author_data.csv')
 
     # Use repository_utils to get an array from the list of allowed repositories
-    repositories = repository_utils.read_repository_names("java")
+    repositories = repository_utils.read_repository_names("java")[0:1]
 
     java_file_handler = JavaFileHandler()
     # For each repo on the list of allowed repositories
     timed_list = tqdm.tqdm(repositories)
+
     for repo in timed_list:
-        # Initialise a timer
-        start_time = timeit.default_timer()
         # get repo name
         repo_name = repo.split("/")[-1].split(".")[0]
         # set progress bar message
         timed_list.set_description('Processing ' + repo_name)
+        # Add message to the log
+        logging.notify("Started processing " + repo_name)
+        # Initialise a timer
+        start_time = timeit.default_timer()
         # gather data
         commits, test_files = process.gather_commits_and_tests(repo, java_file_handler)
         # preprocess commits
@@ -152,15 +157,20 @@ def main():
         print("Test after Implementation: " + str(test_after))
         print("Test during Implementation: " + str(test_during))
 
+        # Add message to the log
+        logging.notify("Iteration over " + repo_name + "has completed")
+
         # Plot the bar graph using the function
         #graphs.plot_bar_graph(test_before, test_during, test_after, repo_name)
 
         # Prepare data to write to the repo CSV
+        # Add message to the log
         repo_headers = ["Repo Name", "Language", "Test Before", "Test After", "Test During", "Duration (s)",
                         "Avg Before Commit Size", "Avg After Commit Size", "Avg During Commit Size", "Avg Commit Size"]
         repo_data_file_path = "../results/repo_data.csv"
         data_for_repo_csv = [repo_name, 'java', test_before, test_after, test_during, duration,
                              avg_size_before, avg_size_after, avg_size_during, avg_size_total]
+        logging.notify("Writing data to " + repo_data_file_path)
         update_csv_data(repo_data_file_path, data_for_repo_csv, repo_headers, 'repo')
 
         # Prepare data to write to the author CSV
@@ -174,25 +184,27 @@ def main():
         update_author_count(commits, author_counts, array_after, 1)
         update_author_count(commits, author_counts, array_during, 2)
 
-        #file_path, data, headers, type_flag
+        # Add message to the log
+        logging.notify("Writing data to " + author_data_file_path)
+
         for key in author_counts.keys():
             update_csv_data(author_data_file_path, [key] + author_counts[key], author_headers, 'author')
 
+        logging.notify("Finished processing " + repo_name)
+
+# Set Up Logging
+# Create custom logging level between INFO and WARNING - at level 25
+logging.NOTIFY = 25
+logging.addLevelName(logging.NOTIFY, 'NOTIFY')
+logging.Logger.notify = partialmethod(logging.Logger.log, logging.NOTIFY)
+logging.notify = partial(logging.log, logging.NOTIFY)
+
+logging.basicConfig(format="{asctime} - {levelname} - {message}", style="{", datefmt="%Y-%m-%d %H:%M",
+                    filename="../results/log.txt", filemode="w", level=25)
 
 main()
-
-# WRITE AUTHOR SPECIFIC DATA TO THE AUTHORS CSV
-# if author is already in the csv, update their values
-# if author is not already in the csv, create new row for the author
-
 '''
 WORK ON METHODOLOGY OF REPORT
-
-
-ADD STORAGE OF AVERAGE COMMIT, BEFORE, AFTER, DURING and ALL into this CSV
-Caluclate this from the 3 arrays above
-Units = number of files
-
 
 INFORMATION PER AUTHOR CAN BE DONE OVER MULTIPLE REPOSITORIES
 RUN CODE ONCE WITHOUT LOOKING AT AUTHOR
