@@ -198,12 +198,5 @@ logging.basicConfig(format="{asctime} - {levelname} - {message}", style="{", dat
                     filename="../results/log.txt", filemode="w", level=25)
 
 main()
-'''
-WORK ON METHODOLOGY OF REPORT
-
-INFORMATION PER AUTHOR CAN BE DONE OVER MULTIPLE REPOSITORIES
-RUN CODE ONCE WITHOUT LOOKING AT AUTHOR
-RUN AUTHOR ANALYSIS OVER COMPLETELY ANALYSED DATA AFTER TO GENERATE A 2nd CSV
-'''
 
 
