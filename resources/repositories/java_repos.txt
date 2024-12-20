@@ -1,2 +1,2 @@
-zookeeper
 bigtop-manager
+zookeeper

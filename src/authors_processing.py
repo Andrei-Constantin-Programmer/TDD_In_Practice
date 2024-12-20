@@ -4,7 +4,7 @@ import repository_utils
 from models.JavaFileHandler import JavaFileHandler
 import graphs
 import commit_processing as process
-import os.path, csv, timeit
+import os.path, csv, timeit, tqdm
 
 def update_csv_data(file_path, data, headers, type_flag):
     '''
@@ -97,15 +97,18 @@ def main():
         os.remove('../results/author_data.csv')
 
     # Use repository_utils to get an array from the list of allowed repositories
-    repositories = repository_utils.read_repository_names("java")[1:2]
+    repositories = repository_utils.read_repository_names("java")
 
     java_file_handler = JavaFileHandler()
     # For each repo on the list of allowed repositories
-    for repo in repositories:
+    timed_list = tqdm.tqdm(repositories)
+    for repo in timed_list:
         # Initialise a timer
         start_time = timeit.default_timer()
         # get repo name
         repo_name = repo.split("/")[-1].split(".")[0]
+        # set progress bar message
+        timed_list.set_description('Processing ' + repo_name)
         # gather data
         commits, test_files = process.gather_commits_and_tests(repo, java_file_handler)
         # preprocess commits
