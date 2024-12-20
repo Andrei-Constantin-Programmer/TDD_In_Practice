@@ -109,9 +109,10 @@ def main():
         # get repo name
         repo_name = repo.split("/")[-1].split(".")[0]
         # set progress bar message
-        timed_list.set_description('Processing ' + repo_name)
-        # Add message to the log
+        timed_list.set_description('Started processing ' + repo_name)
+        # Add message to the log and output to console
         logging.notify("Started processing " + repo_name)
+        print('Started processing ' + repo_name)
         # Initialise a timer
         start_time = timeit.default_timer()
         # gather data
@@ -150,13 +151,6 @@ def main():
         avg_size_during = calculate_average_commit_size(commits, array_during)
         avg_size_total = round((avg_size_before + avg_size_after + avg_size_during)/3, 1)
 
-        # Output our results in the console
-        print("\n")
-        print("Completed Running on " + repo_name + " in " + str(duration) + " seconds")
-        print("Test before Implementation: " + str(test_before))
-        print("Test after Implementation: " + str(test_after))
-        print("Test during Implementation: " + str(test_during))
-
         # Add message to the log
         logging.notify("Iteration over " + repo_name + "has completed")
 
@@ -191,6 +185,7 @@ def main():
             update_csv_data(author_data_file_path, [key] + author_counts[key], author_headers, 'author')
 
         logging.notify("Finished processing " + repo_name)
+        print("Finished processing " + repo_name)
 
 # Set Up Logging
 # Create custom logging level between INFO and WARNING - at level 25
