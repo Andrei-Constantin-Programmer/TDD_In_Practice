@@ -1,3 +1,5 @@
+import re
+
 class JavaFileHandler:
     name = "Java"
     file_extension = ".java"
@@ -6,4 +8,4 @@ class JavaFileHandler:
         return "Test" in file
     
     def get_implementation_file(self, test_file: str) -> str:
-        return test_file.replace("Tests", "").replace("Test", "")
+        return re.sub(r'(Tests|Test)', '', test_file)
