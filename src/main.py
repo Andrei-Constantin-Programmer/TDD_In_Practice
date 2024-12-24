@@ -7,14 +7,9 @@ import repository_utils
 from models.JavaFileHandler import JavaFileHandler
 import commit_processing as process
 import configuration
-from authors_processing import calculate_average_commit_size, update_author_count, update_csv_data
+from csv_export import calculate_average_commit_size, update_author_count, update_author_data, update_repo_data
 
 date_of_experiment = datetime(2024, 12, 1, 0, 0, 0)
-
-repo_headers = ["Repo Name", "Language", "Test Before", "Test After", "Test During", "Duration (s)", 
-                "Avg Before Commit Size", "Avg After Commit Size", "Avg During Commit Size", "Avg Commit Size"]
-
-author_headers = ["Author", "Test Before", "Test After", "Test During"]
 
 def main():
     logging.notify("Program 'main()' has started")
@@ -68,18 +63,15 @@ def main():
         data_for_repo_csv = [repo_name, 'java', test_before, test_after, test_during, duration,
                              avg_size_before, avg_size_after, avg_size_during, avg_size_total]
         
-        repo_data_file_path = os.path.join(repository_utils.RESULTS_PATH, "repo_data.csv")
-        update_csv_data(repo_data_file_path, data_for_repo_csv, repo_headers, 'repo')
-        logging.notify("Wrote repo data to " + repo_data_file_path)
+        update_repo_data(data_for_repo_csv)
 
-        author_data_file_path = os.path.join(repository_utils.RESULTS_PATH, "author_data.csv")
         author_counts = {}
         update_author_count(commits, author_counts, array_before, 0)
         update_author_count(commits, author_counts, array_after, 1)
         update_author_count(commits, author_counts, array_during, 2)
 
         for key in author_counts.keys():
-            update_csv_data(author_data_file_path, [key] + author_counts[key], author_headers, 'author')
+            update_author_data([key] + author_counts[key])
 
         processing_finished_message = "Finished processing " + repo_name
         logging.notify(processing_finished_message)

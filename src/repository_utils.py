@@ -1,15 +1,17 @@
+import csv
 from datetime import datetime
 import logging
 import os
-from typing import List, Optional, Generator, Dict, Any
+from typing import Callable, List, Optional, Generator, Dict, Any
 from pydriller import Commit
 import repository_utils_core as core
 
 ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 RESOURCES_PATH = os.path.join(ROOT_PATH, "resources", "repositories")
 RESULTS_PATH = os.path.join(ROOT_PATH, "results")
-PLOTS_PATH = os.path.join(RESULTS_PATH, "plots")
 LOGS_PATH = os.path.join(ROOT_PATH, "logs")
+
+PLOTS_PATH = os.path.join(RESULTS_PATH, "plots")    
 
 def create_directory(path: str):
     """
@@ -84,3 +86,37 @@ def delete_file_if_exists(path: str):
         logging.notify("Deleted file: '" + path + "'")
         return True
     return False
+
+def create_or_update_csv(file_path: str, headers: list, data: list[str], row_identifier: str, recalculation_function: Callable = None):
+    """
+    Creates or updates a CSV file with the provided data.
+    If the row identified by `row_identifier` exists, it will be updated; otherwise, a new row is added.
+
+    @param file_path: Path to the CSV file.
+    @param headers: List of headers for the CSV.
+    @param data: List of data to insert or update in the CSV.
+    @param row_identifier: The unique identifier for the row (e.g., a column value like author name).
+    """
+    if not os.path.isfile(file_path):
+        with open(file_path, 'w', newline='', encoding='utf-8') as csv_file:
+            writer = csv.writer(csv_file)
+            writer.writerow(headers)
+
+    with open(file_path, 'r', newline='', encoding='utf-8') as csv_file:
+        csv_data = list(csv.reader(csv_file))
+
+    found_row = False
+    for index, row in enumerate(csv_data):
+        if row[0] == row_identifier:
+            if (recalculation_function is not None):
+                data = recalculation_function()
+            csv_data[index] = data
+            found_row = True
+            break
+
+    if not found_row:
+        csv_data.append(data)
+
+    with open(file_path, 'w', newline='', encoding='utf-8') as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerows(csv_data)
