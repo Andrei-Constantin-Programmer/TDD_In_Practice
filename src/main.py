@@ -13,7 +13,6 @@ date_of_experiment = datetime(2024, 12, 1, 0, 0, 0)
 
 def main():
     logging.notify("Program 'main()' has started")
-    repository_utils.delete_file_if_exists(os.path.join(repository_utils.RESULTS_PATH, "author_data.csv"))
     
     # Use repository_utils to get an array from the list of allowed repositories
     repositories = repository_utils.read_repository_names("java")[0:1]

@@ -2,6 +2,9 @@ import logging
 import os.path
 import repository_utils
 
+AUTHOR_CSV_PATH = os.path.join(repository_utils.RESULTS_PATH, "author_data.csv")
+REPO_CSV_PATH = os.path.join(repository_utils.RESULTS_PATH, "repo_data.csv")
+
 repo_headers = ["Repo Name", "Language", "Test Before", "Test After", "Test During", "Duration (s)", 
                 "Avg Before Commit Size", "Avg After Commit Size", "Avg During Commit Size", "Avg Commit Size"]
 
@@ -12,21 +15,19 @@ def update_author_data(data: list[str]):
     Update the author's CSV file with new data
     @param data: The data to update the file with
     """
-    file = os.path.join(repository_utils.RESULTS_PATH, "author_data.csv")
-    row_name = data[0]
+    author_name = data[0]
     author_update_function = lambda data: data
-    repository_utils.create_or_update_csv(file, author_headers, data, row_name, author_update_function)
-    logging.notify("Wrote author data to " + file)
+    repository_utils.create_or_update_csv(AUTHOR_CSV_PATH, author_headers, data, author_name, author_update_function)
+    logging.notify("Wrote author data to " + AUTHOR_CSV_PATH)
 
 def update_repo_data(data: list[str]):
     """
     Update the repo CSV with the new data
     @param data: The data to update the file with
     """
-    file = os.path.join(repository_utils.RESULTS_PATH, "repo_data.csv")
-    row_name = data[0]
-    repository_utils.create_or_update_csv(file, repo_headers, data, row_name)
-    logging.notify("Wrote repo data to " + file)
+    repo_name = data[0]
+    repository_utils.create_or_update_csv(REPO_CSV_PATH, repo_headers, data, repo_name)
+    logging.notify("Wrote repo data to " + REPO_CSV_PATH)
 
 def update_author_count(commits, author_counts, test_files, index_to_update):
     '''
