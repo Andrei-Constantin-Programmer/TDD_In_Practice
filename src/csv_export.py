@@ -8,7 +8,7 @@ REPO_CSV_PATH = os.path.join(repository_utils.RESULTS_PATH, "repo_data.csv")
 repo_headers = ["Repo Name", "Language", "Test Before", "Test After", "Test During", "Duration (s)", 
                 "Avg Before Commit Size", "Avg After Commit Size", "Avg During Commit Size", "Avg Commit Size"]
 
-author_headers = ["ID", "Author", "Test Before", "Test After", "Test During"]
+author_headers = ["Author", "Test Before", "Test After", "Test During"]
 
 def update_author_data(data: list[str]):
     """
