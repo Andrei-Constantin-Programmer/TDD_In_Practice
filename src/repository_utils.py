@@ -2,6 +2,7 @@ import csv
 from datetime import datetime
 import logging
 import os
+import pickle
 import shutil
 from typing import Callable, List, Optional, Generator, Dict, Any
 from pydriller import Commit
@@ -11,6 +12,7 @@ ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 RESOURCES_PATH = os.path.join(ROOT_PATH, "resources", "repositories")
 RESULTS_PATH = os.path.join(ROOT_PATH, "results")
 LOGS_PATH = os.path.join(ROOT_PATH, "logs")
+COMMITS_PATH = os.path.join(RESULTS_PATH, "commits")
 
 PLOTS_PATH = os.path.join(RESULTS_PATH, "plots")    
 
@@ -124,3 +126,32 @@ def create_or_update_csv(file_path: str, headers: list, data: list[str], row_ide
     with open(file_path, 'w', newline='', encoding='utf-8') as csv_file:
         writer = csv.writer(csv_file)
         writer.writerows(csv_data)
+
+def serialize(file_path: str, data: Any):
+    '''
+    Serializes the given data and stores it in a file.
+    @param file_path: The file where the serialized data is stored to.
+    @param data: The data to serialize.
+    '''
+    with open(file_path, "wb") as file:
+        pickle.dump(data, file)
+
+def deserialize(file_path: str):
+    '''
+    Deserializes the data at the given file path.
+    @param file_path: The file where the serialized data is stored to.
+    @return: The deserialized data, or None if the file does not exist.
+    '''
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"Serialized file not found at {file_path}.")
+    
+    with open(file_path, "rb") as file:
+        return pickle.load(file)
+    
+def repo_name_from_url(repo_url):
+    '''
+    Returns the name of the repo from the given GitHub URL.
+    @param repo_url: The URL to the GitHub repo.
+    @return: The repo name
+    '''
+    return repo_url.split("/")[-1].split(".")[0]

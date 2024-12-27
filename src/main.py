@@ -6,10 +6,11 @@ import repository_utils
 from models.JavaFileHandler import JavaFileHandler
 from models.LanguageFileHandler import LanguageFileHandler
 import commit_processing as process
+import commit_retrieval as retrieval
 import configuration
 from csv_export import update_author_count, update_author_data, update_repo_data, anonymyse_authors
 
-date_of_experiment = datetime(2024, 12, 1, 0, 0, 0)
+DATE_OF_EXPERIMENT = datetime(2024, 12, 1, 0, 0, 0)
 
 def _categorise_test_files(test_files, commits, commit_map, file_handler):
     array_before = []
@@ -53,15 +54,14 @@ def _export_data(repo_name, commits, duration, avg_sizes, before, after, during,
     for key in author_counts.keys():
         update_author_data([key] + author_counts[key])
 
-def _process_repo(repo, file_handler, update_taskbar):
-    repo_name = repo.split("/")[-1].split(".")[0]
+def _process_repo(repo, file_handler):
+    repo_name = repository_utils.repo_name_from_url(repo)
 
     processing_started_message = 'Started processing ' + repo_name
-    update_taskbar(processing_started_message)
     logging.notify(processing_started_message)
-    
     start_time = timeit.default_timer()
-    commits, test_files = process.gather_commits_and_tests(repo, file_handler, final_date=date_of_experiment)
+    
+    commits, test_files = process.gather_commits_and_tests(repo, file_handler)
     commit_map = process.precompute_commit_map(commits)
     before, after, during = _categorise_test_files(test_files, commits, commit_map, file_handler)
 
@@ -73,12 +73,28 @@ def _process_repo(repo, file_handler, update_taskbar):
     logging.notify(processing_finished_message)
     print(processing_finished_message)
 
+def _store_repo_data(repo, file_handler, update_taskbar):
+    repo_name = repository_utils.repo_name_from_url(repo)
+
+    processing_started_message = 'Started data retrieval for ' + repo_name
+    update_taskbar(processing_started_message)
+    logging.notify(processing_started_message)
+
+    retrieval.retrieve_and_store_repo_info(repo, file_handler, final_date=DATE_OF_EXPERIMENT)
+
+    processing_finished_message = "Finished data retrieval for " + repo_name
+    logging.notify(processing_finished_message)
+    print(processing_finished_message)
+
 def _process_repositories(file_handler: LanguageFileHandler):
     repositories = repository_utils.read_repository_names(file_handler.name.lower())[0:1]
     timed_list = tqdm(repositories)
 
     for repo in timed_list:
-        _process_repo(repo, file_handler, lambda desc: timed_list.set_description(desc))
+        _store_repo_data(repo, file_handler, lambda desc: timed_list.set_description(desc))
+
+    for repo in repositories:
+        _process_repo(repo, file_handler)
 
 def main():
     configuration.setup_directories()

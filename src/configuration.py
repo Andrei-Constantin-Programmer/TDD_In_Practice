@@ -13,6 +13,7 @@ def setup_directories():
     repository_utils.create_directory(repository_utils.RESULTS_PATH, delete_existing=True)
     repository_utils.create_directory(repository_utils.PLOTS_PATH)
     repository_utils.create_directory(repository_utils.LOGS_PATH)
+    repository_utils.create_directory(repository_utils.COMMITS_PATH)
 
 def setup_logging():
     logging.NOTIFY = notify_level
