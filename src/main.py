@@ -7,7 +7,7 @@ from models.JavaFileHandler import JavaFileHandler
 from models.LanguageFileHandler import LanguageFileHandler
 import commit_processing as process
 import configuration
-from csv_export import update_author_count, update_author_data, update_repo_data
+from csv_export import update_author_count, update_author_data, update_repo_data, anonymyse_authors
 
 date_of_experiment = datetime(2024, 12, 1, 0, 0, 0)
 
@@ -89,6 +89,8 @@ def main():
     file_handlers = [JavaFileHandler()]
     for file_handler in file_handlers:
         _process_repositories(file_handler)
+
+    anonymyse_authors()
 
 if __name__ == "__main__":
     main()
