@@ -7,6 +7,7 @@ import shutil
 from typing import Callable, List, Optional, Generator, Dict, Any
 from pydriller import Commit
 import repository_utils_core as core
+from models.Repository import Repository
 
 ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 RESOURCES_PATH = os.path.join(ROOT_PATH, "resources", "repositories")
@@ -27,19 +28,19 @@ def create_directory(path: str, delete_existing: bool = False):
     os.makedirs(path, exist_ok=not delete_existing)
     return path
 
-def read_repository_names(language: str) -> List[str]:
+def read_repositories(language: str) -> List[Repository]:
     """
     Reads repository names from a file under 'resources/repositories/' and formats them
     as GitHub URLs from Apache (e.g., 'https://github.com/apache/{repo}.git').
 
     @param language: The programming language (e.g., "java", "kotlin").
-    @return: A list of formatted GitHub repository URLs.
+    @return: A list of Repository objects.
     """
     file_path = os.path.join(RESOURCES_PATH, f"{language}_repos.txt")
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"The file '{file_path}' does not exist.")
     with open(file_path, "r", encoding="utf-8") as file:
-        return core.read_repository_names(file)
+        return core.read_repositories(file)
 
 
 def read_csv(file_name: str) -> List[Dict[str, Any]]:
@@ -157,11 +158,3 @@ def deserialize(file_path: str):
     
     with open(file_path, "rb") as file:
         return pickle.load(file)
-    
-def repo_name_from_url(repo_url):
-    '''
-    Returns the name of the repo from the given GitHub URL.
-    @param repo_url: The URL to the GitHub repo.
-    @return: The repo name
-    '''
-    return repo_url.split("/")[-1].split(".")[0]

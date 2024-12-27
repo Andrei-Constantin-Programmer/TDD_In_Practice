@@ -1,20 +1,16 @@
 from collections import defaultdict
 import commit_retrieval as retrieval
 from models.LanguageFileHandler import LanguageFileHandler
-import repository_utils
 
-
-def gather_commits_and_tests(repo, file_handler: LanguageFileHandler):
+def gather_commits_and_tests(repo_name, file_handler: LanguageFileHandler):
     """
     Read commits from file and analyse tests to produce a test_files array
-    @param repo: A String representing the repository which we will search and retrieve commits from
+    @param repo_name: A String representing the repository which we will search and retrieve commits from
     @param file_handler: Object containing information required to retrieve commits that modify files of a particular programming language
     @return: A tuple containing an Array with CustomCommit objects and an Array of tuples of the form (test file name, commit index)
     """
-    repo_name = repository_utils.repo_name_from_url(repo)
     commits = retrieval.read_repo_info(repo_name)
 
-    # For each test file, create a tuple with the filename and its index in the commits array
     test_files = []
     for i in range(0, len(commits)):
         for file in commits[i].modified_files:

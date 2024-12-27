@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import unittest
 from unittest.mock import MagicMock, mock_open, patch
-from src.repository_utils_core import read_repository_names, read_csv, write_csv, read_commits
+from src.repository_utils_core import read_repositories, read_csv, write_csv, read_commits
 
 class TestRepositoryUtilsCore(unittest.TestCase):
     def test_read_repository_names(self):
@@ -10,7 +10,7 @@ class TestRepositoryUtilsCore(unittest.TestCase):
         file_like = mock_open(read_data=mock_file_content)()
 
         # Act
-        result = read_repository_names(file_like)
+        result = read_repositories(file_like)
 
         # Assert
         self.assertEqual(result, [
