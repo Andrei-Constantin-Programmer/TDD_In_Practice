@@ -11,6 +11,7 @@ from src.commit_processing import (
     gather_commits_and_tests,
     precompute_commit_map,
     find_nearest_implementation,
+    calculate_average_commit_size
 )
 
 class TestCommitProcessing(unittest.TestCase):
@@ -236,6 +237,29 @@ class TestCommitProcessing(unittest.TestCase):
 
         # Assert
         mock_read_commits.assert_called_once_with("mock_repo", final_date)
+
+
+    def test_calculate_average_commit_size(self):
+        commits = {
+            0: MagicMock(size=100),
+            1: MagicMock(size=200),
+            2: MagicMock(size=300)
+        }
+        test_files = [(0,), (1,), (2,)]
+        average_size = calculate_average_commit_size(commits, test_files)
+        self.assertEqual(average_size, 200.0)
+
+    def test_calculate_average_commit_size_when_no_test_files(self):
+        commits = {
+            0: MagicMock(size=100),
+            1: MagicMock(size=200),
+            2: MagicMock(size=300)
+        }
+    
+        test_files = []
+        with self.assertRaises(ZeroDivisionError):
+            calculate_average_commit_size(commits, test_files)
+
 
 
 if __name__ == "__main__":

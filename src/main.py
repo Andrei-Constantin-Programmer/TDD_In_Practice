@@ -7,7 +7,7 @@ from models.JavaFileHandler import JavaFileHandler
 from models.LanguageFileHandler import LanguageFileHandler
 import commit_processing as process
 import configuration
-from csv_export import calculate_average_commit_size, update_author_count, update_author_data, update_repo_data
+from csv_export import update_author_count, update_author_data, update_repo_data
 
 date_of_experiment = datetime(2024, 12, 1, 0, 0, 0)
 
@@ -31,9 +31,9 @@ def _categorise_test_files(test_files, commits, commit_map, file_handler):
     return array_before, array_after, array_during
 
 def _calculate_commit_metrics(commits, before, after, during):
-    avg_size_before = calculate_average_commit_size(commits, before)
-    avg_size_after = calculate_average_commit_size(commits, after)
-    avg_size_during = calculate_average_commit_size(commits, during)
+    avg_size_before = process.calculate_average_commit_size(commits, before)
+    avg_size_after = process.calculate_average_commit_size(commits, after)
+    avg_size_during = process.calculate_average_commit_size(commits, during)
     avg_size_total = round((avg_size_before + avg_size_after + avg_size_during) / 3, 1)
     return avg_size_before, avg_size_after, avg_size_during, avg_size_total
 

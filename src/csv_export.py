@@ -42,22 +42,3 @@ def update_author_count(commits, author_counts, test_files, index_to_update):
         if author not in author_counts.keys():
             author_counts[author] = [0, 0, 0]
         author_counts[author][index_to_update] += 1
-
-def calculate_average_commit_size(commits, test_files):
-    '''
-    Calculate the average commit size for commits containing tests
-    @param commits: An Array containing CustomCommit objects
-    @param test_files: The test files to iterate over
-    @return: The average commit size
-    '''
-    total = 0
-    counter = 0
-    complete_indexes = []
-
-    for test_file in test_files:
-        if test_file[0] not in complete_indexes:
-            total += commits[test_file[0]].size
-            counter += 1
-            complete_indexes.append(test_file[0])
-
-    return round(total/counter, 1)
