@@ -21,6 +21,7 @@ def write_csv(content: List[List[Any]], file_obj: IO[str]) -> None:
     writer = csv.writer(file_obj)
     writer.writerows(content)
 
+
 def read_commits(repository_url: str, final_date: Optional[datetime] = None) -> Generator[Commit, None, None]:
     if final_date is not None and final_date > datetime.now():
         raise ValueError("Final date must be in the past.")

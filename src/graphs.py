@@ -24,8 +24,7 @@ def plot_bar_graph(test_before, test_during, test_after, repo):
     plt.xticks(rotation=45)
     plt.tight_layout()
     # Save the plot
-    path = repository_utils.create_resource_folder("plots")
-    file_path = os.path.join(path, repo + "_plot.jpg")
+    file_path = os.path.join(repository_utils.PLOTS_PATH, repo + "_plot.jpg")
     plt.savefig(file_path)
     
     plt.show()

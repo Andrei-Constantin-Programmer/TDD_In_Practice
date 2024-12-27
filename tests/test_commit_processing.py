@@ -11,6 +11,7 @@ from src.commit_processing import (
     gather_commits_and_tests,
     precompute_commit_map,
     find_nearest_implementation,
+    calculate_average_commit_size
 )
 
 class TestCommitProcessing(unittest.TestCase):
@@ -208,13 +209,12 @@ class TestCommitProcessing(unittest.TestCase):
     @patch("repository_utils.read_commits")
     def test_gather_commits_and_tests_with_no_commits(self, mock_read_commits):
         # Arrange
-        mock_read_commits.return_value = []  # Mock read_commits to return an empty list
+        mock_read_commits.return_value = []
 
         # Act
         commits, test_files = gather_commits_and_tests("mock_repo", self.java_file_handler)
 
         # Assert
-        # Ensure that the returned commits and test files are empty
         self.assertEqual(commits, [])
         self.assertEqual(test_files, [])
 
@@ -236,6 +236,36 @@ class TestCommitProcessing(unittest.TestCase):
 
         # Assert
         mock_read_commits.assert_called_once_with("mock_repo", final_date)
+
+
+    def test_calculate_average_commit_size(self):
+        # Arrange
+        commits = {
+            0: MagicMock(size=100),
+            1: MagicMock(size=200),
+            2: MagicMock(size=300)
+        }
+        test_files = [(0,), (1,), (2,)]
+        
+        # Act
+        average_size = calculate_average_commit_size(commits, test_files)
+
+        # Assert
+        self.assertEqual(average_size, 200.0)
+
+    def test_calculate_average_commit_size_when_no_test_files(self):
+        # Arrange
+        commits = {
+            0: MagicMock(size=100),
+            1: MagicMock(size=200),
+            2: MagicMock(size=300)
+        }
+        test_files = []
+
+        # Act, Assert
+        with self.assertRaises(ZeroDivisionError):
+            calculate_average_commit_size(commits, test_files)
+
 
 
 if __name__ == "__main__":
