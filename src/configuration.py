@@ -10,7 +10,7 @@ today = datetime.now().strftime("%Y%m%d%H%M%S")
 log_path = os.path.join(repository_utils.LOGS_PATH, "log - " + today + ".txt")
 
 def setup_directories():
-    repository_utils.create_directory(repository_utils.RESULTS_PATH)
+    repository_utils.create_directory(repository_utils.RESULTS_PATH, delete_existing=True)
     repository_utils.create_directory(repository_utils.PLOTS_PATH)
     repository_utils.create_directory(repository_utils.LOGS_PATH)
 

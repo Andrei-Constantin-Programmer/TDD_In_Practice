@@ -2,6 +2,7 @@ import csv
 from datetime import datetime
 import logging
 import os
+import shutil
 from typing import Callable, List, Optional, Generator, Dict, Any
 from pydriller import Commit
 import repository_utils_core as core
@@ -13,12 +14,15 @@ LOGS_PATH = os.path.join(ROOT_PATH, "logs")
 
 PLOTS_PATH = os.path.join(RESULTS_PATH, "plots")    
 
-def create_directory(path: str):
+def create_directory(path: str, delete_existing: bool = False):
     """
     Creates a directory at the specified path if it does not exist.
     @param path: The path of the directory to be created
     """
-    os.makedirs(path, exist_ok=True)
+    if delete_existing and os.path.exists(path):
+        shutil.rmtree(path)
+
+    os.makedirs(path, exist_ok=not delete_existing)
     return path
 
 def read_repository_names(language: str) -> List[str]:
