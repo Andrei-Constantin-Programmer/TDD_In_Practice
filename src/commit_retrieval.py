@@ -1,3 +1,4 @@
+import asyncio
 import os
 import repository_utils
 from models.LanguageFileHandler import LanguageFileHandler
@@ -24,7 +25,7 @@ def _retrieve_commits(repo, file_handler: LanguageFileHandler, final_date = None
 def _get_serialized_file_name(repo_name: str):
     return os.path.join(repository_utils.COMMITS_PATH, f"{repo_name}.pkl") 
 
-def retrieve_and_store_repo_info(repo: str, file_handler: LanguageFileHandler, final_date = None):
+async def retrieve_and_store_repo_info(repo: str, file_handler: LanguageFileHandler, final_date = None):
     """
     Retrieve, serialize, and write repository information to a file with the repo name under results/commits.
     @param repo: The URL to the repository.
@@ -32,8 +33,12 @@ def retrieve_and_store_repo_info(repo: str, file_handler: LanguageFileHandler, f
     """
     repo_name = repository_utils.repo_name_from_url(repo)
     file_path = _get_serialized_file_name(repo_name)
-    commits = _retrieve_commits(repo, file_handler, final_date)
-    repository_utils.serialize(file_path, commits)
+
+    if repository_utils.file_exists(file_path):
+        return
+
+    commits = await asyncio.to_thread(_retrieve_commits, repo, file_handler, final_date)
+    await asyncio.to_thread(repository_utils.serialize, file_path, commits)
     
 def read_repo_info(repo_name: str):
     '''

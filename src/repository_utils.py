@@ -12,7 +12,7 @@ ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 RESOURCES_PATH = os.path.join(ROOT_PATH, "resources", "repositories")
 RESULTS_PATH = os.path.join(ROOT_PATH, "results")
 LOGS_PATH = os.path.join(ROOT_PATH, "logs")
-COMMITS_PATH = os.path.join(RESULTS_PATH, "commits")
+COMMITS_PATH = os.path.join(ROOT_PATH, "commits")
 
 PLOTS_PATH = os.path.join(RESULTS_PATH, "plots")    
 
@@ -81,6 +81,15 @@ def read_commits(repository_url: str, final_date: Optional[datetime] = None) -> 
     """
     return core.read_commits(repository_url, final_date)
 
+
+def file_exists(path: str):
+    '''
+    Checks if a file exists
+    @param path: The file's path.
+    @return: True if it exists, False otherwise
+    '''
+    return os.path.isfile(path)
+
 def delete_file_if_exists(path: str):
     """
     Deletes file if it exists; if the file is deleted, log.
@@ -92,6 +101,7 @@ def delete_file_if_exists(path: str):
         logging.notify("Deleted file: '" + path + "'")
         return True
     return False
+
 
 def create_or_update_csv(file_path: str, headers: list, data: list[str], row_identifier: str, recalculation_function: Callable[[list[str]], list[str]] = None):
     """

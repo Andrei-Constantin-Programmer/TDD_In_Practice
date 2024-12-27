@@ -20,3 +20,5 @@ plots/
 ./plots
 logs/
 .logs/
+commits/
+.commits/

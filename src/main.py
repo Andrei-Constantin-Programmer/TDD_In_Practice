@@ -1,7 +1,8 @@
+import asyncio
 from datetime import datetime
 import logging
 import timeit
-from tqdm import tqdm
+from tqdm.asyncio import tqdm
 import repository_utils
 from models.JavaFileHandler import JavaFileHandler
 from models.LanguageFileHandler import LanguageFileHandler
@@ -71,32 +72,37 @@ def _process_repo(repo, file_handler):
 
     processing_finished_message = "Finished processing " + repo_name
     logging.notify(processing_finished_message)
-    print(processing_finished_message)
 
-def _store_repo_data(repo, file_handler, update_taskbar):
+async def _store_repo_data(repo, file_handler):
     repo_name = repository_utils.repo_name_from_url(repo)
 
     processing_started_message = 'Started data retrieval for ' + repo_name
-    update_taskbar(processing_started_message)
     logging.notify(processing_started_message)
 
-    retrieval.retrieve_and_store_repo_info(repo, file_handler, final_date=DATE_OF_EXPERIMENT)
+    await retrieval.retrieve_and_store_repo_info(repo, file_handler, final_date=DATE_OF_EXPERIMENT)
 
     processing_finished_message = "Finished data retrieval for " + repo_name
     logging.notify(processing_finished_message)
-    print(processing_finished_message)
 
-def _process_repositories(file_handler: LanguageFileHandler):
-    repositories = repository_utils.read_repository_names(file_handler.name.lower())[0:1]
+async def _process_repositories(file_handler: LanguageFileHandler):
+    repositories = repository_utils.read_repository_names(file_handler.name.lower())
+
+    retrieval_message = "Retrieval:"
+    logging.notify(retrieval_message)
+    print(retrieval_message)
+
+    tasks = [_store_repo_data(repo, file_handler) for repo in repositories]
+    await tqdm.gather(*tasks)
+
+    processing_message = "\nProcessing:"
+    logging.notify(processing_message)
+    print(processing_message)
+
     timed_list = tqdm(repositories)
-
     for repo in timed_list:
-        _store_repo_data(repo, file_handler, lambda desc: timed_list.set_description(desc))
-
-    for repo in repositories:
         _process_repo(repo, file_handler)
 
-def main():
+async def main():
     configuration.setup_directories()
     configuration.setup_logging()
     
@@ -104,9 +110,9 @@ def main():
 
     file_handlers = [JavaFileHandler()]
     for file_handler in file_handlers:
-        _process_repositories(file_handler)
+        await _process_repositories(file_handler)
 
     anonymyse_authors()
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
