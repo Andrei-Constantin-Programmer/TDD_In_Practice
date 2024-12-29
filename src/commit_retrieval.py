@@ -1,6 +1,8 @@
 import asyncio
 import os
 import infrastructure.repository_utils as repository_utils
+import infrastructure.file_utils as file_utils
+import infrastructure.serialize as serializer
 from models.LanguageFileHandler import LanguageFileHandler
 from models.CustomCommit import CustomCommit
 from models.Repository import Repository
@@ -24,7 +26,7 @@ def _retrieve_commits(repo_url, file_handler: LanguageFileHandler, final_date = 
     return commits
 
 def _get_serialized_file_name(repo_name: str):
-    return os.path.join(repository_utils.COMMITS_PATH, f"{repo_name}.pkl") 
+    return os.path.join(file_utils.COMMITS_PATH, f"{repo_name}.pkl") 
 
 async def retrieve_and_store_repo_info(repo: Repository, file_handler: LanguageFileHandler, final_date = None):
     """
@@ -34,11 +36,11 @@ async def retrieve_and_store_repo_info(repo: Repository, file_handler: LanguageF
     """
     file_path = _get_serialized_file_name(repo.name)
 
-    if repository_utils.file_exists(file_path):
+    if file_utils.file_exists(file_path):
         return
 
     commits = await asyncio.to_thread(_retrieve_commits, repo.url, file_handler, final_date)
-    await asyncio.to_thread(repository_utils.serialize, file_path, commits)
+    await asyncio.to_thread(serializer.serialize, file_path, commits)
     
 def read_repo_info(repo_name: str):
     '''
@@ -47,4 +49,4 @@ def read_repo_info(repo_name: str):
     @return: An Array containing CustomCommit objects.
     '''
     file_path = _get_serialized_file_name(repo_name)
-    return repository_utils.deserialize(file_path)
+    return serializer.deserialize(file_path)
