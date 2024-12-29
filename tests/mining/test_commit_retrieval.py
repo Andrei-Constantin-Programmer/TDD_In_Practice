@@ -18,9 +18,9 @@ class TestCommitRetrieval(unittest.TestCase):
         self.java_file_handler = JavaFileHandler()
         self.repo = Repository(name="mock_repo", url="https://mock-repo.git")
 
-    @patch("infrastructure.file_utils.file_exists", return_value=False)
-    @patch("infrastructure.serialize.serialize")
-    @patch("infrastructure.repository_utils.read_commits")
+    @patch("src.infrastructure.file_utils.file_exists", return_value=False)
+    @patch("src.infrastructure.serialize.serialize")
+    @patch("src.infrastructure.repository_utils.read_commits")
     def test_retrieve_and_store_repo_info_with_no_modified_files(self, mock_read_commits, mock_serialize, mock_file_exists):
         # Arrange
         test_date = datetime(2023, 1, 1)
@@ -39,9 +39,9 @@ class TestCommitRetrieval(unittest.TestCase):
         self.assertEqual(len(commits), 1)
         self.assertEqual(len(commits[0].modified_files), 0)
 
-    @patch("infrastructure.file_utils.file_exists", return_value=False)
-    @patch("infrastructure.serialize.serialize")
-    @patch("infrastructure.repository_utils.read_commits")
+    @patch("src.infrastructure.file_utils.file_exists", return_value=False)
+    @patch("src.infrastructure.serialize.serialize")
+    @patch("src.infrastructure.repository_utils.read_commits")
     def test_retrieve_and_store_repo_info_with_final_date(self, mock_read_commits, mock_serialize, mock_file_exists):
         # Arrange
         final_date = datetime(2024, 1, 1)
@@ -60,9 +60,9 @@ class TestCommitRetrieval(unittest.TestCase):
         self.assertEqual(len(commits), 1)
         self.assertEqual(commits[0].hash, "abc123")
 
-    @patch("infrastructure.file_utils.file_exists", return_value=False)
-    @patch("infrastructure.serialize.serialize")
-    @patch("infrastructure.repository_utils.read_commits")
+    @patch("src.infrastructure.file_utils.file_exists", return_value=False)
+    @patch("src.infrastructure.serialize.serialize")
+    @patch("src.infrastructure.repository_utils.read_commits")
     def test_retrieve_and_store_repo_info_with_commits_without_files(self, mock_read_commits, mock_serialize, mock_file_exists):
         # Arrange
         test_date = datetime(2023, 1, 1)
@@ -85,7 +85,7 @@ class TestCommitRetrieval(unittest.TestCase):
         self.assertEqual(len(commits[1].modified_files), 0)
         self.assertEqual(commits[1].hash, "def456")
 
-    @patch("infrastructure.serialize.deserialize")
+    @patch("src.infrastructure.serialize.deserialize")
     def test_read_repo_info_with_empty_commits(self, mock_deserialize):
         # Arrange
         mock_deserialize.return_value = []

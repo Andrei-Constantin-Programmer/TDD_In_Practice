@@ -105,7 +105,7 @@ class TestCommitProcessing(unittest.TestCase):
         self.assertEqual(result, 1)
 
 
-    @patch("mining.commit_retrieval.read_repo_info")
+    @patch("src.mining.commit_retrieval.read_repo_info")
     def test_gather_commits_and_tests_with_valid_data(self, mock_read_repo_info):
         # Arrange
         mock_read_repo_info.return_value = [
@@ -124,7 +124,7 @@ class TestCommitProcessing(unittest.TestCase):
         self.assertEqual(len(commits), 1)
         self.assertEqual(len(test_files), 1)
 
-    @patch("mining.commit_retrieval.read_repo_info")
+    @patch("src.mining.commit_retrieval.read_repo_info")
     def test_gather_commits_and_tests_with_no_commits(self, mock_read_repo_info):
         # Arrange
         mock_read_repo_info.return_value = []

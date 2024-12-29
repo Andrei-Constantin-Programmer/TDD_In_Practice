@@ -2,9 +2,9 @@ from datetime import datetime
 import os
 from typing import List, Optional, Generator
 from pydriller import Commit
-from models.Repository import Repository
+from src.models.Repository import Repository
 from pydriller import Repository as DrillerRepo, Commit
-from infrastructure import file_utils
+from src.infrastructure import file_utils
 
 def read_repositories(language: str) -> List[Repository]:
     """

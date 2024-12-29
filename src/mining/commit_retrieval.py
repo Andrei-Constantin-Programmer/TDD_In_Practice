@@ -1,11 +1,11 @@
 import asyncio
 import os
-import infrastructure.repository_utils as repository_utils
-import infrastructure.file_utils as file_utils
-import infrastructure.serialize as serializer
-from models.LanguageFileHandler import LanguageFileHandler
-from models.CustomCommit import CustomCommit
-from models.Repository import Repository
+from src.infrastructure import repository_utils as repository_utils
+from src.infrastructure import file_utils as file_utils
+from src.infrastructure import serialize as serializer
+from src.models.LanguageFileHandler import LanguageFileHandler
+from src.models.CustomCommit import CustomCommit
+from src.models.Repository import Repository
 
 def _retrieve_files(modified_files, file_handler: LanguageFileHandler):
     files = []

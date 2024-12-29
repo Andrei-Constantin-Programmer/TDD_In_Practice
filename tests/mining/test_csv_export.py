@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
 import unittest.mock
+from src.infrastructure import configuration
 from src.mining import csv_export
 
 from src.mining.csv_export import (
@@ -13,15 +14,9 @@ from src.mining.csv_export import (
 class TestCsvExport(unittest.TestCase):
     
     def setUp(self):
-        self.patcher_logging = patch("src.mining.csv_export.logging")
-        self.mock_logging = self.patcher_logging.start()
-        self.mock_logging.notify = MagicMock()
+        configuration.setup_logging()
 
-    def tearDown(self):
-        self.patcher_logging.stop()
-
-
-    @patch("mining.csv_export.file_utils.create_or_update_csv")
+    @patch("src.mining.csv_export.file_utils.create_or_update_csv")
     def test_update_author_data(self, mock_create_or_update_csv):
         # Arrange
         data = ["author_name", "data1", "data2"]
@@ -38,7 +33,7 @@ class TestCsvExport(unittest.TestCase):
             unittest.mock.ANY
         )
 
-    @patch("mining.csv_export.file_utils.create_or_update_csv")
+    @patch("src.mining.csv_export.file_utils.create_or_update_csv")
     def test_update_repo_data(self, mock_create_or_update_csv):
         # Arrange
         data = ["repo_name", "data1", "data2"]
@@ -75,8 +70,8 @@ class TestCsvExport(unittest.TestCase):
         # Assert
         self.assertEqual(author_counts, expected_counts)
 
-    @patch('mining.csv_export.file_utils.read_csv')
-    @patch('mining.csv_export.file_utils.write_csv')
+    @patch('src.mining.csv_export.file_utils.read_csv')
+    @patch('src.mining.csv_export.file_utils.write_csv')
     def test_anonymyse_authors_single_authors(self, mock_write_csv, mock_read_csv):
         # Arrange
         mock_read_csv.return_value = [{"Author": "Alice", "Test Before": "5", "Test After": "3", "Test During": "2"}]
@@ -89,8 +84,8 @@ class TestCsvExport(unittest.TestCase):
         # Assert
         mock_write_csv.assert_called_once_with(expected_data, 'author_data')
 
-    @patch('mining.csv_export.file_utils.read_csv')
-    @patch('mining.csv_export.file_utils.write_csv')
+    @patch('src.mining.csv_export.file_utils.read_csv')
+    @patch('src.mining.csv_export.file_utils.write_csv')
     def test_anonymyse_authors_multiple_authors(self, mock_write_csv, mock_read_csv):
         # Arrange
         mock_read_csv.return_value = [
@@ -112,8 +107,8 @@ class TestCsvExport(unittest.TestCase):
         # Assert
         mock_write_csv.assert_called_once_with(expected_data, 'author_data')
 
-    @patch('mining.csv_export.file_utils.read_csv')
-    @patch('mining.csv_export.file_utils.write_csv')
+    @patch('src.mining.csv_export.file_utils.read_csv')
+    @patch('src.mining.csv_export.file_utils.write_csv')
     def test_anonymyse_authors_empty_csv(self, mock_write_csv, mock_read_csv):
         # Arrange
         mock_read_csv.return_value = []

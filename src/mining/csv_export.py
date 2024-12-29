@@ -1,6 +1,6 @@
 import logging
 import os.path
-from infrastructure import file_utils
+from src.infrastructure import file_utils
 
 AUTHOR_FILE_NAME = "author_data"
 AUTHOR_CSV_PATH = os.path.join(file_utils.RESULTS_PATH, f"{AUTHOR_FILE_NAME}.csv")

@@ -1,6 +1,6 @@
 import pickle
 from typing import Any
-from infrastructure import file_utils
+from src.infrastructure import file_utils
 
 def serialize(file_path: str, data: Any):
     '''

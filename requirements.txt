@@ -1,4 +1,5 @@
 pydriller~=2.7
 pytest
+pytest-asyncio
 matplotlib~=3.9.4
 tqdm
