@@ -104,7 +104,7 @@ def delete_file_if_exists(path: str):
     return False
 
 
-def create_or_update_csv(file_path: str, headers: list, data: list[str], row_identifier: str, recalculation_function: Callable[[list[str]], list[str]] = None):
+def create_or_update_csv(file_path: str, headers: list, data: list[str], row_identifier: str, recalculation_function: Callable[[list[str], list[str]], list[str]] = None):
     """
     Creates or updates a CSV file with the provided data.
     If the row identified by `row_identifier` exists, it will be updated; otherwise, a new row is added.
@@ -126,7 +126,7 @@ def create_or_update_csv(file_path: str, headers: list, data: list[str], row_ide
     for index, row in enumerate(csv_data):
         if row[0] == row_identifier:
             if (recalculation_function is not None):
-                data = recalculation_function(data)
+                data = recalculation_function(data, row)
             csv_data[index] = data
             found_row = True
             break

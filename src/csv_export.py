@@ -11,13 +11,20 @@ REPO_HEADER = ["Repo Name", "Language", "Test Before", "Test After", "Test Durin
 
 AUTHOR_HEADER = ["Author", "Test Before", "Test After", "Test During"]
 
+def _update_author_data_from_csv_line(data: list[str], csv_data: list[str]):
+    if len(data) != len(csv_data):
+        raise IndexError("Author data and CSV author data don't match!")
+    
+    updated_data = [str(int(data[i]) + int(csv_data[i])) for i in range (1, len(data))]
+    return [data[0]] + updated_data
+
 def update_author_data(data: list[str]):
     """
     Update the author's CSV file with new data
     @param data: The data to update the file with
     """
     author_name = data[0]
-    author_update_function = lambda data: data
+    author_update_function = lambda data, csv_data: _update_author_data_from_csv_line(data, csv_data)
     repository_utils.create_or_update_csv(AUTHOR_CSV_PATH, AUTHOR_HEADER, data, author_name, author_update_function)
     logging.notify("Wrote author data to " + AUTHOR_CSV_PATH)
 
