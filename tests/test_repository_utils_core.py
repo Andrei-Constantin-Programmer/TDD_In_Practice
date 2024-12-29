@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import unittest
 from unittest.mock import MagicMock, mock_open, patch
+from src.models.Repository import Repository
 from src.repository_utils_core import read_repositories, read_csv, write_csv, read_commits
 
 class TestRepositoryUtilsCore(unittest.TestCase):
@@ -9,15 +10,23 @@ class TestRepositoryUtilsCore(unittest.TestCase):
         mock_file_content = "repo1\nrepo2\nrepo3"
         file_like = mock_open(read_data=mock_file_content)()
 
+        expected_repos = [
+            Repository("repo1", "https://github.com/apache/repo1.git"),
+            Repository("repo2", "https://github.com/apache/repo2.git"),
+            Repository("repo3", "https://github.com/apache/repo3.git")
+        ]
+
         # Act
         result = read_repositories(file_like)
 
+        for i in result:
+            print(i.name + " " + i.url)
+
         # Assert
-        self.assertEqual(result, [
-            "https://github.com/apache/repo1.git",
-            "https://github.com/apache/repo2.git",
-            "https://github.com/apache/repo3.git"
-        ])
+        self.assertEqual(len(result), len(expected_repos))
+        for actual, expected in zip(result, expected_repos):
+            self.assertEqual(actual.name, expected.name)
+            self.assertEqual(actual.url, expected.url)
 
     def test_read_csv(self):
         # Arrange
@@ -48,7 +57,7 @@ class TestRepositoryUtilsCore(unittest.TestCase):
         handle.write.assert_any_call("val1,val2\r\n")
         handle.write.assert_any_call("val3,val4\r\n")
 
-    @patch("src.repository_utils_core.Repository")
+    @patch("src.repository_utils_core.DrillerRepo")
     @patch("src.repository_utils_core.datetime")
     def test_read_commits(self, mock_datetime, mock_repository):
         # Arrange
@@ -72,7 +81,7 @@ class TestRepositoryUtilsCore(unittest.TestCase):
         self.assertEqual(result[0].author_date, "2024-12-11")
         mock_repository.assert_called_once_with(repo_url, only_modifications_with_file_types=['.java'], to=fake_now)
 
-    @patch("src.repository_utils_core.Repository")
+    @patch("src.repository_utils_core.DrillerRepo")
     @patch("src.repository_utils_core.datetime")
     def test_read_commits_with_no_commits_in_the_past(self, mock_datetime, mock_repository):
         # Arrange
@@ -88,7 +97,7 @@ class TestRepositoryUtilsCore(unittest.TestCase):
         # Assert
         self.assertEqual(len(result), 0)
 
-    @patch("src.repository_utils_core.Repository")
+    @patch("src.repository_utils_core.DrillerRepo")
     @patch("src.repository_utils_core.datetime")
     def test_read_commits_when_datetime_is_in_the_future(self, mock_datetime, mock_repository):
         # Arrange
@@ -107,7 +116,7 @@ class TestRepositoryUtilsCore(unittest.TestCase):
         with self.assertRaises(ValueError):
             _ = list(read_commits(repo_url, fake_tomorrow))
 
-    @patch("src.repository_utils_core.Repository")
+    @patch("src.repository_utils_core.DrillerRepo")
     @patch("src.repository_utils_core.datetime")
     def test_read_commits_when_datetime_is_correct(self, mock_datetime, mock_repository):
         # Arrange

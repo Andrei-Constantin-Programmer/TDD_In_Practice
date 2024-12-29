@@ -10,7 +10,6 @@ def gather_commits_and_tests(repo_name, file_handler: LanguageFileHandler):
     @return: A tuple containing an Array with CustomCommit objects and an Array of tuples of the form (test file name, commit index)
     """
     commits = retrieval.read_repo_info(repo_name)
-
     test_files = []
     for i in range(0, len(commits)):
         for file in commits[i].modified_files:
