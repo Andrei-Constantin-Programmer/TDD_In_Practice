@@ -21,7 +21,7 @@ def _get_parameters():
         "--date",
         type=str,
         default=default_experiment_date_string,
-        help=f"Date of the experiment in YYYY-MM-DD format. Defaults to {default_experiment_date_string}.",
+        help="Date of the experiment in YYYY-MM-DD format.",
     )
     parser.add_argument(
         "--language",
@@ -33,8 +33,8 @@ def _get_parameters():
         "--languages",
         type=str,
         nargs="*",
-        default=["java"],
-        help="List of programming languages to analyze. Defaults to ['Java', 'Python', 'Kotlin', 'C#', 'Rust']. NOTE: If the '--language' argument is provided, this list is ignored.",
+        default=["Java"],
+        help="List of programming languages to analyze. NOTE: If the '--language' argument is provided, this list is ignored.",
     )
     parser.add_argument(
         "--verbose",
