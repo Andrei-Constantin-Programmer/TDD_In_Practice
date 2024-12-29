@@ -6,10 +6,10 @@ import pickle
 import shutil
 from typing import Callable, List, Optional, Generator, Dict, Any
 from pydriller import Commit
-import repository_utils_core as core
+from infrastructure import repository_utils_core as core
 from models.Repository import Repository
 
-ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 RESOURCES_PATH = os.path.join(ROOT_PATH, "resources", "repositories")
 RESULTS_PATH = os.path.join(ROOT_PATH, "results")
 LOGS_PATH = os.path.join(ROOT_PATH, "logs")

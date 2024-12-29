@@ -20,7 +20,7 @@ class TestCsvExport(unittest.TestCase):
         self.patcher_logging.stop()
 
 
-    @patch("repository_utils.create_or_update_csv")
+    @patch("csv_export.repository_utils.create_or_update_csv")
     def test_update_author_data(self, mock_create_or_update_csv):
         # Arrange
         data = ["author_name", "data1", "data2"]
@@ -37,7 +37,7 @@ class TestCsvExport(unittest.TestCase):
             unittest.mock.ANY
         )
 
-    @patch("repository_utils.create_or_update_csv")
+    @patch("csv_export.repository_utils.create_or_update_csv")
     def test_update_repo_data(self, mock_create_or_update_csv):
         # Arrange
         data = ["repo_name", "data1", "data2"]

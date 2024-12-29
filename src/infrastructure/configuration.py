@@ -2,7 +2,7 @@ from datetime import datetime
 from functools import partial, partialmethod
 import logging
 import os
-import repository_utils
+from infrastructure import repository_utils
 
 notify_level = 25
 

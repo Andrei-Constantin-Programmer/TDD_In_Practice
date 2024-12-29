@@ -1,6 +1,6 @@
 import os
 from matplotlib import pyplot as plt
-import repository_utils
+import infrastructure.repository_utils as repository_utils
 
 def plot_bar_graph(test_before, test_during, test_after, repo):
     """

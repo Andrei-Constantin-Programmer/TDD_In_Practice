@@ -1,6 +1,6 @@
 import asyncio
 import os
-import repository_utils
+import infrastructure.repository_utils as repository_utils
 from models.LanguageFileHandler import LanguageFileHandler
 from models.CustomCommit import CustomCommit
 from models.Repository import Repository

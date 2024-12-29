@@ -1,6 +1,6 @@
 import logging
 import os.path
-import repository_utils
+import infrastructure.repository_utils as repository_utils
 
 AUTHOR_FILE_NAME = "author_data"
 AUTHOR_CSV_PATH = os.path.join(repository_utils.RESULTS_PATH, f"{AUTHOR_FILE_NAME}.csv")

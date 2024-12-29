@@ -3,12 +3,12 @@ from datetime import datetime
 import logging
 import timeit
 from tqdm.asyncio import tqdm
-import repository_utils
+import infrastructure.repository_utils as repository_utils
 from models.JavaFileHandler import JavaFileHandler
 from models.LanguageFileHandler import LanguageFileHandler
 import commit_processing as process
 import commit_retrieval as retrieval
-import configuration
+import infrastructure.configuration as configuration
 from csv_export import update_author_count, update_author_data, update_repo_data, anonymyse_authors
 
 DATE_OF_EXPERIMENT = datetime(2024, 12, 1, 0, 0, 0)
