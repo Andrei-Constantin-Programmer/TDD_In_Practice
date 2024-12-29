@@ -7,7 +7,7 @@ from src.models.JavaFileHandler import JavaFileHandler
 from src.models.Repository import Repository
 from src.infrastructure import file_utils
 
-from src.commit_retrieval import (
+from src.mining.commit_retrieval import (
     retrieve_and_store_repo_info,
     read_repo_info,
 )

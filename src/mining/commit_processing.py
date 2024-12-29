@@ -1,5 +1,5 @@
 from collections import defaultdict
-import commit_retrieval as retrieval
+from mining import commit_retrieval as retrieval
 from models.LanguageFileHandler import LanguageFileHandler
 
 def gather_commits_and_tests(repo_name, file_handler: LanguageFileHandler):
