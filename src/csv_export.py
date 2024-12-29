@@ -46,7 +46,7 @@ def update_author_count(commits, author_counts, test_files, index_to_update):
     @index_to_update: The index of the commit type to update (before, after, during)
     '''
     for test_file in test_files:
-        author = str(commits[test_file[0]].author).split(',')[1]
+        author = str(commits[test_file[0]].author).split(',')[0]
         if author not in author_counts.keys():
             author_counts[author] = [0, 0, 0]
         author_counts[author][index_to_update] += 1
