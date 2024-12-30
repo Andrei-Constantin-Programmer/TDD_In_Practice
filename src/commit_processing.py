@@ -1,52 +1,15 @@
 from collections import defaultdict
-import repository_utils
-from models.CustomCommit import CustomCommit
+import commit_retrieval as retrieval
 from models.LanguageFileHandler import LanguageFileHandler
 
-def retrieve_files(modified_files, file_handler: LanguageFileHandler):
+def gather_commits_and_tests(repo_name, file_handler: LanguageFileHandler):
     """
-    Function to take the 'modified_files' attribute of a Pydriller Commit object and return a simple array of filename strings
-    @param modified_files: An array of ModifiedFile objects taken from the Commit object of pydriller
-    @param file_handler: Object containing the extension of a particular programming language
-    @return: An array of filename strings
-    """
-    files = []
-
-    # Iterate through all file objects from the Pydriller modified_files passed in
-    for file in modified_files:
-        if file_handler.file_extension in file.filename:
-            files.append(file.filename)
-
-    return files
-
-
-def retrieve_commits(repo, file_handler: LanguageFileHandler, final_date = None):
-    """
-    Function to take a repo name and convert commits into a "CustomCommit" object.
-    @param repo: A String representing the repository which we will search and retrieve commits from
-    @param file_handler: Object containing information required to retrieve files specific to the a particular programming language
-    @return: An Array containing CustomCommit objects, one CustomCommit object is appended per commit
-    """
-    commits = []
-
-    for commit in repository_utils.read_commits(repo, final_date):
-        files = retrieve_files(commit.modified_files, file_handler)
-        commits.append(CustomCommit(commit.hash, files, commit.author, commit.author_date))
-
-    # Return the array
-    return commits
-
-
-def gather_commits_and_tests(repo, file_handler: LanguageFileHandler, final_date = None):
-    """
-    Retrieve Commits from GitHub using the retrieve_commits, and analyse tests to produce a test_files array
-    @param repo: A String representing the repository which we will search and retrieve commits from
+    Read commits from file and analyse tests to produce a test_files array
+    @param repo_name: A String representing the repository which we will search and retrieve commits from
     @param file_handler: Object containing information required to retrieve commits that modify files of a particular programming language
     @return: A tuple containing an Array with CustomCommit objects and an Array of tuples of the form (test file name, commit index)
     """
-    commits = retrieve_commits(repo, file_handler, final_date)
-
-    # For each test file, create a tuple with the filename and its index in the commits array
+    commits = retrieval.read_repo_info(repo_name)
     test_files = []
     for i in range(0, len(commits)):
         for file in commits[i].modified_files:

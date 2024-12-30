@@ -2,15 +2,18 @@ import csv
 from datetime import datetime
 import logging
 import os
+import pickle
 import shutil
 from typing import Callable, List, Optional, Generator, Dict, Any
 from pydriller import Commit
 import repository_utils_core as core
+from models.Repository import Repository
 
 ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 RESOURCES_PATH = os.path.join(ROOT_PATH, "resources", "repositories")
 RESULTS_PATH = os.path.join(ROOT_PATH, "results")
 LOGS_PATH = os.path.join(ROOT_PATH, "logs")
+COMMITS_PATH = os.path.join(ROOT_PATH, "commits")
 
 PLOTS_PATH = os.path.join(RESULTS_PATH, "plots")    
 
@@ -25,19 +28,19 @@ def create_directory(path: str, delete_existing: bool = False):
     os.makedirs(path, exist_ok=not delete_existing)
     return path
 
-def read_repository_names(language: str) -> List[str]:
+def read_repositories(language: str) -> List[Repository]:
     """
     Reads repository names from a file under 'resources/repositories/' and formats them
     as GitHub URLs from Apache (e.g., 'https://github.com/apache/{repo}.git').
 
     @param language: The programming language (e.g., "java", "kotlin").
-    @return: A list of formatted GitHub repository URLs.
+    @return: A list of Repository objects.
     """
     file_path = os.path.join(RESOURCES_PATH, f"{language}_repos.txt")
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"The file '{file_path}' does not exist.")
     with open(file_path, "r", encoding="utf-8") as file:
-        return core.read_repository_names(file)
+        return core.read_repositories(file)
 
 
 def read_csv(file_name: str) -> List[Dict[str, Any]]:
@@ -79,6 +82,15 @@ def read_commits(repository_url: str, final_date: Optional[datetime] = None) -> 
     """
     return core.read_commits(repository_url, final_date)
 
+
+def file_exists(path: str):
+    '''
+    Checks if a file exists
+    @param path: The file's path.
+    @return: True if it exists, False otherwise
+    '''
+    return os.path.isfile(path)
+
 def delete_file_if_exists(path: str):
     """
     Deletes file if it exists; if the file is deleted, log.
@@ -91,7 +103,8 @@ def delete_file_if_exists(path: str):
         return True
     return False
 
-def create_or_update_csv(file_path: str, headers: list, data: list[str], row_identifier: str, recalculation_function: Callable[[list[str]], list[str]] = None):
+
+def create_or_update_csv(file_path: str, headers: list, data: list[str], row_identifier: str, recalculation_function: Callable[[list[str], list[str]], list[str]] = None):
     """
     Creates or updates a CSV file with the provided data.
     If the row identified by `row_identifier` exists, it will be updated; otherwise, a new row is added.
@@ -113,7 +126,7 @@ def create_or_update_csv(file_path: str, headers: list, data: list[str], row_ide
     for index, row in enumerate(csv_data):
         if row[0] == row_identifier:
             if (recalculation_function is not None):
-                data = recalculation_function(data)
+                data = recalculation_function(data, row)
             csv_data[index] = data
             found_row = True
             break
@@ -124,3 +137,24 @@ def create_or_update_csv(file_path: str, headers: list, data: list[str], row_ide
     with open(file_path, 'w', newline='', encoding='utf-8') as csv_file:
         writer = csv.writer(csv_file)
         writer.writerows(csv_data)
+
+def serialize(file_path: str, data: Any):
+    '''
+    Serializes the given data and stores it in a file.
+    @param file_path: The file where the serialized data is stored to.
+    @param data: The data to serialize.
+    '''
+    with open(file_path, "wb") as file:
+        pickle.dump(data, file)
+
+def deserialize(file_path: str):
+    '''
+    Deserializes the data at the given file path.
+    @param file_path: The file where the serialized data is stored to.
+    @return: The deserialized data, or None if the file does not exist.
+    '''
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"Serialized file not found at {file_path}.")
+    
+    with open(file_path, "rb") as file:
+        return pickle.load(file)

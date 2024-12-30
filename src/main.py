@@ -1,15 +1,17 @@
+import asyncio
 from datetime import datetime
 import logging
 import timeit
-from tqdm import tqdm
+from tqdm.asyncio import tqdm
 import repository_utils
 from models.JavaFileHandler import JavaFileHandler
 from models.LanguageFileHandler import LanguageFileHandler
 import commit_processing as process
+import commit_retrieval as retrieval
 import configuration
 from csv_export import update_author_count, update_author_data, update_repo_data, anonymyse_authors
 
-date_of_experiment = datetime(2024, 12, 1, 0, 0, 0)
+DATE_OF_EXPERIMENT = datetime(2024, 12, 1, 0, 0, 0)
 
 def _categorise_test_files(test_files, commits, commit_map, file_handler):
     array_before = []
@@ -53,34 +55,50 @@ def _export_data(repo_name, commits, duration, avg_sizes, before, after, during,
     for key in author_counts.keys():
         update_author_data([key] + author_counts[key])
 
-def _process_repo(repo, file_handler, update_taskbar):
-    repo_name = repo.split("/")[-1].split(".")[0]
-
-    processing_started_message = 'Started processing ' + repo_name
-    update_taskbar(processing_started_message)
+def _process_repo(repo, file_handler):
+    processing_started_message = 'Started processing ' + repo.name
     logging.notify(processing_started_message)
-    
     start_time = timeit.default_timer()
-    commits, test_files = process.gather_commits_and_tests(repo, file_handler, final_date=date_of_experiment)
+    
+    commits, test_files = process.gather_commits_and_tests(repo.name, file_handler)
     commit_map = process.precompute_commit_map(commits)
     before, after, during = _categorise_test_files(test_files, commits, commit_map, file_handler)
 
     avg_sizes = _calculate_commit_metrics(commits, before, after, during)
     duration = round((timeit.default_timer() - start_time), 1)
-    _export_data(repo_name, commits, duration, avg_sizes, before, after, during, file_handler)
+    _export_data(repo.name, commits, duration, avg_sizes, before, after, during, file_handler)
 
-    processing_finished_message = "Finished processing " + repo_name
+    processing_finished_message = "Finished processing " + repo.name
     logging.notify(processing_finished_message)
-    print(processing_finished_message)
 
-def _process_repositories(file_handler: LanguageFileHandler):
-    repositories = repository_utils.read_repository_names(file_handler.name.lower())[0:1]
+async def _store_repo_data(repo, file_handler):
+    processing_started_message = 'Started data retrieval for ' + repo.name
+    logging.notify(processing_started_message)
+
+    await retrieval.retrieve_and_store_repo_info(repo, file_handler, final_date=DATE_OF_EXPERIMENT)
+
+    processing_finished_message = "Finished data retrieval for " + repo.name
+    logging.notify(processing_finished_message)
+
+async def _process_repositories(file_handler: LanguageFileHandler):
+    repositories = repository_utils.read_repositories(file_handler.name.lower())
+
+    retrieval_message = "Retrieval:"
+    logging.notify(retrieval_message)
+    print(retrieval_message)
+
+    tasks = [_store_repo_data(repo, file_handler) for repo in repositories]
+    await tqdm.gather(*tasks)
+
+    processing_message = "\nProcessing:"
+    logging.notify(processing_message)
+    print(processing_message)
+
     timed_list = tqdm(repositories)
-
     for repo in timed_list:
-        _process_repo(repo, file_handler, lambda desc: timed_list.set_description(desc))
+        _process_repo(repo, file_handler)
 
-def main():
+async def main():
     configuration.setup_directories()
     configuration.setup_logging()
     
@@ -88,9 +106,9 @@ def main():
 
     file_handlers = [JavaFileHandler()]
     for file_handler in file_handlers:
-        _process_repositories(file_handler)
+        await _process_repositories(file_handler)
 
     anonymyse_authors()
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
