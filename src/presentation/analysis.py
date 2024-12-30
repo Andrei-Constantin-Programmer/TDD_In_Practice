@@ -55,7 +55,7 @@ class Analysis():
         for key in author_counts.keys():
             update_author_data([key] + author_counts[key])
 
-    def _process_repo(self, repo, file_handler):
+    def process_repo(self, repo, file_handler):
         processing_started_message = 'Started processing ' + repo.name
         logging.notify(processing_started_message)
         start_time = timeit.default_timer()
@@ -100,7 +100,7 @@ class Analysis():
 
         timed_list = tqdm(repositories)
         for repo in timed_list:
-            self._process_repo(repo, file_handler)
+            self.process_repo(repo, file_handler)
 
     async def perform_analysis(self, file_handlers):
         for file_handler in file_handlers:

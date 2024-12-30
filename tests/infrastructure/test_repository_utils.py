@@ -5,7 +5,9 @@ from src.models.Repository import Repository
 
 from src.infrastructure.repository_utils import (
     read_repositories, 
-    read_commits
+    read_commits,
+    repo_from_url,
+    apache_repo_from_name
 )
     
 class TestRepositoryUtils(unittest.TestCase):
@@ -107,6 +109,40 @@ class TestRepositoryUtils(unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0].hash, "abc123")
         mock_repository.assert_called_once_with(repo_url, only_modifications_with_file_types=['.java'], to=test_date)
+
+    
+    def test_repo_from_url_valid(self):
+        # Arrange
+        valid_url = "https://github.com/apache/test-repo.git"
+        expected_repo = Repository(name="test-repo", url=valid_url)
+
+        # Act
+        result = repo_from_url(valid_url)
+
+        # Assert
+        self.assertEqual(result.name, expected_repo.name)
+        self.assertEqual(result.url, expected_repo.url)
+
+    def test_repo_from_url_invalid(self):
+        # Arrange
+        invalid_url = "https://example.com/apache/test-repo.git"
+
+        # Act, Assert
+        with self.assertRaises(ValueError):
+            repo_from_url(invalid_url)
+
+    def test_apache_repo_from_name(self):
+        # Arrange
+        repo_name = "test-repo"
+        expected_url = "https://github.com/apache/test-repo.git"
+        expected_repo = Repository(name=repo_name, url=expected_url)
+
+        # Act
+        result = apache_repo_from_name(repo_name)
+
+        # Assert
+        self.assertEqual(result.name, expected_repo.name)
+        self.assertEqual(result.url, expected_repo.url)
 
 
 if __name__ == "__main__":

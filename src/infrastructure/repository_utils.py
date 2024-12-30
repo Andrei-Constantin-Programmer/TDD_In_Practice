@@ -1,5 +1,6 @@
 from datetime import datetime
 import os
+import re
 from typing import List, Optional, Generator
 from pydriller import Commit
 from src.models.Repository import Repository
@@ -20,7 +21,7 @@ def read_repositories(language: str) -> List[Repository]:
     with open(file_path, "r", encoding="utf-8") as file:
         lines = file.readlines()
         repositories: List[str] = [line.strip() for line in lines]
-        return [Repository(repo_name, f"https://github.com/apache/{repo_name}.git") for repo_name in repositories]
+        return [apache_repo_from_name(repo_name) for repo_name in repositories]
 
 def read_commits(repository_url: str, final_date: Optional[datetime] = None) -> Generator[Commit, None, None]:
     """
@@ -35,3 +36,15 @@ def read_commits(repository_url: str, final_date: Optional[datetime] = None) -> 
         raise ValueError("Final date must be in the past.")
     to_date = final_date if final_date else datetime.now()
     return DrillerRepo(repository_url, only_modifications_with_file_types=['.java'], to=to_date).traverse_commits()
+
+def repo_from_url(repo_url: str):
+    repo_name = re.search(r"github\.com/[^/]+/([^/.]+)", repo_url).group(1) if re.search(r"github\.com/[^/]+/([^/.]+)", repo_url) else None
+
+    if repo_name is None:
+        raise ValueError(f"Invalid repository URL '{repo_url}'")
+
+    return Repository(repo_name, repo_url)
+
+def apache_repo_from_name(repo_name: str):
+    repo_url = f"https://github.com/apache/{repo_name}.git"
+    return Repository(repo_name, repo_url)
