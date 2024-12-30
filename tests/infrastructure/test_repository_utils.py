@@ -14,7 +14,7 @@ class TestRepositoryUtils(unittest.TestCase):
 
     @patch("src.infrastructure.repository_utils.os.path.exists", return_value=True)
     @patch("src.infrastructure.repository_utils.open", new_callable=mock_open, read_data="repo1\nrepo2\nrepo3")
-    def test_read_repositories(self, _, __):
+    def test_read_repositories(self, mock_open, _):
         # Arrange
         expected_repos = [
             Repository("repo1", "https://github.com/apache/repo1.git"),
@@ -31,9 +31,12 @@ class TestRepositoryUtils(unittest.TestCase):
             self.assertEqual(actual.name, expected.name)
             self.assertEqual(actual.url, expected.url)
 
+        mock_open().write.assert_called_once_with("repo1\nrepo2\nrepo3")
+
+
     @patch("src.infrastructure.repository_utils.os.path.exists", return_value=True)
-    @patch("src.infrastructure.repository_utils.open", new_callable=mock_open, read_data="repo1\nrepo1\nrepo2")
-    def test_read_repositories_retrieves_unique_repos(self, _, __):
+    @patch("src.infrastructure.repository_utils.open", new_callable=mock_open, read_data="repo2\nrepo1\nrepo1")
+    def test_read_repositories_retrieves_unique_repos(self, mock_open, _):
         # Arrange
         expected_repos = [
             Repository("repo1", "https://github.com/apache/repo1.git"),
@@ -48,6 +51,9 @@ class TestRepositoryUtils(unittest.TestCase):
         for actual, expected in zip(result, expected_repos):
             self.assertEqual(actual.name, expected.name)
             self.assertEqual(actual.url, expected.url)
+
+        handle = mock_open()
+        handle.write.assert_called_once_with("repo1\nrepo2")
 
     @patch("src.infrastructure.repository_utils.DrillerRepo")
     @patch("src.infrastructure.repository_utils.datetime")

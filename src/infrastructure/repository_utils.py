@@ -9,8 +9,10 @@ from src.infrastructure import file_utils
 
 def read_repositories(language: str) -> List[Repository]:
     """
-    Reads repository names from a file under 'resources/repositories/' and formats them
-    as GitHub URLs from Apache (e.g., 'https://github.com/apache/{repo}.git').
+    Reads repository names from a file under 'resources/repositories/', removes duplicates,
+    alphabetically orders them, and formats them as GitHub URLs from Apache
+    (e.g., 'https://github.com/apache/{repo}.git'). 
+    The updated list replaces the original file, with one repository per line.
 
     @param language: The programming language (e.g., "java", "kotlin").
     @return: A list of Repository objects.
@@ -18,9 +20,14 @@ def read_repositories(language: str) -> List[Repository]:
     file_path = os.path.join(file_utils.RESOURCES_PATH, f"{language}_repos.txt")
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"The file '{file_path}' does not exist.")
+    
     with open(file_path, "r", encoding="utf-8") as file:
         lines = file.readlines()
-        repositories: List[str] = list(set(line.strip() for line in lines))
+        repositories: List[str] = sorted(set(line.strip() for line in lines))
+
+        with open(file_path, "w", encoding="utf-8") as file:
+            file.write("\n".join(repositories))
+
         return [apache_repo_from_name(repo_name) for repo_name in repositories]
 
 def read_commits(repository_url: str, final_date: Optional[datetime] = None) -> Generator[Commit, None, None]:
