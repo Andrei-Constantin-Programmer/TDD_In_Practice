@@ -20,7 +20,7 @@ def read_repositories(language: str) -> List[Repository]:
         raise FileNotFoundError(f"The file '{file_path}' does not exist.")
     with open(file_path, "r", encoding="utf-8") as file:
         lines = file.readlines()
-        repositories: List[str] = [line.strip() for line in lines]
+        repositories: List[str] = list(set(line.strip() for line in lines))
         return [apache_repo_from_name(repo_name) for repo_name in repositories]
 
 def read_commits(repository_url: str, final_date: Optional[datetime] = None) -> Generator[Commit, None, None]:

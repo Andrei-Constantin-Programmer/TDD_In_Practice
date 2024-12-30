@@ -31,6 +31,24 @@ class TestRepositoryUtils(unittest.TestCase):
             self.assertEqual(actual.name, expected.name)
             self.assertEqual(actual.url, expected.url)
 
+    @patch("src.infrastructure.repository_utils.os.path.exists", return_value=True)
+    @patch("src.infrastructure.repository_utils.open", new_callable=mock_open, read_data="repo1\nrepo1\nrepo2")
+    def test_read_repositories_retrieves_unique_repos(self, _, __):
+        # Arrange
+        expected_repos = [
+            Repository("repo1", "https://github.com/apache/repo1.git"),
+            Repository("repo2", "https://github.com/apache/repo2.git")
+        ]
+
+        # Act
+        result = read_repositories("java")
+
+        # Assert
+        self.assertEqual(len(result), len(expected_repos))
+        for actual, expected in zip(result, expected_repos):
+            self.assertEqual(actual.name, expected.name)
+            self.assertEqual(actual.url, expected.url)
+
     @patch("src.infrastructure.repository_utils.DrillerRepo")
     @patch("src.infrastructure.repository_utils.datetime")
     def test_read_commits(self, mock_datetime, mock_repository):
