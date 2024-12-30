@@ -5,9 +5,9 @@ from unittest.mock import patch, MagicMock
 from datetime import datetime
 from src.models.JavaFileHandler import JavaFileHandler
 from src.models.Repository import Repository
-from src import repository_utils
+from src.infrastructure import file_utils
 
-from src.commit_retrieval import (
+from src.mining.commit_retrieval import (
     retrieve_and_store_repo_info,
     read_repo_info,
 )
@@ -18,9 +18,9 @@ class TestCommitRetrieval(unittest.TestCase):
         self.java_file_handler = JavaFileHandler()
         self.repo = Repository(name="mock_repo", url="https://mock-repo.git")
 
-    @patch("repository_utils.file_exists", return_value=False)
-    @patch("repository_utils.serialize")
-    @patch("repository_utils.read_commits")
+    @patch("src.infrastructure.file_utils.file_exists", return_value=False)
+    @patch("src.infrastructure.serialize.serialize")
+    @patch("src.infrastructure.repository_utils.read_commits")
     def test_retrieve_and_store_repo_info_with_no_modified_files(self, mock_read_commits, mock_serialize, mock_file_exists):
         # Arrange
         test_date = datetime(2023, 1, 1)
@@ -39,9 +39,9 @@ class TestCommitRetrieval(unittest.TestCase):
         self.assertEqual(len(commits), 1)
         self.assertEqual(len(commits[0].modified_files), 0)
 
-    @patch("repository_utils.file_exists", return_value=False)
-    @patch("repository_utils.serialize")
-    @patch("repository_utils.read_commits")
+    @patch("src.infrastructure.file_utils.file_exists", return_value=False)
+    @patch("src.infrastructure.serialize.serialize")
+    @patch("src.infrastructure.repository_utils.read_commits")
     def test_retrieve_and_store_repo_info_with_final_date(self, mock_read_commits, mock_serialize, mock_file_exists):
         # Arrange
         final_date = datetime(2024, 1, 1)
@@ -60,9 +60,9 @@ class TestCommitRetrieval(unittest.TestCase):
         self.assertEqual(len(commits), 1)
         self.assertEqual(commits[0].hash, "abc123")
 
-    @patch("repository_utils.file_exists", return_value=False)
-    @patch("repository_utils.serialize")
-    @patch("repository_utils.read_commits")
+    @patch("src.infrastructure.file_utils.file_exists", return_value=False)
+    @patch("src.infrastructure.serialize.serialize")
+    @patch("src.infrastructure.repository_utils.read_commits")
     def test_retrieve_and_store_repo_info_with_commits_without_files(self, mock_read_commits, mock_serialize, mock_file_exists):
         # Arrange
         test_date = datetime(2023, 1, 1)
@@ -85,7 +85,7 @@ class TestCommitRetrieval(unittest.TestCase):
         self.assertEqual(len(commits[1].modified_files), 0)
         self.assertEqual(commits[1].hash, "def456")
 
-    @patch("repository_utils.deserialize")
+    @patch("src.infrastructure.serialize.deserialize")
     def test_read_repo_info_with_empty_commits(self, mock_deserialize):
         # Arrange
         mock_deserialize.return_value = []
@@ -94,5 +94,9 @@ class TestCommitRetrieval(unittest.TestCase):
         result = read_repo_info("mock_repo")
 
         # Assert
-        mock_deserialize.assert_called_once_with(os.path.join(repository_utils.COMMITS_PATH, "mock_repo.pkl"))
+        mock_deserialize.assert_called_once_with(os.path.join(file_utils.COMMITS_PATH, "mock_repo.pkl"))
         self.assertEqual(result, [])
+
+
+if __name__ == "__main__":
+    unittest.main()
