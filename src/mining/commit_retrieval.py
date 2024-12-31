@@ -54,7 +54,12 @@ def read_repo_info(repo_name: str):
     '''
     Reads repo information from a file.
     @param repo_name: The name of the repository.
-    @return: An Array containing CustomCommit objects.
+    @return: An Array containing CustomCommit objects, or None if the deserialization fails.
     '''
     file_path = _get_serialized_file_name(repo_name)
-    return serializer.deserialize(file_path)
+    try:
+        repo_info = serializer.deserialize(file_path)
+    except Exception as e:
+        logging.warning(f"No 'commits' file found for repository '{repo_name}': {e}")
+        return []
+    return repo_info

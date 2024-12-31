@@ -133,6 +133,20 @@ class TestCommitRetrieval(unittest.TestCase):
         mock_deserialize.assert_called_once_with(os.path.join(file_utils.COMMITS_PATH, "mock_repo.pkl"))
         self.assertEqual(result, [])
 
+    @patch("src.infrastructure.serialize.deserialize")
+    @patch("logging.warning")
+    def test_read_repo_info_with_commits(self, mock_logging_warning, mock_deserialize):
+        # Arrange
+        mock_deserialize.side_effect = Exception("Test exception")
+
+        # Act
+        result = read_repo_info("mock_repo")
+
+        # Assert
+        mock_deserialize.assert_called_once_with(os.path.join(file_utils.COMMITS_PATH, "mock_repo.pkl"))
+        self.assertEqual(len(result), 0)
+        mock_logging_warning.assert_called_once()
+
 
 if __name__ == "__main__":
     unittest.main()
