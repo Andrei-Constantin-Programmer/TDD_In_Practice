@@ -134,20 +134,6 @@ class TestRepositoryUtils(unittest.TestCase):
         self.assertEqual(result[0].hash, "abc123")
         mock_repository.assert_called_once_with(repo_url, only_modifications_with_file_types=['.java'], to=test_date)
 
-    @patch("src.infrastructure.repository_utils.DrillerRepo")
-    @patch("src.infrastructure.repository_utils.logging.error")
-    def test_read_commits_handles_exception(self, mock_logging_error, mock_repository):
-        # Arrange
-        repo_url = "https://github.com/apache/repo1.git"
-        mock_repository.side_effect = Exception("Test exception")
-
-        # Act
-        result = read_commits(repo_url)
-
-        # Assert
-        self.assertIsNone(result)
-        mock_logging_error.assert_called_once_with(f"Could not drill repository {repo_url}: Test exception")
-
     
     def test_repo_from_url_valid(self):
         # Arrange

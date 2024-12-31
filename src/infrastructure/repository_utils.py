@@ -43,11 +43,8 @@ def read_commits(repository_url: str, final_date: Optional[datetime] = None) -> 
     if final_date is not None and final_date > datetime.now():
         raise ValueError("Final date must be in the past.")
     to_date = final_date if final_date else datetime.now()
-    try:
-        return DrillerRepo(repository_url, only_modifications_with_file_types=['.java'], to=to_date).traverse_commits()
-    except Exception as e:
-        logging.error(f"Could not drill repository {repository_url}: {e}")
-        return None
+    
+    return DrillerRepo(repository_url, only_modifications_with_file_types=['.java'], to=to_date).traverse_commits()
 
 def repo_from_url(repo_url: str):
     repo_name = re.search(r"github\.com/[^/]+/([^/.]+)", repo_url).group(1) if re.search(r"github\.com/[^/]+/([^/.]+)", repo_url) else None

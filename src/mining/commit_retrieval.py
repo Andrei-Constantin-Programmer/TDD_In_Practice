@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 from src.infrastructure import repository_utils as repository_utils
 from src.infrastructure import file_utils as file_utils
@@ -19,13 +20,13 @@ def _retrieve_files(modified_files, file_handler: LanguageFileHandler):
 def _retrieve_commits(repo_url, file_handler: LanguageFileHandler, final_date = None):
     commits = []
 
-    commit_generator = repository_utils.read_commits(repo_url, final_date)
-    if commit_generator is None:
+    try:
+        for commit in repository_utils.read_commits(repo_url, final_date):
+            files = _retrieve_files(commit.modified_files, file_handler)
+            commits.append(CustomCommit(commit.hash, files, commit.author, commit.author_date))
+    except Exception as e:
+        logging.error(f"Could not drill repository {repo_url}: {e}")
         return []
-
-    for commit in commit_generator:
-        files = _retrieve_files(commit.modified_files, file_handler)
-        commits.append(CustomCommit(commit.hash, files, commit.author, commit.author_date))
 
     return commits
 

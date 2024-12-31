@@ -87,14 +87,19 @@ class TestCommitRetrieval(unittest.TestCase):
 
     @patch("src.infrastructure.file_utils.file_exists", return_value=False)
     @patch("src.infrastructure.serialize.serialize")
-    @patch("src.infrastructure.repository_utils.read_commits", return_value=None)
-    def test_retrieve_and_store_repo_info_with_no_commit_generator(self, mock_read_commits, mock_serialize, mock_file_exists):
+    @patch("src.infrastructure.repository_utils.read_commits")
+    @patch("src.infrastructure.repository_utils.logging.error")
+    def test_retrieve_and_store_repo_info_with_failing_commit_generator(self, mock_logging_error, mock_read_commits, mock_serialize, mock_file_exists):
+        # Arrange
+        mock_read_commits.side_effect = Exception("Test exception")
+        
         # Act
         with patch("asyncio.to_thread", side_effect=lambda func, *args: func(*args)):
             asyncio.run(retrieve_and_store_repo_info(self.repo, self.java_file_handler))
 
         # Assert
         mock_read_commits.assert_called_once_with("https://mock-repo.git", None)
+        mock_logging_error.assert_called_once_with(f"Could not drill repository {self.repo.url}: Test exception")
         mock_serialize.assert_not_called()
 
 
