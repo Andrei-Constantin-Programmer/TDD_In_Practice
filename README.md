@@ -44,6 +44,8 @@ python tdd_analysis.py [--date DATE] [--language LANGUAGE] [--languages LANGUAGE
 - `--repository --repo REPOSITORY (optional)`: URL for repository to analyse. By default, analyse all repos under `resources/repositories`.
   
     **Note**: The `'--language'` argument must also be provided if `'--repository'` is provided.
+
+- `--batch_size BATCH_SIZE (optional)`: Batch size for asynchronous repository retrieval using PyDriller. Defaults to 8.
   
 - `--verbose (optional)`: Enable verbose output for debugging or detailed logs.  
 
@@ -52,7 +54,7 @@ To display a help message with detailed usage instructions, run:
 
 ```bash
 python tdd_analysis.py --help
-```
+``` 
 
 ## Run Tests
 To run the unit tests, simply call:

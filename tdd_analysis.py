@@ -46,6 +46,12 @@ def _get_parameters():
         help="Repository URL to analyse. NOTE: The '--language' argument must be provided in conjunction with this parameter.",
     )
     parser.add_argument(
+        "--batch_size",
+        type=int,
+        default = 8,
+        help="Batch size for asynchronous repository retrieval using PyDriller."
+    )
+    parser.add_argument(
         "--verbose",
         action="store_true",
         help="Enable verbose output for debugging or detailed logs.",
@@ -60,6 +66,15 @@ def _get_parameters():
     
     if args.repository and not args.language:
         raise argparse.ArgumentError(None, "--repository requires the --language argument to be provided.")
+    
+    if args.batch_size < 1:
+        raise argparse.ArgumentError(None, "--batch_size cannot be lower than 1.")
+    elif args.batch_size > 16:
+        response = input(f"Warning: --batch_size ({args.batch_size}) is greater than 16. Are you sure you want to continue? (Y/N): ").strip().lower()
+        while response not in {'y', 'n', 'yes', 'no'}:
+            response = input("Invalid input. Please enter 'yes'/'y' or 'no'/'n': ").strip().lower()
+        if response in {'no', 'n'}:
+            raise argparse.ArgumentError(None, "Operation aborted by the user.")
 
     return args
 
@@ -77,7 +92,7 @@ def _process_single_repo(repo, language, analysis):
     repo = repository_utils.repo_from_url(repo)
     analysis.process_repo(repo, _get_handler(language))
 
-async def _process_all_repos(language, languages, analysis):
+async def _process_all_repos(language, languages, batch_size, analysis):
     if (language is not None):
         handlers = [_get_handler(language)]
     elif (languages is not None):
@@ -85,7 +100,7 @@ async def _process_all_repos(language, languages, analysis):
     else:
         handlers = _get_handlers(DEFAULT_LANGUAGES)
 
-    await analysis.perform_analysis(handlers)
+    await analysis.perform_analysis(handlers, batch_size)
 
 async def main():
     try:
@@ -104,7 +119,7 @@ async def main():
         if args.repository is not None:
             _process_single_repo(args.repository, args.language, analysis)
         else:
-            await _process_all_repos(args.language, args.languages, analysis)
+            await _process_all_repos(args.language, args.languages, args.batch_size, analysis)
 
         print("Analysis complete.")
 

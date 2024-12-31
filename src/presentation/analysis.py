@@ -85,14 +85,13 @@ class Analysis():
         processing_finished_message = "Finished data retrieval for " + repo.name
         logging.notify(processing_finished_message)
 
-    async def _process_repositories(self, file_handler: LanguageFileHandler):
+    async def _process_repositories(self, file_handler: LanguageFileHandler, batch_size: int):
         repositories = repository_utils.read_repositories(file_handler.name.lower())
 
         retrieval_message = "Retrieval:"
         logging.notify(retrieval_message)
         print(retrieval_message)
 
-        batch_size = 8
         with tqdm(total=len(repositories), desc="Processing repositories") as progress_bar:
             async def process_and_update(repo):
                 await self._store_repo_data(repo, file_handler)
@@ -111,8 +110,8 @@ class Analysis():
         for repo in timed_list:
             self.process_repo(repo, file_handler)
 
-    async def perform_analysis(self, file_handlers):
+    async def perform_analysis(self, file_handlers, batch_size):
         for file_handler in file_handlers:
-            await self._process_repositories(file_handler)
+            await self._process_repositories(file_handler, batch_size)
 
         anonymyse_authors()
