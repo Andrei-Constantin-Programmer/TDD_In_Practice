@@ -91,7 +91,7 @@ class Analysis():
         logging.notify(retrieval_message)
         print(retrieval_message)
 
-        with tqdm(total=len(repositories), desc="Processing repositories") as progress_bar:
+        with tqdm(total=len(repositories)) as progress_bar:
             async def process_and_update(repo):
                 await self._store_repo_data(repo, file_handler, force_mine)
                 progress_bar.update(1)
