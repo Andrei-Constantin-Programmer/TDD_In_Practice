@@ -33,7 +33,7 @@ class TestCommitRetrieval(unittest.TestCase):
             asyncio.run(retrieve_and_store_repo_info(self.repo, self.java_file_handler))
 
         # Assert
-        mock_read_commits.assert_called_once_with("https://mock-repo.git", None)
+        mock_read_commits.assert_called_once_with("https://mock-repo.git", '.java', None)
         mock_serialize.assert_called_once()
         commits = mock_serialize.call_args[0][1]
         self.assertEqual(len(commits), 1)
@@ -54,7 +54,7 @@ class TestCommitRetrieval(unittest.TestCase):
             asyncio.run(retrieve_and_store_repo_info(self.repo, self.java_file_handler, final_date))
 
         # Assert
-        mock_read_commits.assert_called_once_with("https://mock-repo.git", final_date)
+        mock_read_commits.assert_called_once_with("https://mock-repo.git", '.java', final_date)
         mock_serialize.assert_called_once()
         commits = mock_serialize.call_args[0][1]
         self.assertEqual(len(commits), 1)
@@ -76,7 +76,7 @@ class TestCommitRetrieval(unittest.TestCase):
             asyncio.run(retrieve_and_store_repo_info(self.repo, self.java_file_handler))
 
         # Assert
-        mock_read_commits.assert_called_once_with("https://mock-repo.git", None)
+        mock_read_commits.assert_called_once_with("https://mock-repo.git", '.java', None)
         mock_serialize.assert_called_once()
         commits = mock_serialize.call_args[0][1]
         self.assertEqual(len(commits), 2)
@@ -98,9 +98,48 @@ class TestCommitRetrieval(unittest.TestCase):
             asyncio.run(retrieve_and_store_repo_info(self.repo, self.java_file_handler))
 
         # Assert
-        mock_read_commits.assert_called_once_with("https://mock-repo.git", None)
+        mock_read_commits.assert_called_once_with("https://mock-repo.git", '.java', None)
         mock_logging_error.assert_called_once_with(f"Could not drill repository {self.repo.url}: Test exception")
         mock_serialize.assert_not_called()
+
+    @patch("src.infrastructure.file_utils.file_exists", return_value=True)
+    @patch("src.infrastructure.serialize.serialize")
+    @patch("src.infrastructure.repository_utils.read_commits")
+    def test_retrieve_and_store_repo_info_file_exists_no_force(self, mock_read_commits, mock_serialize, mock_file_exists):
+        # Arrange
+        test_date = datetime(2023, 1, 1)
+        mock_read_commits.return_value = [
+            MagicMock(hash="abc123", modified_files=[MagicMock(filename="TestFile1.java")], author="Author1", author_date=test_date)
+        ]
+
+        # Act
+        with patch("asyncio.to_thread", side_effect=lambda func, *args: func(*args)):
+            asyncio.run(retrieve_and_store_repo_info(self.repo, self.java_file_handler))
+
+        # Assert
+        mock_read_commits.assert_not_called()
+        mock_serialize.assert_not_called()
+
+    @patch("src.infrastructure.file_utils.file_exists", return_value=True)
+    @patch("src.infrastructure.serialize.serialize")
+    @patch("src.infrastructure.repository_utils.read_commits")
+    def test_retrieve_and_store_repo_info_file_exists_with_force(self, mock_read_commits, mock_serialize, mock_file_exists):
+        # Arrange
+        test_date = datetime(2023, 1, 1)
+        mock_read_commits.return_value = [
+            MagicMock(hash="abc123", modified_files=[MagicMock(filename="TestFile1.java")], author="Author1", author_date=test_date)
+        ]
+
+        # Act
+        with patch("asyncio.to_thread", side_effect=lambda func, *args: func(*args)):
+            asyncio.run(retrieve_and_store_repo_info(self.repo, self.java_file_handler, force_mine=True))
+
+        # Assert
+        mock_read_commits.assert_called_once_with("https://mock-repo.git", '.java', None)
+        mock_serialize.assert_called_once()
+        commits = mock_serialize.call_args[0][1]
+        self.assertEqual(len(commits), 1)
+        self.assertEqual(commits[0].hash, "abc123")
 
 
     @patch("src.infrastructure.serialize.deserialize")

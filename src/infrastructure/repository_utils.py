@@ -31,11 +31,12 @@ def read_repositories(language: str) -> List[Repository]:
 
         return [apache_repo_from_name(repo_name) for repo_name in repositories]
 
-def read_commits(repository_url: str, final_date: Optional[datetime] = None) -> Generator[Commit, None, None]:
+def read_commits(repository_url: str, file_extension: str, final_date: Optional[datetime] = None) -> Generator[Commit, None, None]:
     """
     Reads commits from a repository using PyDriller.
 
     @param: repository_url: The URL of the repository.
+    @param: file_extension: The file extension to search for.
     @param: final_date: Date to read commits up until from the given repository.
 
     @return: A generator of Commit objects.
@@ -44,7 +45,7 @@ def read_commits(repository_url: str, final_date: Optional[datetime] = None) -> 
         raise ValueError("Final date must be in the past.")
     to_date = final_date if final_date else datetime.now()
     
-    return DrillerRepo(repository_url, only_modifications_with_file_types=['.java'], to=to_date).traverse_commits()
+    return DrillerRepo(repository_url, only_modifications_with_file_types=[file_extension], to=to_date).traverse_commits()
 
 def repo_from_url(repo_url: str):
     repo_name = re.search(r"github\.com/[^/]+/([^/.]+)", repo_url).group(1) if re.search(r"github\.com/[^/]+/([^/.]+)", repo_url) else None

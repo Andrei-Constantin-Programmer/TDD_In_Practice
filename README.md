@@ -26,8 +26,9 @@ Run the following command from the project root:
 ## Run Analysis
 To execute the TDD analysis, use the command-line interface:
 ```bash
-python tdd_analysis.py [--date DATE] [--language LANGUAGE] [--languages LANGUAGES ...]
-                       [--repository REPOSITORY] [--verbose]
+python tdd_analysis.py  [--date DATE] [--language LANGUAGE] [--languages LANGUAGES ...]
+                        [--repository REPOSITORY] [--batch_size BATCH_SIZE] [--force-mine]
+                        [--verbose]
 ```
 
 ### Parameters
@@ -46,6 +47,8 @@ python tdd_analysis.py [--date DATE] [--language LANGUAGE] [--languages LANGUAGE
     **Note**: The `'--language'` argument must also be provided if `'--repository'` is provided.
 
 - `--batch_size BATCH_SIZE (optional)`: Batch size for asynchronous repository retrieval using PyDriller. Defaults to 8.
+
+- `--force_mine (optional)`: Forcefully mine the repository/repositories, even if they have already been retrieved. Defaults to False.
   
 - `--verbose (optional)`: Enable verbose output for debugging or detailed logs.  
 

@@ -8,7 +8,6 @@ RESOURCES_PATH = os.path.join(ROOT_PATH, "resources", "repositories")
 RESULTS_PATH = os.path.join(ROOT_PATH, "results")
 LOGS_PATH = os.path.join(ROOT_PATH, "logs")
 COMMITS_PATH = os.path.join(ROOT_PATH, "commits")
-PLOTS_PATH = os.path.join(RESULTS_PATH, "plots")
 
 def create_directory(path: str, delete_existing: bool = False):
     """

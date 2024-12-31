@@ -11,7 +11,6 @@ log_path = os.path.join(file_utils.LOGS_PATH, "log - " + today + ".txt")
 
 def setup_directories():
     file_utils.create_directory(file_utils.RESULTS_PATH, delete_existing=True)
-    file_utils.create_directory(file_utils.PLOTS_PATH)
     file_utils.create_directory(file_utils.LOGS_PATH)
     file_utils.create_directory(file_utils.COMMITS_PATH)
 

@@ -70,7 +70,7 @@ class TestRepositoryUtils(unittest.TestCase):
         mock_datetime.now.return_value = fake_now
 
         # Act
-        result = list(read_commits(repo_url))
+        result = list(read_commits(repo_url, '.java'))
 
         # Assert
         self.assertEqual(len(result), 1)
@@ -90,7 +90,7 @@ class TestRepositoryUtils(unittest.TestCase):
         mock_datetime.now.return_value = fake_now
 
         # Act
-        result = list(read_commits(repo_url))
+        result = list(read_commits(repo_url, '.java'))
 
         # Assert
         self.assertEqual(len(result), 0)
@@ -112,7 +112,7 @@ class TestRepositoryUtils(unittest.TestCase):
 
         # Act, Assert
         with self.assertRaises(ValueError):
-            _ = list(read_commits(repo_url, fake_tomorrow))
+            _ = list(read_commits(repo_url, '.java', fake_tomorrow))
 
     @patch("src.infrastructure.repository_utils.DrillerRepo")
     @patch("src.infrastructure.repository_utils.datetime")
@@ -127,7 +127,7 @@ class TestRepositoryUtils(unittest.TestCase):
         mock_datetime.now.return_value = fake_now
 
         # Act
-        result = list(read_commits(repo_url, test_date))
+        result = list(read_commits(repo_url,'.java', test_date))
 
         # Assert
         self.assertEqual(len(result), 1)

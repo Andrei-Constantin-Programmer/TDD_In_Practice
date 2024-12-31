@@ -8,6 +8,7 @@ from src.models import LanguageFileHandler
 from src.mining import commit_processing as process
 from src.mining import commit_retrieval as retrieval
 from src.mining.csv_export import update_author_count, update_author_data, update_repo_data, anonymyse_authors
+from src.models.Repository import Repository
 
 class Analysis():
     def __init__(self, date_of_experiment: datetime):
@@ -76,25 +77,23 @@ class Analysis():
         processing_finished_message = "Finished processing " + repo.name
         logging.notify(processing_finished_message)
 
-    async def _store_repo_data(self, repo, file_handler):
+    async def _store_repo_data(self, repo, file_handler, force_mine):
         processing_started_message = 'Started data retrieval for ' + repo.name
         logging.notify(processing_started_message)
 
-        await retrieval.retrieve_and_store_repo_info(repo, file_handler, final_date=self.date_of_experiment)
+        await retrieval.retrieve_and_store_repo_info(repo, file_handler, final_date=self.date_of_experiment, force_mine=force_mine)
 
         processing_finished_message = "Finished data retrieval for " + repo.name
         logging.notify(processing_finished_message)
 
-    async def _process_repositories(self, file_handler: LanguageFileHandler, batch_size: int):
-        repositories = repository_utils.read_repositories(file_handler.name.lower())
-
+    async def _process_repositories(self, repositories, file_handler: LanguageFileHandler, batch_size: int, force_mine: bool):
         retrieval_message = "Retrieval:"
         logging.notify(retrieval_message)
         print(retrieval_message)
 
         with tqdm(total=len(repositories), desc="Processing repositories") as progress_bar:
             async def process_and_update(repo):
-                await self._store_repo_data(repo, file_handler)
+                await self._store_repo_data(repo, file_handler, force_mine)
                 progress_bar.update(1)
 
             for i in range(0, len(repositories), batch_size):
@@ -110,8 +109,13 @@ class Analysis():
         for repo in timed_list:
             self.process_repo(repo, file_handler)
 
-    async def perform_analysis(self, file_handlers, batch_size):
+    async def perform_analysis_on_repo(self, repo: Repository, file_handler: LanguageFileHandler, force_mine: bool):
+        await self._process_repositories([repo], file_handler, batch_size=1, force_mine=force_mine)
+        anonymyse_authors()
+
+    async def perform_analysis(self, file_handlers: list, batch_size: int, force_mine: bool):
         for file_handler in file_handlers:
-            await self._process_repositories(file_handler, batch_size)
+            repositories = repository_utils.read_repositories(file_handler.name.lower())
+            await self._process_repositories(repositories, file_handler, batch_size, force_mine)
 
         anonymyse_authors()
