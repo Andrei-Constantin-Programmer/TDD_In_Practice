@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import timeit
 from datetime import datetime
@@ -91,8 +92,16 @@ class Analysis():
         logging.notify(retrieval_message)
         print(retrieval_message)
 
-        tasks = [self._store_repo_data(repo, file_handler) for repo in repositories]
-        await tqdm.gather(*tasks)
+        batch_size = 8
+        with tqdm(total=len(repositories), desc="Processing repositories") as progress_bar:
+            async def process_and_update(repo):
+                await self._store_repo_data(repo, file_handler)
+                progress_bar.update(1)
+
+            for i in range(0, len(repositories), batch_size):
+                repo_batch = repositories[i:i + batch_size]
+                tasks = [process_and_update(repo) for repo in repo_batch]
+                await asyncio.gather(*tasks)
 
         processing_message = "\nProcessing:"
         logging.notify(processing_message)
