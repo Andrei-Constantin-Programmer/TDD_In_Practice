@@ -19,7 +19,11 @@ def _retrieve_files(modified_files, file_handler: LanguageFileHandler):
 def _retrieve_commits(repo_url, file_handler: LanguageFileHandler, final_date = None):
     commits = []
 
-    for commit in repository_utils.read_commits(repo_url, final_date):
+    commit_generator = repository_utils.read_commits(repo_url, final_date)
+    if commit_generator is None:
+        return []
+
+    for commit in commit_generator:
         files = _retrieve_files(commit.modified_files, file_handler)
         commits.append(CustomCommit(commit.hash, files, commit.author, commit.author_date))
 
@@ -40,6 +44,9 @@ async def retrieve_and_store_repo_info(repo: Repository, file_handler: LanguageF
         return
 
     commits = await asyncio.to_thread(_retrieve_commits, repo.url, file_handler, final_date)
+    if len(commits) == 0:
+        return
+
     await asyncio.to_thread(serializer.serialize, file_path, commits)
     
 def read_repo_info(repo_name: str):

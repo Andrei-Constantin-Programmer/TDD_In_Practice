@@ -3,6 +3,7 @@
 import argparse
 import asyncio
 from datetime import datetime
+import logging
 import sys
 from src.infrastructure import configuration, repository_utils
 from src.models.JavaFileHandler import JavaFileHandler
@@ -108,6 +109,7 @@ async def main():
         print("Analysis complete.")
 
     except Exception as e:
+        logging.exception(e)
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 

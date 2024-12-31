@@ -85,6 +85,37 @@ class TestCommitRetrieval(unittest.TestCase):
         self.assertEqual(len(commits[1].modified_files), 0)
         self.assertEqual(commits[1].hash, "def456")
 
+    @patch("src.infrastructure.file_utils.file_exists", return_value=False)
+    @patch("src.infrastructure.serialize.serialize")
+    @patch("src.infrastructure.repository_utils.read_commits", return_value=None)
+    def test_retrieve_and_store_repo_info_with_no_commit_generator(self, mock_read_commits, mock_serialize, mock_file_exists):
+        # Act
+        with patch("asyncio.to_thread", side_effect=lambda func, *args: func(*args)):
+            asyncio.run(retrieve_and_store_repo_info(self.repo, self.java_file_handler))
+
+        # Assert
+        mock_read_commits.assert_called_once_with("https://mock-repo.git", None)
+        mock_serialize.assert_not_called()
+
+
+    @patch("src.infrastructure.serialize.deserialize")
+    def test_read_repo_info_with_commits(self, mock_deserialize):
+        # Arrange
+        mock_commits = [
+            MagicMock(hash="abc123", modified_files=["TestFile1.java"], author="Author1", author_date="2023-01-01"),
+            MagicMock(hash="def456", modified_files=["TestFile2.java"], author="Author2", author_date="2023-01-02"),
+        ]
+        mock_deserialize.return_value = mock_commits
+
+        # Act
+        result = read_repo_info("mock_repo")
+
+        # Assert
+        mock_deserialize.assert_called_once_with(os.path.join(file_utils.COMMITS_PATH, "mock_repo.pkl"))
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0].hash, "abc123")
+        self.assertEqual(result[1].hash, "def456")
+        
     @patch("src.infrastructure.serialize.deserialize")
     def test_read_repo_info_with_empty_commits(self, mock_deserialize):
         # Arrange
