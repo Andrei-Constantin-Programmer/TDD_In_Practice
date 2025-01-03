@@ -10,7 +10,7 @@ from src.mining import commit_retrieval as retrieval
 from src.mining.csv_export import update_author_count, update_author_data, update_repo_data, anonymyse_authors
 from src.models.Repository import Repository
 
-class Analysis():
+class AnalysisManager():
     def __init__(self, date_of_experiment: datetime):
         self.date_of_experiment = date_of_experiment
         

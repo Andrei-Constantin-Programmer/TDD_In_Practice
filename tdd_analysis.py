@@ -8,7 +8,7 @@ import sys
 from src.infrastructure import configuration, repository_utils
 from src.models.CSharpFileHandler import CSharpFileHandler
 from src.models.JavaFileHandler import JavaFileHandler
-from src.presentation.analysis import Analysis
+from src.presentation.analysis_manager import Analysis
 
 DEFAULT_EXPERIMENT_DATE = datetime(2024, 12, 1, 0, 0, 0)
 DEFAULT_LANGUAGES = ["Java"]
