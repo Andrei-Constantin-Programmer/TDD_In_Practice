@@ -2,7 +2,7 @@ import requests
 import csv
 
 # Replace with your GitHub Personal Access Token
-GITHUB_TOKEN = 'your_github_token_here'
+GITHUB_TOKEN = 'your github token'
 # Replace with the target organization name
 ORG_NAME = 'apache'
 
