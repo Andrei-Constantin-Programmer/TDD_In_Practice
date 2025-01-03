@@ -1,5 +1,3 @@
-Here is the combined list of Java repositories with duplicates removed:
-
 abdera
 accumulo
 ace
