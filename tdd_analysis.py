@@ -112,8 +112,8 @@ async def _process_all_repos(args, analysis: Analysis):
 
 async def main():
     try:
-        configuration.setup_logging()
         configuration.setup_directories()
+        configuration.setup_logging()
 
         args = _get_parameters()
 
