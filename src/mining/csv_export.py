@@ -6,7 +6,7 @@ AUTHOR_FILE_NAME = "author_data"
 AUTHOR_CSV_PATH = os.path.join(file_utils.RESULTS_PATH, f"{AUTHOR_FILE_NAME}.csv")
 REPO_CSV_PATH = os.path.join(file_utils.RESULTS_PATH, "repo_data.csv")
 
-REPO_HEADER = ["Repo Name", "Language", "Test Before", "Test After", "Test During", "Duration (s)", 
+REPO_HEADER = ["Repo Name", "Language", "Commit Count", "Test Before", "Test After", "Test During", "Duration (s)", 
                 "Avg Before Commit Size", "Avg After Commit Size", "Avg During Commit Size", "Avg Commit Size"]
 
 AUTHOR_HEADER = ["Author", "Test Before", "Test After", "Test During"]
