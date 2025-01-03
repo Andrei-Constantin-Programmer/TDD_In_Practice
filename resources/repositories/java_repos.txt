@@ -179,7 +179,6 @@ zookeeper
 xalan-j
 directory-studio
 maven-resources
-camel
 xmlgraphics-fop
 maven-scm
 directory-samples
