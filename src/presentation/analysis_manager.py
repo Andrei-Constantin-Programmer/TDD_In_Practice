@@ -87,7 +87,7 @@ class AnalysisManager():
         logging.notify(processing_finished_message)
 
     async def _process_repositories(self, repositories, file_handler: LanguageFileHandler, batch_size: int, force_mine: bool):
-        retrieval_message = "Retrieval:"
+        retrieval_message = f"Retrieval ({file_handler.name}):"
         logging.notify(retrieval_message)
         print(retrieval_message)
 
@@ -101,7 +101,7 @@ class AnalysisManager():
                 tasks = [process_and_update(repo) for repo in repo_batch]
                 await asyncio.gather(*tasks)
 
-        processing_message = "\nProcessing:"
+        processing_message = f"\nProcessing ({file_handler.name}):"
         logging.notify(processing_message)
         print(processing_message)
 
