@@ -1,0 +1,15 @@
+spark
+beam
+kafka
+flink
+druid
+pulsar
+nifi
+cassandra
+hadoop
+hbase
+hive
+storm
+superset
+airflow
+mahout
