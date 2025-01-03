@@ -45,7 +45,7 @@ class Analysis():
         test_before = len(before)
         test_after = len(after)
         test_during = len(during)
-        data_for_repo_csv = [repo_name, file_handler.name, test_before, test_after, test_during, duration, *avg_sizes]
+        data_for_repo_csv = [repo_name, file_handler.name, len(commits), test_before, test_after, test_during, duration, *avg_sizes]
         
         update_repo_data(data_for_repo_csv)
 
