@@ -176,3 +176,16 @@ xmlbeans
 xmlgraphics-batik
 xmlgraphics-fop
 zookeeper
+dubbo
+bval
+shiro
+opennlp
+commons-vfs
+hudi
+hbase-operator-tools
+incubator-tuweni
+avro
+ant-ivy
+santuario-java
+servicecomb-java-chassis
+vxquery
