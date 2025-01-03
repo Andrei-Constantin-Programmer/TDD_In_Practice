@@ -1,14 +1,1 @@
-arrow
-lucenenet
-log4net
-qpid
-thrift
-ignite
-cordova
-etch
-chemistry
-avro
-hadoop
-hbase
-hive
-kafka
+logging-log4net

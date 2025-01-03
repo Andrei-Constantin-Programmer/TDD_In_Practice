@@ -1,6 +1,6 @@
 from collections import defaultdict
 from src.mining import commit_retrieval as retrieval
-from src.models.LanguageFileHandler import LanguageFileHandler
+from src.models.file_handlers.LanguageFileHandler import LanguageFileHandler
 
 def gather_commits_and_tests(repo_name, file_handler: LanguageFileHandler):
     """
@@ -82,4 +82,4 @@ def calculate_average_commit_size(commits, test_files):
             counter += 1
             complete_indexes.append(test_file[0])
 
-    return round(total/counter, 1)
+    return round(total/counter, 1) if counter != 0 else 0

@@ -3,7 +3,7 @@ import os
 import unittest
 from unittest.mock import patch, MagicMock
 from datetime import datetime
-from src.models.JavaFileHandler import JavaFileHandler
+from src.models.file_handlers.JavaFileHandler import JavaFileHandler
 from src.models.Repository import Repository
 from src.infrastructure import file_utils
 

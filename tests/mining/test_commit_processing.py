@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 from collections import defaultdict
 from src.models.CustomCommit import CustomCommit
-from src.models.JavaFileHandler import JavaFileHandler
+from src.models.file_handlers.JavaFileHandler import JavaFileHandler
 
 from src.mining.commit_processing import (
     gather_commits_and_tests,
@@ -161,9 +161,11 @@ class TestCommitProcessing(unittest.TestCase):
         }
         test_files = []
 
-        # Act, Assert
-        with self.assertRaises(ZeroDivisionError):
-            calculate_average_commit_size(commits, test_files)
+        # Act
+        result = calculate_average_commit_size(commits, test_files)
+
+        # Assert
+        self.assertEqual(result, 0)
 
 
 

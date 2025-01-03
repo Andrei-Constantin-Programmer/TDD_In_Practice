@@ -6,12 +6,17 @@ from datetime import datetime
 import logging
 import sys
 from src.infrastructure import configuration, repository_utils
-from src.models.CSharpFileHandler import CSharpFileHandler
-from src.models.JavaFileHandler import JavaFileHandler
 from src.presentation.analysis_manager import AnalysisManager
+from src.models.file_handlers import (
+    JavaFileHandler,
+    CSharpFileHandler,
+    PythonFileHandler,
+    KotlinFileHandler,
+    CPlusPlusFileHandler
+)
 
 DEFAULT_EXPERIMENT_DATE = datetime(2024, 12, 1, 0, 0, 0)
-DEFAULT_LANGUAGES = ["Java"]
+DEFAULT_LANGUAGES = ["Java", "C#", "C++", "Kotlin", "Python"]
 
 def _get_parameters():
     parser = argparse.ArgumentParser(
@@ -90,6 +95,12 @@ def _get_handler(language):
             return JavaFileHandler()
         case "c#" | "csharp":
             return CSharpFileHandler()
+        case "python":
+            return PythonFileHandler()
+        case "kotlin":
+            return KotlinFileHandler()
+        case "c++" | "cplusplus":
+            return CPlusPlusFileHandler()
         case _:
             raise ValueError(f"No file handler found for language {language}")
         

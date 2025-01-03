@@ -4,7 +4,7 @@ import os
 from src.infrastructure import repository_utils as repository_utils
 from src.infrastructure import file_utils as file_utils
 from src.infrastructure import serialize as serializer
-from src.models.LanguageFileHandler import LanguageFileHandler
+from src.models.file_handlers.LanguageFileHandler import LanguageFileHandler
 from src.models.CustomCommit import CustomCommit
 from src.models.Repository import Repository
 
