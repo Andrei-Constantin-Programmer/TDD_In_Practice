@@ -18,3 +18,4 @@ parquet-dotnet
 activemq-nms-stomp
 activemq-nms-ems
 qpid-proton-dotnet
+logging-log4net
