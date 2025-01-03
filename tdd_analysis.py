@@ -8,7 +8,7 @@ import sys
 from src.infrastructure import configuration, repository_utils
 from src.models.CSharpFileHandler import CSharpFileHandler
 from src.models.JavaFileHandler import JavaFileHandler
-from src.presentation.analysis_manager import Analysis
+from src.presentation.analysis_manager import AnalysisManager
 
 DEFAULT_EXPERIMENT_DATE = datetime(2024, 12, 1, 0, 0, 0)
 DEFAULT_LANGUAGES = ["Java"]
@@ -96,11 +96,11 @@ def _get_handler(language):
 def _get_handlers(languages):
     return [_get_handler(language) for language in languages]
 
-async def _process_single_repo(args, analysis: Analysis):
+async def _process_single_repo(args, analysis: AnalysisManager):
     repo = repository_utils.repo_from_url(args.repository)
     await analysis.perform_analysis_on_repo(repo, _get_handler(args.language), args.force_mine)
 
-async def _process_all_repos(args, analysis: Analysis):
+async def _process_all_repos(args, analysis: AnalysisManager):
     if (args.language is not None):
         handlers = [_get_handler(args.language)]
     elif (args.languages is not None):
@@ -122,7 +122,7 @@ async def main():
 
         logging.notify(f"Running analysis for {args.date}...")
 
-        analysis = Analysis(args.date)
+        analysis = AnalysisManager(args.date)
 
         if args.repository is not None:
             await _process_single_repo(args, analysis)
