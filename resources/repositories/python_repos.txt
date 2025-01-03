@@ -18,4 +18,3 @@ pulsar
 nifi
 cassandra
 mahout
-polaris

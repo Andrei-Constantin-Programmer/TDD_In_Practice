@@ -12,7 +12,7 @@ Its role is to mine repositories (from the Apache Software Project) to see how m
 
 ## Installing
 
-1. Ensure **Python 3.10.x** or higher is installed
+1. Ensure **Python 3.9.x** or higher is installed
 
 2. Clone project
 Clone the repository locally, or download and extract the ZIP file.

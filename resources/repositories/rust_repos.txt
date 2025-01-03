@@ -1,5 +1,2 @@
 arrow
 teaclave
-iceberg
-datafusion
-dubbo
