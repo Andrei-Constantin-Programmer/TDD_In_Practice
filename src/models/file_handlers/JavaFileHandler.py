@@ -2,7 +2,7 @@ import re
 
 class JavaFileHandler:
     name = "Java"
-    file_extension = ".java"
+    file_extensions = [".java"]
 
     def is_test_file(self, file: str) -> bool:
         return "Test" in file

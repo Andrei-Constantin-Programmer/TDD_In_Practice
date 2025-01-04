@@ -2,7 +2,7 @@ import re
 
 class KotlinFileHandler:
     name = "Kotlin"
-    file_extension = ".kt"
+    file_extensions = [".kt"]
 
     def is_test_file(self, file: str) -> bool:
         return "Test" in file

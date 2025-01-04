@@ -70,7 +70,7 @@ class TestRepositoryUtils(unittest.TestCase):
         mock_datetime.now.return_value = fake_now
 
         # Act
-        result = list(read_commits(repo_url, '.java'))
+        result = list(read_commits(repo_url, ['.java']))
 
         # Assert
         self.assertEqual(len(result), 1)
@@ -127,7 +127,7 @@ class TestRepositoryUtils(unittest.TestCase):
         mock_datetime.now.return_value = fake_now
 
         # Act
-        result = list(read_commits(repo_url,'.java', test_date))
+        result = list(read_commits(repo_url, ['.java'], test_date))
 
         # Assert
         self.assertEqual(len(result), 1)

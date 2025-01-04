@@ -1,5 +1,13 @@
+activemq-nms-amqp
+activemq-nms-api
+activemq-nms-ems
+activemq-nms-msmq
 activemq-nms-openwire
 activemq-nms-stomp
-activemq-nms-ems
-qpid-proton-dotnet
+activemq-nms-xms
 logging-log4net
+lucenenet
+pulsar-dotpulsar
+qpid-proton-dotnet
+rocketmq-client-csharp
+usergrid-dotnet
