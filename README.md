@@ -6,8 +6,11 @@ Its role is to mine repositories (from the Apache Software Project) to see how m
 ## Table of Contents
 - [Installing](#installing)
 - [Run Analysis](#run-analysis)
-  - [Parameters](#parameters)
-  - [Help](#help)
+  - [Parameters](#analysis-parameters)
+  - [Help](#analysis-help)
+- [Run Repo Finder](#run-repo-finder)
+    - [Parameters](#repo-finder-parameters)
+    - [Help](#finder-help)
 - [Run Tests](#run-tests)
 
 ## Installing
@@ -31,7 +34,8 @@ python tdd_analysis.py  [--date DATE] [--language LANGUAGE] [--languages LANGUAG
                         [--verbose]
 ```
 
-### Parameters
+### Analysis Parameters
+
 - `--date DATE (optional)`: The date for the experiment in YYYY-MM-DD format. Defaults to a specific date in `tdd_analysis.py`.
   
 - `--language LANGUAGE (optional)`: Single programming language to analyse. Defaults to `Java`.
@@ -52,11 +56,36 @@ python tdd_analysis.py  [--date DATE] [--language LANGUAGE] [--languages LANGUAG
   
 - `--verbose (optional)`: Enable verbose output for debugging or detailed logs.  
 
-### Help
+
+### Analysis Help
 To display a help message with detailed usage instructions, run:
 
 ```bash
 python tdd_analysis.py --help
+``` 
+
+## Run Repo Finder
+To execute the repo finder, use the command-line interface:
+```bash
+python find_repos.py  [--github_token TOKEN] [--organisation ORGANISATION] [--language LANGUAGE] [--pagination PAGINATION] [--maximum MAXIMUM]
+```
+
+### Repo Finder Parameters
+- `--github_token GITHUB_TOKEN`: Personal GitHub token. For information on how to create one, visit: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token
+  
+- `--language LANGUAGE`: Programming language to find repositories for.
+
+- `--organisation --org ORGANISATION (optional)`: Organisation to find repositories for. (default: Apache)
+      
+- `--pagination PAGINATION (optional)`: Pagination for searching GitHub. Defaults to 100.
+
+- `--maximum --max MAXIMUM (optional)`: Maximum number of repositories to find.
+
+### Finder Help
+To display a help message with detailed usage instructions, run:
+
+```bash
+python find_repos.py --help
 ``` 
 
 ## Run Tests
