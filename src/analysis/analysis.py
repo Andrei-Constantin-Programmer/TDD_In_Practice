@@ -1,7 +1,7 @@
 import os
 import matplotlib.pyplot as plt
 import numpy as np
-from src.infrastructure import file_utils, repository_utils
+from src.infrastructure import file_utils
 
 def _save_plot(plot: plt, name: str):
     file_path = os.path.join(file_utils.CHARTS_PATH, f"{name}.jpg")
