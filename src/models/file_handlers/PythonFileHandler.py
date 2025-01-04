@@ -2,7 +2,7 @@ import re
 
 class PythonFileHandler:
     name = "Python"
-    file_extensions = [".py"]
+    file_extensions = [".py", ".ipy"]
 
     def is_test_file(self, file: str) -> bool:
         return "test" in file

@@ -1,3 +1,10 @@
 brpc
+datasketches-cpp
 incubator-pegasus
+kudu
+kvrocks
+mesos
+nifi-minifi-cpp
+pulsar-client-cpp
+singa
 trafficserver

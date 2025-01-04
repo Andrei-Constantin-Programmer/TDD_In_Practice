@@ -1,2 +1,9 @@
 airflow
 allura
+openserverless-operator
+iceberg-python
+airflow-client-python
+skywalking-python
+ignite-python-thin-client
+pulsar-client-python
+hunter
