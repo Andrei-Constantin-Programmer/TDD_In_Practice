@@ -1,8 +1,3 @@
-from distutils.dep_util import newer_pairwise
-from idlelib.colorizer import color_config
-
-from PIL.ImageColor import colormap
-
 from src.infrastructure.file_utils import read_csv
 import matplotlib.pyplot as plt
 import numpy as np
