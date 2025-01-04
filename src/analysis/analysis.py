@@ -35,9 +35,9 @@ def create_size_impact_plot():
     plt.plot(x, a * x + b, color="red", alpha=0.5)
 
     # Set title and axes labels
-    plt.xlabel("Commit Count")
+    plt.xlabel("Repo Size (No. of files)")
     plt.ylabel("Percentage of TDD")
-    plt.title("Scatter plot showing how the size of commits impacts results")
+    plt.title("Repo size and TDD percentage")
 
     # Show the plot
     plt.show()
@@ -50,8 +50,8 @@ def create_box_plot():
 
     # Initialize arrays to store percentages for each repo
     before = []
-    during = []
     after = []
+    during = []
 
     # Iterate through each repo and append the before, during and after percentages to each array
     for repo in repo_data:
@@ -60,11 +60,11 @@ def create_box_plot():
 
         # Append the percentage data to each array
         before.append((int(repo['Test Before']) / total_test_count) * 100)
-        during.append((int(repo['Test During']) / total_test_count) * 100)
         after.append((int(repo['Test After']) / total_test_count) * 100)
+        during.append((int(repo['Test During']) / total_test_count) * 100)
 
     # Plot the box plots
-    boxplt = plt.boxplot([before, during, after], patch_artist=True, tick_labels=["Before", "During", "After"], flierprops= dict(markerfacecolor='coral'))
+    boxplt = plt.boxplot([before, after, during], patch_artist=True, tick_labels=["Before", "After", "During"], flierprops= dict(markerfacecolor='coral'))
 
     colors = ['palegreen', 'lightblue', 'lightskyblue']
     for patch, color in zip(boxplt['boxes'], colors):
@@ -72,7 +72,7 @@ def create_box_plot():
 
     # Set title and axes labels
     plt.ylabel("Percentage")
-    plt.title("Boxplot showing how often a test is created\nbefore, during and after implementation")
+    plt.title("How often a test is created before, after and during implementation")
 
     # Show the plot
     plt.show()
@@ -84,23 +84,22 @@ def create_avg_commit_size_plot():
 
     # Initialize variables to store averages for each repo
     before_avg  = 0
-    during_avg = 0
     after_avg = 0
+    during_avg = 0
 
     # Iterate through each repo and update the before, during and after averages
     for repo in repo_data:
         before_avg = (before_avg + float(repo['Avg Before Commit Size'])) / 2
-        during_avg = (during_avg + float(repo['Avg During Commit Size'])) / 2
         after_avg = (after_avg + float(repo['Avg After Commit Size'])) / 2
+        during_avg = (during_avg + float(repo['Avg During Commit Size'])) / 2
 
     # Plot the bar chart
     colors = ['palegreen', 'lightblue', 'lightskyblue']
-    plt.bar(["Before", "During", "After"], [before_avg, during_avg, after_avg], align='center', color=colors)
+    plt.bar(["Before", "After", "During"], [before_avg, after_avg, during_avg], align='center', color=colors)
 
     # Set title and axes labels
-    plt.xlabel("Commit relation between tests and implementation")
     plt.ylabel("Average Commit Size (No. of files)")
-    plt.title("Bar chart showing the average commit size when a\ntests are created before, during and after implementation")
+    plt.title("Average commit size when tests are created \nbefore, after and during implementation")
 
     # Show the plot
     plt.show()
@@ -147,7 +146,7 @@ def create_pie_plot():
     patches, texts = plt.pie(percentages, colors=colours)
     plt.legend(patches, labels, loc="upper left")
     plt.axis('equal')
-    plt.title("Pie chart showing the percentage of authors using levels of TDD")
+    plt.title("Percentage of authors using levels of TDD")
 
     # Show the plot
     plt.show()
