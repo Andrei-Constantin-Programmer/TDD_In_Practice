@@ -9,6 +9,7 @@ from src.mining import commit_processing as process
 from src.mining import commit_retrieval as retrieval
 from src.mining.csv_export import update_author_count, update_author_data, update_repo_data, anonymyse_authors
 from src.models.Repository import Repository
+from src.analysis import analysis
 
 class AnalysisManager():
     def __init__(self, date_of_experiment: datetime):
@@ -114,6 +115,7 @@ class AnalysisManager():
     async def perform_analysis_on_repo(self, repo: Repository, file_handler: LanguageFileHandler, force_mine: bool):
         await self._process_repositories([repo], file_handler, batch_size=1, force_mine=force_mine)
         anonymyse_authors()
+        analysis.create_plots()
 
     async def perform_analysis(self, file_handlers: list, batch_size: int, force_mine: bool):
         for file_handler in file_handlers:
@@ -121,3 +123,4 @@ class AnalysisManager():
             await self._process_repositories(repositories, file_handler, batch_size, force_mine)
 
         anonymyse_authors()
+        analysis.create_plots()

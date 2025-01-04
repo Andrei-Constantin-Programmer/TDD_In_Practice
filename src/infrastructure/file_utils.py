@@ -6,6 +6,7 @@ from typing import Any, Callable, Dict, List
 ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 RESOURCES_PATH = os.path.join(ROOT_PATH, "resources", "repositories")
 RESULTS_PATH = os.path.join(ROOT_PATH, "results")
+CHARTS_PATH = os.path.join(RESULTS_PATH, "charts")
 LOGS_PATH = os.path.join(ROOT_PATH, "logs")
 COMMITS_PATH = os.path.join(ROOT_PATH, "commits")
 
