@@ -41,7 +41,7 @@ def _get_parameters():
         "--languages",
         type=str,
         nargs="*",
-        default=["Java"],
+        default=DEFAULT_LANGUAGES,
         help="List of programming languages to analyze. NOTE: If the '--language' argument is provided, this list is ignored.",
     )
     parser.add_argument(
@@ -118,6 +118,7 @@ async def _process_all_repos(args, analysis: AnalysisManager):
         handlers = _get_handlers(args.languages)
     else:
         handlers = _get_handlers(DEFAULT_LANGUAGES)
+    
 
     await analysis.perform_analysis(handlers, args.batch_size, args.force_mine)
 
