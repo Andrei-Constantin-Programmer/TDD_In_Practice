@@ -78,8 +78,27 @@ def create_box_plot():
     plt.show()
 
 
-create_size_impact_plot()
-create_box_plot()
+def create_avg_commit_size_plot():
+    # Read data from the repo_data csv
+    repo_data = read_csv("repo_data")
+
+    # Initialize arrays to store percentages for each repo
+    before_avg  = 0
+    during_avg = 0
+    after_avg = 0
+
+    # Iterate through each repo and update the before, during and after averages
+    for repo in repo_data:
+        before_avg = (before_avg + float(repo['Avg Before Commit Size'])) / 2
+        during_avg = (during_avg + float(repo['Avg During Commit Size'])) / 2
+        after_avg = (after_avg + float(repo['Avg After Commit Size'])) / 2
+
+    plt.bar(["Before", "During", "After"], [before_avg, during_avg, after_avg], align='center')
+    plt.show()
+
+#create_size_impact_plot()
+#create_box_plot()
+create_avg_commit_size_plot()
 
 '''
 
