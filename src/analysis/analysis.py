@@ -90,7 +90,6 @@ def _create_avg_commit_size_plot():
     # Initialize variables to store averages for each repo
     before_avg  = 0
     after_avg = 0
-    after_avg = 0
     during_avg = 0
 
     # Iterate through each repo and update the before, during and after averages
