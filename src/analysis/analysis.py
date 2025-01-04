@@ -5,7 +5,7 @@ from src.infrastructure import file_utils, repository_utils
 
 def _save_plot(plot: plt, name: str):
     file_path = os.path.join(file_utils.CHARTS_PATH, f"{name}.jpg")
-    plot.savefig(file_path, dpi=300)
+    plot.savefig(file_path)
 
 def _create_size_impact_plot():
     # Read data from the repo_data csv
@@ -47,6 +47,7 @@ def _create_size_impact_plot():
     plt.ylabel("Percentage of TDD")
     plt.title("Repo size and TDD percentage")
 
+    # Save the plot
     _save_plot(plt, "Size Impact")
 
 def _create_box_plot():
@@ -75,6 +76,7 @@ def _create_box_plot():
     # Plot the box plots
     boxplt = plt.boxplot([before, after, during], patch_artist=True, tick_labels=["Before", "After", "During"], flierprops= dict(markerfacecolor='coral'))
 
+    # Give each bar a color
     colors = ['palegreen', 'lightblue', 'lightskyblue']
     for patch, color in zip(boxplt['boxes'], colors):
         patch.set_facecolor(color)
@@ -82,6 +84,8 @@ def _create_box_plot():
     # Set title and axes labels
     plt.ylabel("Percentage")
     plt.title("How often a test is created before, after and during implementation")
+
+    # Save the plot
     _save_plot(plt, "TDD Usage Statistics")
 
 
@@ -111,10 +115,12 @@ def _create_avg_commit_size_plot():
     # Set title and axes labels
     plt.ylabel("Average Commit Size (No. of files)")
     plt.title("Average commit size when tests are created \nbefore, after and during implementation")
+
+    # Save the plot
     _save_plot(plt, "Average Commit Size")
 
 
-def _create_pie_plot():
+def _create_pie_plot_tdd_levels():
     # Read data from the author_data csv
     author_data = file_utils.read_csv("author_data")
 
@@ -144,6 +150,7 @@ def _create_pie_plot():
     # Convert the counters into percentages using a lambda function and map
     percentages = list(map(lambda x: x/max(1, len(author_data))*100, counters))
 
+    # Update labels to include percentage values for each slice
     labels = ['Non TDD', 'Rarely TDD', 'Occasionally TDD', 'Somewhat TDD', 'Mostly TDD', 'Consistently TDD']
     for i in range(len(labels)):
         labels[i] = labels[i] + ' - ' + str(round(percentages[i], 0)) + '%'
@@ -151,21 +158,70 @@ def _create_pie_plot():
     # Clear any existing plot
     plt.clf()
 
-    # Set up and plot the pie chart, colors, legend and title
-    colours = ['#225ea8', '#1d91c0', '#41b6c4', '#7fcdbb', '#c7e9b4', '#71cb71']
-    plt.rcParams["figure.figsize"] = [7.5, 4.25]
-    plt.rcParams["figure.autolayout"] = True
-    patches, texts = plt.pie(percentages, colors=colours)
+    # Plot the pie
+    colors = ['#225ea8', '#1d91c0', '#41b6c4', '#7fcdbb', '#c7e9b4', '#71cb71']
+    patches, texts = plt.pie(percentages, colors=colors)
+
+    # Plot the legend
     plt.legend(patches, labels, loc="upper left")
+
+    # Set the title and specify axis setting
     plt.axis('equal')
     plt.title("Pie chart showing the percentage of authors using levels of TDD")
+    plt.rcParams["figure.figsize"] = [7.5, 4.25]
+    plt.rcParams["figure.autolayout"] = True
+
+    # Save the plot
     _save_plot(plt, "TDD Categories")
 
+
+def _create_pie_plot_tdd_overall():
+    # Read data from the author_data csv
+    repo_data = file_utils.read_csv("repo_data")
+
+    # Initialize Counters
+    total = 0
+    data = [0, 0, 0]
+
+    for repo in repo_data:
+        data[0] += int(repo['Test Before'])
+        data[1] += int(repo['Test After'])
+        data[2] += int(repo['Test During'])
+        total += int(repo['Test Before']) + int(repo['Test After']) + int(repo['Test During'])
+
+    # Convert the data into percentages using a lambda function and map
+    percentages = list(map(lambda x: x / max(1, total) * 100, data))
+
+
+    # Update labels to include percentage values for each slice
+    labels = ['TDD', 'Not TDD', 'Unclear']
+    for i in range(len(labels)):
+        labels[i] = labels[i] + ' - ' + str(round(percentages[i], 0)) + '%'
+
+    # Clear any existing plot
+    plt.clf()
+
+    # Plot the pie
+    colors = ['palegreen', 'lightblue', 'lightskyblue']
+    patches, texts, x = plt.pie(percentages, colors=colors, autopct='%1.1f%%')
+
+    # Plot the legend
+    plt.legend(patches, labels, loc="upper left")
+
+    # Set the title and specify axis setting
+    plt.axis('equal')
+    plt.title("Overall TDD Percentage (Raw Data)")
+    plt.rcParams["figure.figsize"] = [7.5, 4.25]
+    plt.rcParams["figure.autolayout"] = True
+
+    # Save the plot
+    _save_plot(plt, "Overall TDD Usage Raw")
 
 def create_plots():
     _create_box_plot()
     _create_size_impact_plot()
     _create_avg_commit_size_plot()
-    _create_pie_plot()
+    _create_pie_plot_tdd_levels()
+    _create_pie_plot_tdd_overall()
 
 create_plots()
