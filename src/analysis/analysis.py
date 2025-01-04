@@ -104,8 +104,7 @@ def create_pie_plot():
     author_data = read_csv("author_data")
 
     # Initialize Counters
-    labels = ['Non TDD', 'Rarely TDD', 'Occasionally TDD', 'Somewhat TDD', 'Mostly TDD', 'Consistently TDD']
-    #          10         25            50                  70              90            100
+    #10 25 50 70 90 100
     counters = [0,0,0,0,0,0]
 
 
@@ -130,8 +129,19 @@ def create_pie_plot():
     # Convert the counters into percentages using a lambda function and map
     percentages = list(map(lambda x: x/len(author_data)*100, counters))
 
+    labels = ['Non TDD', 'Rarely TDD', 'Occasionally TDD', 'Somewhat TDD', 'Mostly TDD', 'Consistently TDD']
+    for i in range(len(labels)):
+        labels[i] = labels[i] + ' - ' + str(round(percentages[i], 0)) + '%'
+
     # Plot the pie chart
-    plt.pie(percentages, labels=labels)
+    plt.rcParams["figure.figsize"] = [7.5, 4.25]
+    plt.rcParams["figure.autolayout"] = True
+
+    patches, texts = plt.pie(percentages)
+
+    plt.legend(patches, labels, loc="upper left")
+    plt.axis('equal')
+
     # Show the plot
     plt.show()
 
