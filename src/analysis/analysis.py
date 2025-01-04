@@ -82,7 +82,7 @@ def create_avg_commit_size_plot():
     # Read data from the repo_data csv
     repo_data = read_csv("repo_data")
 
-    # Initialize arrays to store percentages for each repo
+    # Initialize variables to store averages for each repo
     before_avg  = 0
     during_avg = 0
     after_avg = 0
@@ -93,12 +93,52 @@ def create_avg_commit_size_plot():
         during_avg = (during_avg + float(repo['Avg During Commit Size'])) / 2
         after_avg = (after_avg + float(repo['Avg After Commit Size'])) / 2
 
+    # Plot the bar chart
     plt.bar(["Before", "During", "After"], [before_avg, during_avg, after_avg], align='center')
+    # Show the plot
+    plt.show()
+
+
+def create_pie_plot():
+    # Read data from the author_data csv
+    author_data = read_csv("author_data")
+
+    # Initialize Counters
+    labels = ['Non TDD', 'Rarely TDD', 'Occasionally TDD', 'Somewhat TDD', 'Mostly TDD', 'Consistently TDD']
+    #          10         25            50                  70              90            100
+    counters = [0,0,0,0,0,0]
+
+
+    for author in author_data:
+        # Calculate the percentage of TDD of the author
+        TDD_percent = (float(author['Test Before']) / (float(author['Test Before']) + float(author['Test During']) + float(author['Test After']))) * 100
+
+        # Update the counters array based on this result
+        if TDD_percent < 10:
+            counters[0] += 1
+        elif TDD_percent < 25:
+            counters[1] += 1
+        elif TDD_percent < 50:
+            counters[2] += 1
+        elif TDD_percent < 70:
+            counters[3] += 1
+        elif TDD_percent < 90:
+            counters[4] += 1
+        elif TDD_percent < 100:
+            counters[5] += 1
+
+    # Convert the counters into percentages using a lambda function and map
+    percentages = list(map(lambda x: x/len(author_data)*100, counters))
+
+    # Plot the pie chart
+    plt.pie(percentages, labels=labels)
+    # Show the plot
     plt.show()
 
 #create_size_impact_plot()
 #create_box_plot()
-create_avg_commit_size_plot()
+#create_avg_commit_size_plot()
+create_pie_plot()
 
 '''
 
