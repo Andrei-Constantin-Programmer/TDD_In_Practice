@@ -1,2 +1,2 @@
-logging-log4j-kotlin
 incubator-retired-amaterasu
+logging-log4j-kotlin
