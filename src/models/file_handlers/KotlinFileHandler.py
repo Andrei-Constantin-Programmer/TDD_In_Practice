@@ -1,8 +1,8 @@
 import re
 
-class JavaFileHandler:
-    name = "Java"
-    file_extension = ".java"
+class KotlinFileHandler:
+    name = "Kotlin"
+    file_extensions = [".kt"]
 
     def is_test_file(self, file: str) -> bool:
         return "Test" in file

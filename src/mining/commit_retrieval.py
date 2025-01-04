@@ -4,7 +4,7 @@ import os
 from src.infrastructure import repository_utils as repository_utils
 from src.infrastructure import file_utils as file_utils
 from src.infrastructure import serialize as serializer
-from src.models.LanguageFileHandler import LanguageFileHandler
+from src.models.file_handlers.LanguageFileHandler import LanguageFileHandler
 from src.models.CustomCommit import CustomCommit
 from src.models.Repository import Repository
 
@@ -12,7 +12,7 @@ def _retrieve_files(modified_files, file_handler: LanguageFileHandler):
     files = []
 
     for file in modified_files:
-        if file_handler.file_extension in file.filename:
+        if any(file_extension in file.filename for file_extension in file_handler.file_extensions):
             files.append(file.filename)
 
     return files
@@ -21,7 +21,7 @@ def _retrieve_commits(repo_url, file_handler: LanguageFileHandler, final_date = 
     commits = []
 
     try:
-        for commit in repository_utils.read_commits(repo_url, file_handler.file_extension, final_date):
+        for commit in repository_utils.read_commits(repo_url, file_handler.file_extensions, final_date):
             files = _retrieve_files(commit.modified_files, file_handler)
             commits.append(CustomCommit(commit.hash, files, commit.author, commit.author_date))
     except Exception as e:

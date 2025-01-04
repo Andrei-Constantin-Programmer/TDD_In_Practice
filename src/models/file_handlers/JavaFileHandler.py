@@ -1,8 +1,8 @@
 import re
 
-class CSharpFileHandler:
-    name = "C#"
-    file_extension = ".cs"
+class JavaFileHandler:
+    name = "Java"
+    file_extensions = [".java"]
 
     def is_test_file(self, file: str) -> bool:
         return "Test" in file

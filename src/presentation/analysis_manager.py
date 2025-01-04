@@ -4,7 +4,7 @@ import timeit
 from datetime import datetime
 from tqdm.asyncio import tqdm
 from src.infrastructure import repository_utils as repository_utils
-from src.models import LanguageFileHandler
+from src.models.file_handlers import LanguageFileHandler
 from src.mining import commit_processing as process
 from src.mining import commit_retrieval as retrieval
 from src.mining.csv_export import update_author_count, update_author_data, update_repo_data, anonymyse_authors
@@ -87,7 +87,7 @@ class AnalysisManager():
         logging.notify(processing_finished_message)
 
     async def _process_repositories(self, repositories, file_handler: LanguageFileHandler, batch_size: int, force_mine: bool):
-        retrieval_message = "Retrieval:"
+        retrieval_message = f"Retrieval ({file_handler.name}):"
         logging.notify(retrieval_message)
         print(retrieval_message)
 
@@ -101,13 +101,15 @@ class AnalysisManager():
                 tasks = [process_and_update(repo) for repo in repo_batch]
                 await asyncio.gather(*tasks)
 
-        processing_message = "\nProcessing:"
+        processing_message = f"\nProcessing ({file_handler.name}):"
         logging.notify(processing_message)
         print(processing_message)
 
         timed_list = tqdm(repositories)
         for repo in timed_list:
             self.process_repo(repo, file_handler)
+
+        print()
 
     async def perform_analysis_on_repo(self, repo: Repository, file_handler: LanguageFileHandler, force_mine: bool):
         await self._process_repositories([repo], file_handler, batch_size=1, force_mine=force_mine)

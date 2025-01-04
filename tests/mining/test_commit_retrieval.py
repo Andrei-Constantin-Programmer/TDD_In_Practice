@@ -3,7 +3,7 @@ import os
 import unittest
 from unittest.mock import patch, MagicMock
 from datetime import datetime
-from src.models.JavaFileHandler import JavaFileHandler
+from src.models.file_handlers.JavaFileHandler import JavaFileHandler
 from src.models.Repository import Repository
 from src.infrastructure import file_utils
 
@@ -33,7 +33,7 @@ class TestCommitRetrieval(unittest.TestCase):
             asyncio.run(retrieve_and_store_repo_info(self.repo, self.java_file_handler))
 
         # Assert
-        mock_read_commits.assert_called_once_with("https://mock-repo.git", '.java', None)
+        mock_read_commits.assert_called_once_with("https://mock-repo.git", ['.java'], None)
         mock_serialize.assert_called_once()
         commits = mock_serialize.call_args[0][1]
         self.assertEqual(len(commits), 1)
@@ -54,7 +54,7 @@ class TestCommitRetrieval(unittest.TestCase):
             asyncio.run(retrieve_and_store_repo_info(self.repo, self.java_file_handler, final_date))
 
         # Assert
-        mock_read_commits.assert_called_once_with("https://mock-repo.git", '.java', final_date)
+        mock_read_commits.assert_called_once_with("https://mock-repo.git", ['.java'], final_date)
         mock_serialize.assert_called_once()
         commits = mock_serialize.call_args[0][1]
         self.assertEqual(len(commits), 1)
@@ -76,7 +76,7 @@ class TestCommitRetrieval(unittest.TestCase):
             asyncio.run(retrieve_and_store_repo_info(self.repo, self.java_file_handler))
 
         # Assert
-        mock_read_commits.assert_called_once_with("https://mock-repo.git", '.java', None)
+        mock_read_commits.assert_called_once_with("https://mock-repo.git", ['.java'], None)
         mock_serialize.assert_called_once()
         commits = mock_serialize.call_args[0][1]
         self.assertEqual(len(commits), 2)
@@ -98,7 +98,7 @@ class TestCommitRetrieval(unittest.TestCase):
             asyncio.run(retrieve_and_store_repo_info(self.repo, self.java_file_handler))
 
         # Assert
-        mock_read_commits.assert_called_once_with("https://mock-repo.git", '.java', None)
+        mock_read_commits.assert_called_once_with("https://mock-repo.git", ['.java'], None)
         mock_logging_error.assert_called_once_with(f"Could not drill repository {self.repo.url}: Test exception")
         mock_serialize.assert_not_called()
 
@@ -135,7 +135,7 @@ class TestCommitRetrieval(unittest.TestCase):
             asyncio.run(retrieve_and_store_repo_info(self.repo, self.java_file_handler, force_mine=True))
 
         # Assert
-        mock_read_commits.assert_called_once_with("https://mock-repo.git", '.java', None)
+        mock_read_commits.assert_called_once_with("https://mock-repo.git", ['.java'], None)
         mock_serialize.assert_called_once()
         commits = mock_serialize.call_args[0][1]
         self.assertEqual(len(commits), 1)

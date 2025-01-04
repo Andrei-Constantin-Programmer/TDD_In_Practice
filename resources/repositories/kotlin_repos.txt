@@ -1,15 +1,2 @@
-spark
-beam
-kafka
-flink
-druid
-pulsar
-nifi
-cassandra
-hadoop
-hbase
-hive
-storm
-superset
-airflow
-mahout
+logging-log4j-kotlin
+incubator-retired-amaterasu

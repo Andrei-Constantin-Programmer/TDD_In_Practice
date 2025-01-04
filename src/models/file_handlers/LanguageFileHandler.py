@@ -1,8 +1,8 @@
-from typing import Protocol
+from typing import List, Protocol
 
 class LanguageFileHandler(Protocol):
     name: str
-    file_extension: str
+    file_extensions: List[str]
 
     def is_test_file(self, file: str) -> bool:
         ...

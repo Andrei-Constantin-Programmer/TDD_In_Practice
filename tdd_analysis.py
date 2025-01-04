@@ -6,12 +6,17 @@ from datetime import datetime
 import logging
 import sys
 from src.infrastructure import configuration, repository_utils
-from src.models.CSharpFileHandler import CSharpFileHandler
-from src.models.JavaFileHandler import JavaFileHandler
 from src.presentation.analysis_manager import AnalysisManager
+from src.models.file_handlers import (
+    JavaFileHandler,
+    CSharpFileHandler,
+    PythonFileHandler,
+    KotlinFileHandler,
+    CPlusPlusFileHandler
+)
 
 DEFAULT_EXPERIMENT_DATE = datetime(2024, 12, 1, 0, 0, 0)
-DEFAULT_LANGUAGES = ["Java"]
+DEFAULT_LANGUAGES = ["Java", "C#", "C++", "Kotlin", "Python"]
 
 def _get_parameters():
     parser = argparse.ArgumentParser(
@@ -36,7 +41,7 @@ def _get_parameters():
         "--languages",
         type=str,
         nargs="*",
-        default=["Java"],
+        default=DEFAULT_LANGUAGES,
         help="List of programming languages to analyze. NOTE: If the '--language' argument is provided, this list is ignored.",
     )
     parser.add_argument(
@@ -90,6 +95,12 @@ def _get_handler(language):
             return JavaFileHandler()
         case "c#" | "csharp":
             return CSharpFileHandler()
+        case "python":
+            return PythonFileHandler()
+        case "kotlin":
+            return KotlinFileHandler()
+        case "c++" | "cplusplus":
+            return CPlusPlusFileHandler()
         case _:
             raise ValueError(f"No file handler found for language {language}")
         
@@ -107,6 +118,7 @@ async def _process_all_repos(args, analysis: AnalysisManager):
         handlers = _get_handlers(args.languages)
     else:
         handlers = _get_handlers(DEFAULT_LANGUAGES)
+    
 
     await analysis.perform_analysis(handlers, args.batch_size, args.force_mine)
 
