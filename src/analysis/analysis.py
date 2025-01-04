@@ -5,7 +5,7 @@ from src.infrastructure import file_utils, repository_utils
 
 def _save_plot(plot: plt, name: str):
     file_path = os.path.join(file_utils.CHARTS_PATH, f"{name}.jpg")
-    plot.savefig(file_path)
+    plot.savefig(file_path, dpi=300)
 
 def _create_size_impact_plot():
     # 3. How does the size of a commit impact the results?
