@@ -8,8 +8,6 @@ def _save_plot(plot: plt, name: str):
     plot.savefig(file_path, dpi=300)
 
 def _create_size_impact_plot():
-    # 3. How does the size of a commit impact the results?
-
     # Read data from the repo_data csv
     repo_data = file_utils.read_csv("repo_data")
 
@@ -33,6 +31,9 @@ def _create_size_impact_plot():
     x = np.array(x)
     y = np.array(y)
 
+    # Clear any existing plot
+    plt.clf()
+
     # Plot the scatter points
     plt.scatter(x, y, c=y, cmap = 'winter')
 
@@ -45,11 +46,10 @@ def _create_size_impact_plot():
     plt.xlabel("Repo Size (No. of files)")
     plt.ylabel("Percentage of TDD")
     plt.title("Repo size and TDD percentage")
+
     _save_plot(plt, "Size Impact")
 
 def _create_box_plot():
-    # 2. How often is a test class (file) created (a) before, (b) after, or (c) in the same commit as a tested class (file)?
-
     # Read data from the repo_data csv
     repo_data = file_utils.read_csv("repo_data")
 
@@ -68,6 +68,9 @@ def _create_box_plot():
         before.append((int(repo['Test Before']) / total_test_count) * 100)
         after.append((int(repo['Test After']) / total_test_count) * 100)
         during.append((int(repo['Test During']) / total_test_count) * 100)
+
+    # Clear any existing plot
+    plt.clf()
 
     # Plot the box plots
     boxplt = plt.boxplot([before, after, during], patch_artist=True, tick_labels=["Before", "After", "During"], flierprops= dict(markerfacecolor='coral'))
@@ -96,6 +99,9 @@ def _create_avg_commit_size_plot():
         before_avg = (before_avg + float(repo['Avg Before Commit Size'])) / 2
         after_avg = (after_avg + float(repo['Avg After Commit Size'])) / 2
         during_avg = (during_avg + float(repo['Avg During Commit Size'])) / 2
+
+    # Clear any existing plot
+    plt.clf()
 
     # Plot the bar chart
     colors = ['palegreen', 'lightblue', 'lightskyblue']
@@ -142,6 +148,9 @@ def _create_pie_plot():
     for i in range(len(labels)):
         labels[i] = labels[i] + ' - ' + str(round(percentages[i], 0)) + '%'
 
+    # Clear any existing plot
+    plt.clf()
+
     # Set up and plot the pie chart, colors, legend and title
     colours = ['#225ea8', '#1d91c0', '#41b6c4', '#7fcdbb', '#c7e9b4', '#71cb71']
     plt.rcParams["figure.figsize"] = [7.5, 4.25]
@@ -154,8 +163,8 @@ def _create_pie_plot():
 
 
 def create_plots():
-    _create_size_impact_plot()
     _create_box_plot()
+    _create_size_impact_plot()
     _create_avg_commit_size_plot()
     _create_pie_plot()
 
