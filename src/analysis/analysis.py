@@ -71,7 +71,6 @@ def _create_box_plot():
 
     # Plot the box plots
     boxplt = plt.boxplot([before, after, during], patch_artist=True, tick_labels=["Before", "After", "During"], flierprops= dict(markerfacecolor='coral'))
-    boxplt = plt.boxplot([before, after, during], patch_artist=True, tick_labels=["Before", "After", "During"], flierprops= dict(markerfacecolor='coral'))
 
     colors = ['palegreen', 'lightblue', 'lightskyblue']
     for patch, color in zip(boxplt['boxes'], colors):
@@ -159,3 +158,5 @@ def create_plots():
     _create_box_plot()
     _create_avg_commit_size_plot()
     _create_pie_plot()
+
+create_plots()
