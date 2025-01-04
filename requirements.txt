@@ -4,3 +4,4 @@ pytest-asyncio
 matplotlib~=3.9.4
 tqdm
 requests
+numpy
