@@ -66,7 +66,7 @@ def create_box_plot():
     # Plot the box plots
     boxplt = plt.boxplot([before, during, after], patch_artist=True, tick_labels=["Before", "During", "After"], flierprops= dict(markerfacecolor='coral'))
 
-    colors = ['lightskyblue', 'paleturquoise', 'palegreen']
+    colors = ['palegreen', 'lightblue', 'lightskyblue']
     for patch, color in zip(boxplt['boxes'], colors):
         patch.set_facecolor(color)
 
@@ -94,7 +94,14 @@ def create_avg_commit_size_plot():
         after_avg = (after_avg + float(repo['Avg After Commit Size'])) / 2
 
     # Plot the bar chart
-    plt.bar(["Before", "During", "After"], [before_avg, during_avg, after_avg], align='center')
+    colors = ['palegreen', 'lightblue', 'lightskyblue']
+    plt.bar(["Before", "During", "After"], [before_avg, during_avg, after_avg], align='center', color=colors)
+
+    # Set title and axes labels
+    plt.xlabel("Commit relation between tests and implementation")
+    plt.ylabel("Average Commit Size (No. of files)")
+    plt.title("Bar chart showing the average commit size when a\ntests are created before, during and after implementation")
+
     # Show the plot
     plt.show()
 
@@ -133,27 +140,21 @@ def create_pie_plot():
     for i in range(len(labels)):
         labels[i] = labels[i] + ' - ' + str(round(percentages[i], 0)) + '%'
 
-    # Plot the pie chart
+    # Set up and plot the pie chart, colors, legend and title
+    colours = ['#225ea8', '#1d91c0', '#41b6c4', '#7fcdbb', '#c7e9b4', '#71cb71']
     plt.rcParams["figure.figsize"] = [7.5, 4.25]
     plt.rcParams["figure.autolayout"] = True
-
-    patches, texts = plt.pie(percentages)
-
+    patches, texts = plt.pie(percentages, colors=colours)
     plt.legend(patches, labels, loc="upper left")
     plt.axis('equal')
+    plt.title("Pie chart showing the percentage of authors using levels of TDD")
 
     # Show the plot
     plt.show()
 
-#create_size_impact_plot()
-#create_box_plot()
-#create_avg_commit_size_plot()
+create_size_impact_plot()
+create_box_plot()
+create_avg_commit_size_plot()
 create_pie_plot()
-
-'''
-
-8. How does TDD adoption vary between projects?
-
-'''
 
 
