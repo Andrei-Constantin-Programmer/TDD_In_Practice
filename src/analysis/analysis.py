@@ -2,6 +2,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 from src.infrastructure import file_utils
+from src.analysis.adjustments import make_adjustments
 
 def _save_plot(plot: plt, name: str):
     file_path = os.path.join(file_utils.CHARTS_PATH, f"{name}.jpg")
@@ -359,6 +360,7 @@ def _create_tdd_repo_categories_pie():
 
 
 def create_plots():
+    make_adjustments()
     _create_size_impact_scatter()
     _create_tdd_usage_box_plot()
     _create_avg_commit_size_bar_graph()
@@ -368,6 +370,7 @@ def create_plots():
     _create_tdd_author_categories_pie()
     _create_tdd_repo_categories_pie()
 
+# REMOVE THIS FUNCTION CALL
 create_plots()
 
 '''
