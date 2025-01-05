@@ -94,16 +94,21 @@ def _create_avg_commit_size_plot():
     # Read data from the repo_data csv
     repo_data = file_utils.read_csv("repo_data")
 
-    # Initialize variables to store averages for each repo
-    before_avg  = 0
-    after_avg = 0
-    during_avg = 0
+    # Initialize variables to store total for each repo
+    before_total  = 0
+    after_total = 0
+    during_total = 0
 
-    # Iterate through each repo and update the before, during and after averages
+    # Iterate through each repo and update the before, during and after totals
     for repo in repo_data:
-        before_avg = (before_avg + float(repo['Avg Before Commit Size'])) / 2
-        after_avg = (after_avg + float(repo['Avg After Commit Size'])) / 2
-        during_avg = (during_avg + float(repo['Avg During Commit Size'])) / 2
+        before_total += float(repo['Avg Before Commit Size'])
+        after_total += float(repo['Avg After Commit Size'])
+        during_total += float(repo['Avg During Commit Size'])
+
+    # Calculate the average commit size using the totals above
+    before_avg = before_total / len(repo_data)
+    after_avg = after_total / len(repo_data)
+    during_avg = during_total / len(repo_data)
 
     # Clear any existing plot
     plt.clf()
@@ -111,7 +116,10 @@ def _create_avg_commit_size_plot():
     # Plot the bar chart
     colors = ['palegreen', 'lightblue', 'lightskyblue']
     plt.bar(["Before", "After", "During"], [before_avg, after_avg, during_avg], align='center', color=colors)
-    plt.bar(["Before", "After", "During"], [before_avg, after_avg, during_avg], align='center', color=colors)
+
+    # Place values at the top of each bar
+    for index, value in enumerate([before_avg, after_avg, during_avg]):
+        plt.text(index, value+0.5, round(value, 1), ha='center')
 
     # Set title and axes labels
     plt.ylabel("Average Commit Size (No. of files)")
@@ -226,6 +234,7 @@ def create_plots():
     _create_pie_plot_tdd_levels()
     _create_pie_plot_tdd_overall()
 
+# REMEMBER TO REMOVE THESE
 create_plots()
 
 '''
@@ -235,7 +244,6 @@ write the adjustments/estimates code in python
 todo - 
 plot like the TDD cagetories pie, but for repo instead of author - modify _create_pie_plot_tdd_levels
 bar chart for tdd percentace per langange - ignoring during
-average code on line 97 is completely wrong because of the 0
 overall tdd percentage - pie of before and after, excluding during
 
 '''
