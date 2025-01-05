@@ -163,7 +163,7 @@ def _create_pie_plot_tdd_levels():
     # Update labels to include percentage values for each slice
     labels = ['Non TDD', 'Rarely TDD', 'Occasionally TDD', 'Somewhat TDD', 'Mostly TDD', 'Consistently TDD']
     for i in range(len(labels)):
-        labels[i] = labels[i] + ' - ' + str(round(percentages[i], 0)) + '%'
+        labels[i] = labels[i] + ' - ' + str(round(percentages[i], 1)) + '%'
 
     # Clear any existing plot
     plt.clf()
@@ -206,7 +206,7 @@ def _create_pie_plot_overall_tdd_raw():
     # Update labels to include percentage values for each slice
     labels = ['TDD', 'Not TDD', 'Unclear']
     for i in range(len(labels)):
-        labels[i] = labels[i] + ' - ' + str(round(percentages[i], 0)) + '%'
+        labels[i] = labels[i] + ' - ' + str(round(percentages[i], 1)) + '%'
 
     # Clear any existing plot
     plt.clf()
@@ -286,6 +286,7 @@ write the adjustments/estimates code in python
 
 todo - 
 plot like the TDD cagetories pie, but for repo instead of author - modify _create_pie_plot_tdd_levels
+
 bar chart for tdd percentace per langange - ignoring during
 
 '''
