@@ -129,7 +129,7 @@ def _create_avg_commit_size_plot():
     _save_plot(plt, "Average Commit Size")
 
 
-def _create_pie_plot_tdd_levels():
+def _create_pie_plot_tdd_author_categories():
     # Read data from the author_data csv
     author_data = file_utils.read_csv("author_data")
 
@@ -154,7 +154,7 @@ def _create_pie_plot_tdd_levels():
             counters[3] += 1
         elif TDD_percent < 90:
             counters[4] += 1
-        elif TDD_percent < 100:
+        elif TDD_percent <= 100:
             counters[5] += 1
 
     # Convert the counters into percentages using a lambda function and map
@@ -177,12 +177,12 @@ def _create_pie_plot_tdd_levels():
 
     # Set the title and specify axis setting
     plt.axis('equal')
-    plt.title("Pie chart showing the percentage of authors using levels of TDD")
+    plt.title("Pie chart showing levels of TDD usage by authors")
     plt.rcParams["figure.figsize"] = [7.5, 4.25]
     plt.rcParams["figure.autolayout"] = True
 
     # Save the plot
-    _save_plot(plt, "TDD Categories")
+    _save_plot(plt, "TDD Author Categories")
 
 
 def _create_pie_plot_overall_tdd_raw():
@@ -269,13 +269,69 @@ def _create_pie_overall_tdd_percentage():
     # Save the plot
     _save_plot(plt, "Overall TDD Percentage")
 
+def _create_pie_plot_tdd_repo_categories():
+    # Read data from the author_data csv
+    repo_data = file_utils.read_csv("repo_data")
+
+    # Initialize Counters
+    #10 25 50 70 90 100
+    counters = [0,0,0,0,0,0]
+
+
+    for repo in repo_data:
+        # Calculate the percentage of TDD of the author
+        # we don't count test_during as we want TDD percentage, not before, during and after percentage
+        TDD_percent = (float(repo['Test Before']) / max(1, float(repo['Test Before']) + float(repo['Test After']))) * 100
+
+        # Update the counters array based on this result
+        if TDD_percent < 10:
+            counters[0] += 1
+        elif TDD_percent < 25:
+            counters[1] += 1
+        elif TDD_percent < 50:
+            counters[2] += 1
+        elif TDD_percent < 70:
+            counters[3] += 1
+        elif TDD_percent < 90:
+            counters[4] += 1
+        elif TDD_percent <= 100:
+            counters[5] += 1
+
+    # Convert the counters into percentages using a lambda function and map
+    percentages = list(map(lambda x: x/max(1, len(repo_data))*100, counters))
+
+    # Update labels to include percentage values for each slice
+    labels = ['Non TDD', 'Rarely TDD', 'Occasionally TDD', 'Somewhat TDD', 'Mostly TDD', 'Consistently TDD']
+    for i in range(len(labels)):
+        labels[i] = labels[i] + ' - ' + str(round(percentages[i], 1)) + '%'
+
+    # Clear any existing plot
+    plt.clf()
+
+    # Plot the pie
+    colors = ['#225ea8', '#1d91c0', '#41b6c4', '#7fcdbb', '#c7e9b4', '#71cb71']
+    patches, texts = plt.pie(percentages, colors=colors)
+
+    # Plot the legend
+    plt.legend(patches, labels, loc="upper left")
+
+    # Set the title and specify axis setting
+    plt.axis('equal')
+    plt.title("Pie chart showing levels of TDD usage seen in repositories")
+    plt.rcParams["figure.figsize"] = [7.5, 4.25]
+    plt.rcParams["figure.autolayout"] = True
+
+    # Save the plot
+    _save_plot(plt, "TDD Repo Categories")
+
 def create_plots():
     _create_box_plot()
     _create_size_impact_plot()
     _create_avg_commit_size_plot()
-    _create_pie_plot_tdd_levels()
+    _create_pie_plot_tdd_author_categories()
     _create_pie_plot_overall_tdd_raw()
     _create_pie_overall_tdd_percentage()
+    _create_pie_plot_tdd_repo_categories()
 
 # REMEMBER TO REMOVE THESE
 create_plots()
@@ -285,7 +341,6 @@ todo -
 write the adjustments/estimates code in python
 
 todo - 
-plot like the TDD cagetories pie, but for repo instead of author - modify _create_pie_plot_tdd_levels
 
 bar chart for tdd percentace per langange - ignoring during
 
