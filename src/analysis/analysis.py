@@ -223,5 +223,3 @@ def create_plots():
     _create_avg_commit_size_plot()
     _create_pie_plot_tdd_levels()
     _create_pie_plot_tdd_overall()
-
-create_plots()
