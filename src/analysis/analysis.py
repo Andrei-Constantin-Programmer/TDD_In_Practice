@@ -23,7 +23,7 @@ def _get_category_index(tdd_percentage):
     elif tdd_percentage <= 100:
         return 5
 
-def _create_size_impact_plot():
+def _create_size_impact_scatter():
     # Read data from the repo_data csv
     repo_data = file_utils.read_csv("repo_data")
 
@@ -64,9 +64,9 @@ def _create_size_impact_plot():
     plt.title("Repo size and TDD percentage")
 
     # Save the plot
-    _save_plot(plt, "Size Impact")
+    _save_plot(plt, "1 - Size Impact")
 
-def _create_box_plot():
+def _create_tdd_usage_box_plot():
     # Read data from the repo_data csv
     repo_data = file_utils.read_csv("repo_data")
 
@@ -102,10 +102,10 @@ def _create_box_plot():
     plt.title("Percentage of tests created before, after and during implementation")
 
     # Save the plot
-    _save_plot(plt, "TDD Usage Statistics")
+    _save_plot(plt, "2 - TDD Usage Statistics")
 
 
-def _create_avg_commit_size_bar_plot():
+def _create_avg_commit_size_bar_graph():
     # Read data from the repo_data csv
     repo_data = file_utils.read_csv("repo_data")
 
@@ -141,10 +141,136 @@ def _create_avg_commit_size_bar_plot():
     plt.title("Average commit size when tests are created \nbefore, after and during implementation")
 
     # Save the plot
-    _save_plot(plt, "Average Commit Size")
+    _save_plot(plt, "3 - Average Commit Size")
 
 
-def _create_pie_plot_tdd_author_categories():
+def _create_tdd_languages_bar_graph():
+    # Read data from the repo_data csv
+    repo_data = file_utils.read_csv("repo_data")
+
+    # Initialize variables to store total for each repo
+    labels = ["Java", "C++", "C#", "Kotlin", "Python"]
+    percentage_total = {"Java":0, "C++":0, "C#":0, "Kotlin":0, "Python":0}
+    repo_count = {"Java":0, "C++":0, "C#":0, "Kotlin":0, "Python":0}
+
+    # Iterate through each repo and update the percentage total and repo count for the respective language
+    for repo in repo_data:
+        language = repo['Language']
+        repo_count[language] += 1
+        try:
+            percentage_total[language] += (int(repo['Test Before']) / (int(repo['Test Before']) + int(repo['Test After']))) * 100
+        except ZeroDivisionError:
+            pass
+
+    percentage_avg = []
+    for language in labels:
+        percentage_avg.append((percentage_total[language] / repo_count[language]))
+
+    # Clear any existing plot
+    plt.clf()
+
+    # Plot the bar chart
+    colors = ['#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854']
+    plt.bar(labels, percentage_avg, align='center', color=colors)
+
+    # Place values at the top of each bar
+    for index, value in enumerate(percentage_avg):
+        plt.text(index, value+0.25, round(value, 1), ha='center')
+
+    # Set title and axes labels
+    plt.ylabel("TDD Percentage (%)")
+    plt.xlabel("Language")
+    plt.title("TDD percentage observed between programming languages")
+
+    # Save the plot
+    _save_plot(plt, "4 - Language TDD Percentage")
+
+
+def _create_raw_tdd_percentage_pie():
+    # Read data from the author_data csv
+    repo_data = file_utils.read_csv("repo_data")
+
+    # Initialize Counters
+    total = 0
+    data = [0, 0, 0]
+
+    for repo in repo_data:
+        data[0] += int(repo['Test Before'])
+        data[1] += int(repo['Test After'])
+        data[2] += int(repo['Test During'])
+        total += int(repo['Test Before']) + int(repo['Test After']) + int(repo['Test During'])
+
+    # Convert the data into percentages using a lambda function and map
+    percentages = list(map(lambda x: x / max(1, total) * 100, data))
+
+    # Update labels to include percentage values for each slice
+    labels = ['TDD', 'Not TDD', 'Unclear']
+    for i in range(len(labels)):
+        labels[i] = labels[i] + ' - ' + str(round(percentages[i], 1)) + '%'
+
+    # Clear any existing plot
+    plt.clf()
+
+    # Plot the pie
+    colors = ['palegreen', 'lightblue', 'lightskyblue']
+    patches, texts, x = plt.pie(percentages, colors=colors, autopct='%1.1f%%')
+
+    # Plot the legend
+    plt.legend(patches, labels, loc="upper left")
+
+    # Set the title and specify axis setting
+    plt.axis('equal')
+    plt.title("Overall TDD Percentage (Raw Data)")
+    plt.rcParams["figure.figsize"] = [7.5, 4.25]
+    plt.rcParams["figure.autolayout"] = True
+
+    # Save the plot
+    _save_plot(plt, "5 - Raw TDD Percentage")
+
+
+def _create_overall_tdd_percentage_pie():
+    # Read data from the author_data csv
+    repo_data = file_utils.read_csv("repo_data")
+
+    # Initialize Counters
+    total = 0
+    data = [0, 0]
+
+    for repo in repo_data:
+        data[0] += int(repo['Test Before'])
+        data[1] += int(repo['Test After'])
+        total += int(repo['Test Before']) + int(repo['Test After'])
+
+    # Convert the data into percentages using a lambda function and map
+    percentages = list(map(lambda x: x / max(1, total) * 100, data))
+
+
+    # Update labels to include percentage values for each slice
+    labels = ['TDD', 'Not TDD']
+    for i in range(len(labels)):
+        labels[i] = labels[i] + ' - ' + str(round(percentages[i], 1)) + '%'
+
+    # Clear any existing plot
+    plt.clf()
+
+    # Plot the pie
+    colors = ['palegreen', 'lightblue']
+    patches, texts, x = plt.pie(percentages, colors=colors, autopct='%1.1f%%')
+
+    # Plot the legend
+    plt.legend(patches, labels, loc="upper left")
+
+    # Set the title and specify axis setting
+    plt.axis('equal')
+    plt.title("Overall TDD Percentage")
+    plt.rcParams["figure.figsize"] = [7.5, 4.25]
+    plt.rcParams["figure.autolayout"] = True
+
+    # Save the plot
+    _save_plot(plt, "6 - Overall TDD Percentage")
+
+
+def _create_tdd_author_categories_pie():
     # Read data from the author_data csv
     author_data = file_utils.read_csv("author_data")
 
@@ -185,93 +311,10 @@ def _create_pie_plot_tdd_author_categories():
     plt.rcParams["figure.autolayout"] = True
 
     # Save the plot
-    _save_plot(plt, "TDD Author Categories")
+    _save_plot(plt, "7 - TDD Author Categories")
 
 
-def _create_pie_plot_overall_tdd_raw():
-    # Read data from the author_data csv
-    repo_data = file_utils.read_csv("repo_data")
-
-    # Initialize Counters
-    total = 0
-    data = [0, 0, 0]
-
-    for repo in repo_data:
-        data[0] += int(repo['Test Before'])
-        data[1] += int(repo['Test After'])
-        data[2] += int(repo['Test During'])
-        total += int(repo['Test Before']) + int(repo['Test After']) + int(repo['Test During'])
-
-    # Convert the data into percentages using a lambda function and map
-    percentages = list(map(lambda x: x / max(1, total) * 100, data))
-
-    # Update labels to include percentage values for each slice
-    labels = ['TDD', 'Not TDD', 'Unclear']
-    for i in range(len(labels)):
-        labels[i] = labels[i] + ' - ' + str(round(percentages[i], 1)) + '%'
-
-    # Clear any existing plot
-    plt.clf()
-
-    # Plot the pie
-    colors = ['palegreen', 'lightblue', 'lightskyblue']
-    patches, texts, x = plt.pie(percentages, colors=colors, autopct='%1.1f%%')
-
-    # Plot the legend
-    plt.legend(patches, labels, loc="upper left")
-
-    # Set the title and specify axis setting
-    plt.axis('equal')
-    plt.title("Overall TDD Percentage (Raw Data)")
-    plt.rcParams["figure.figsize"] = [7.5, 4.25]
-    plt.rcParams["figure.autolayout"] = True
-
-    # Save the plot
-    _save_plot(plt, "Overall TDD Usage Raw")
-
-
-def _create_pie_overall_tdd_percentage():
-    # Read data from the author_data csv
-    repo_data = file_utils.read_csv("repo_data")
-
-    # Initialize Counters
-    total = 0
-    data = [0, 0]
-
-    for repo in repo_data:
-        data[0] += int(repo['Test Before'])
-        data[1] += int(repo['Test After'])
-        total += int(repo['Test Before']) + int(repo['Test After'])
-
-    # Convert the data into percentages using a lambda function and map
-    percentages = list(map(lambda x: x / max(1, total) * 100, data))
-
-
-    # Update labels to include percentage values for each slice
-    labels = ['TDD', 'Not TDD']
-    for i in range(len(labels)):
-        labels[i] = labels[i] + ' - ' + str(round(percentages[i], 1)) + '%'
-
-    # Clear any existing plot
-    plt.clf()
-
-    # Plot the pie
-    colors = ['palegreen', 'lightblue']
-    patches, texts, x = plt.pie(percentages, colors=colors, autopct='%1.1f%%')
-
-    # Plot the legend
-    plt.legend(patches, labels, loc="upper left")
-
-    # Set the title and specify axis setting
-    plt.axis('equal')
-    plt.title("Overall TDD Percentage")
-    plt.rcParams["figure.figsize"] = [7.5, 4.25]
-    plt.rcParams["figure.autolayout"] = True
-
-    # Save the plot
-    _save_plot(plt, "Overall TDD Percentage")
-
-def _create_pie_plot_tdd_repo_categories():
+def _create_tdd_repo_categories_pie():
     # Read data from the author_data csv
     repo_data = file_utils.read_csv("repo_data")
 
@@ -312,67 +355,22 @@ def _create_pie_plot_tdd_repo_categories():
     plt.rcParams["figure.autolayout"] = True
 
     # Save the plot
-    _save_plot(plt, "TDD Repo Categories")
+    _save_plot(plt, "8 - TDD Repo Categories")
 
-
-def _create_language_tdd_bar_plot():
-    # Read data from the repo_data csv
-    repo_data = file_utils.read_csv("repo_data")
-
-    # Initialize variables to store total for each repo
-    labels = ["Java", "C++", "C#", "Kotlin", "Python"]
-    percentage_total = {"Java":0, "C++":0, "C#":0, "Kotlin":0, "Python":0}
-    repo_count = {"Java":0, "C++":0, "C#":0, "Kotlin":0, "Python":0}
-
-    # Iterate through each repo and update the percentage total and repo count for the respective language
-    for repo in repo_data:
-        language = repo['Language']
-        repo_count[language] += 1
-        try:
-            percentage_total[language] += (int(repo['Test Before']) / (int(repo['Test Before']) + int(repo['Test After']))) * 100
-        except ZeroDivisionError:
-            pass
-
-    percentage_avg = []
-    for language in labels:
-        percentage_avg.append((percentage_total[language] / repo_count[language]))
-
-    # Clear any existing plot
-    plt.clf()
-
-    # Plot the bar chart
-    colors = ['#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854']
-    plt.bar(labels, percentage_avg, align='center', color=colors)
-
-    # Place values at the top of each bar
-    for index, value in enumerate(percentage_avg):
-        plt.text(index, value+0.25, round(value, 1), ha='center')
-
-    # Set title and axes labels
-    plt.ylabel("TDD Percentage (%)")
-    plt.xlabel("Language")
-    plt.title("TDD percentage observed between programming languages")
-
-    # Save the plot
-    _save_plot(plt, "Language TDD Percentage")
 
 def create_plots():
-    _create_box_plot()
-    _create_size_impact_plot()
-    _create_avg_commit_size_bar_plot()
-    _create_pie_plot_tdd_author_categories()
-    _create_pie_plot_overall_tdd_raw()
-    _create_pie_overall_tdd_percentage()
-    _create_pie_plot_tdd_repo_categories()
-    _create_language_tdd_bar_plot()
+    _create_size_impact_scatter()
+    _create_tdd_usage_box_plot()
+    _create_avg_commit_size_bar_graph()
+    _create_tdd_languages_bar_graph()
+    _create_raw_tdd_percentage_pie()
+    _create_overall_tdd_percentage_pie()
+    _create_tdd_author_categories_pie()
+    _create_tdd_repo_categories_pie()
 
-# REMEMBER TO REMOVE THIS
 create_plots()
 
 '''
 todo - 
 write the adjustments/estimates code in python
-
-todo - 
-the two categories plots - maybe generalise some of it into a separate function
 '''
