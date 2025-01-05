@@ -7,6 +7,22 @@ def _save_plot(plot: plt, name: str):
     file_path = os.path.join(file_utils.CHARTS_PATH, f"{name}.jpg")
     plot.savefig(file_path)
 
+
+def _get_category_index(tdd_percentage):
+    # Return which index to increment - 10 25 50 70 90 100
+    if tdd_percentage < 10:
+        return 0
+    elif tdd_percentage < 25:
+        return 1
+    elif tdd_percentage < 50:
+        return 2
+    elif tdd_percentage < 70:
+        return 3
+    elif tdd_percentage < 90:
+        return 4
+    elif tdd_percentage <= 100:
+        return 5
+
 def _create_size_impact_plot():
     # Read data from the repo_data csv
     repo_data = file_utils.read_csv("repo_data")
@@ -139,21 +155,10 @@ def _create_pie_plot_tdd_author_categories():
     for author in author_data:
         # Calculate the percentage of TDD of the author
         # we don't count test_during as we want TDD percentage, not before, during and after percentage
-        TDD_percent = (float(author['Test Before']) / max(1, float(author['Test Before']) + float(author['Test After']))) * 100
+        tdd_percentage = (float(author['Test Before']) / max(1, float(author['Test Before']) + float(author['Test After']))) * 100
 
         # Update the counters array based on this result
-        if TDD_percent < 10:
-            counters[0] += 1
-        elif TDD_percent < 25:
-            counters[1] += 1
-        elif TDD_percent < 50:
-            counters[2] += 1
-        elif TDD_percent < 70:
-            counters[3] += 1
-        elif TDD_percent < 90:
-            counters[4] += 1
-        elif TDD_percent <= 100:
-            counters[5] += 1
+        counters[_get_category_index(tdd_percentage)] += 1
 
     # Convert the counters into percentages using a lambda function and map
     percentages = list(map(lambda x: x/max(1, len(author_data))*100, counters))
@@ -277,21 +282,10 @@ def _create_pie_plot_tdd_repo_categories():
     for repo in repo_data:
         # Calculate the percentage of TDD of the author
         # we don't count test_during as we want TDD percentage, not before, during and after percentage
-        TDD_percent = (float(repo['Test Before']) / max(1, float(repo['Test Before']) + float(repo['Test After']))) * 100
+        tdd_percentage = (float(repo['Test Before']) / max(1, float(repo['Test Before']) + float(repo['Test After']))) * 100
 
         # Update the counters array based on this result
-        if TDD_percent < 10:
-            counters[0] += 1
-        elif TDD_percent < 25:
-            counters[1] += 1
-        elif TDD_percent < 50:
-            counters[2] += 1
-        elif TDD_percent < 70:
-            counters[3] += 1
-        elif TDD_percent < 90:
-            counters[4] += 1
-        elif TDD_percent <= 100:
-            counters[5] += 1
+        counters[_get_category_index(tdd_percentage)] += 1
 
     # Convert the counters into percentages using a lambda function and map
     percentages = list(map(lambda x: x/max(1, len(repo_data))*100, counters))
