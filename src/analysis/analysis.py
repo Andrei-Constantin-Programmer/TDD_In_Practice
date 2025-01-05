@@ -21,7 +21,8 @@ def _create_size_impact_plot():
         x.append(int(repo['Commit Count']))
 
         # Get the total number of tests for the repo
-        total_test_count = int(repo['Test Before']) + int(repo['Test During']) + int(repo['Test After'])
+        # we don't count test_during as we want TDD percentage, not before, during and after percentage
+        total_test_count = int(repo['Test Before']) + int(repo['Test After'])
         total_test_count = 1 if total_test_count == 0 else total_test_count
 
         # Append the percentage of TDD for the repo to Y
@@ -82,8 +83,8 @@ def _create_box_plot():
         patch.set_facecolor(color)
 
     # Set title and axes labels
-    plt.ylabel("Percentage")
-    plt.title("How often a test is created before, after and during implementation")
+    plt.ylabel("Percentage of tests")
+    plt.title("Percentage of tests created before, after and during implementation")
 
     # Save the plot
     _save_plot(plt, "TDD Usage Statistics")
@@ -131,7 +132,8 @@ def _create_pie_plot_tdd_levels():
 
     for author in author_data:
         # Calculate the percentage of TDD of the author
-        TDD_percent = (float(author['Test Before']) / max(1, float(author['Test Before']) + float(author['Test During']) + float(author['Test After']))) * 100
+        # we don't count test_during as we want TDD percentage, not before, during and after percentage
+        TDD_percent = (float(author['Test Before']) / max(1, float(author['Test Before']) + float(author['Test After']))) * 100
 
         # Update the counters array based on this result
         if TDD_percent < 10:
@@ -225,3 +227,15 @@ def create_plots():
     _create_pie_plot_tdd_overall()
 
 create_plots()
+
+'''
+todo - 
+write the adjustments/estimates code in python
+
+todo - 
+plot like the TDD cagetories pie, but for repo instead of author - modify _create_pie_plot_tdd_levels
+bar chart for tdd percentace per langange - ignoring during
+average code on line 97 is completely wrong because of the 0
+overall tdd percentage - pie of before and after, excluding during
+
+'''
