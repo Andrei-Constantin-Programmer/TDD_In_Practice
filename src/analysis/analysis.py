@@ -185,7 +185,7 @@ def _create_pie_plot_tdd_levels():
     _save_plot(plt, "TDD Categories")
 
 
-def _create_pie_plot_tdd_overall():
+def _create_pie_plot_overall_tdd_raw():
     # Read data from the author_data csv
     repo_data = file_utils.read_csv("repo_data")
 
@@ -227,12 +227,55 @@ def _create_pie_plot_tdd_overall():
     # Save the plot
     _save_plot(plt, "Overall TDD Usage Raw")
 
+
+def _create_pie_overall_tdd_percentage():
+    # Read data from the author_data csv
+    repo_data = file_utils.read_csv("repo_data")
+
+    # Initialize Counters
+    total = 0
+    data = [0, 0]
+
+    for repo in repo_data:
+        data[0] += int(repo['Test Before'])
+        data[1] += int(repo['Test After'])
+        total += int(repo['Test Before']) + int(repo['Test After'])
+
+    # Convert the data into percentages using a lambda function and map
+    percentages = list(map(lambda x: x / max(1, total) * 100, data))
+
+
+    # Update labels to include percentage values for each slice
+    labels = ['TDD', 'Not TDD']
+    for i in range(len(labels)):
+        labels[i] = labels[i] + ' - ' + str(round(percentages[i], 1)) + '%'
+
+    # Clear any existing plot
+    plt.clf()
+
+    # Plot the pie
+    colors = ['palegreen', 'lightblue']
+    patches, texts, x = plt.pie(percentages, colors=colors, autopct='%1.1f%%')
+
+    # Plot the legend
+    plt.legend(patches, labels, loc="upper left")
+
+    # Set the title and specify axis setting
+    plt.axis('equal')
+    plt.title("Overall TDD Percentage")
+    plt.rcParams["figure.figsize"] = [7.5, 4.25]
+    plt.rcParams["figure.autolayout"] = True
+
+    # Save the plot
+    _save_plot(plt, "Overall TDD Percentage")
+
 def create_plots():
     _create_box_plot()
     _create_size_impact_plot()
     _create_avg_commit_size_plot()
     _create_pie_plot_tdd_levels()
-    _create_pie_plot_tdd_overall()
+    _create_pie_plot_overall_tdd_raw()
+    _create_pie_overall_tdd_percentage()
 
 # REMEMBER TO REMOVE THESE
 create_plots()
@@ -244,6 +287,5 @@ write the adjustments/estimates code in python
 todo - 
 plot like the TDD cagetories pie, but for repo instead of author - modify _create_pie_plot_tdd_levels
 bar chart for tdd percentace per langange - ignoring during
-overall tdd percentage - pie of before and after, excluding during
 
 '''
