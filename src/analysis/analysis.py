@@ -214,33 +214,32 @@ def _create_raw_tdd_percentage_pie():
 
     # Plot the pie
     colors = ['palegreen', 'lightblue', 'lightskyblue']
-    patches, texts, x = plt.pie(percentages, colors=colors, autopct='%1.1f%%')
+    patches, texts, x = plt.pie(percentages, colors=colors, autopct='%1.1f%%', radius=1.5)
 
     # Plot the legend
-    plt.legend(patches, labels, loc="upper left")
+    plt.legend(patches, labels, loc='upper center', bbox_to_anchor=(0.5, -0.001), ncol=3)
 
     # Set the title and specify axis setting
     plt.axis('equal')
     plt.title("Overall TDD Percentage (Raw Data)")
-    plt.rcParams["figure.figsize"] = [7.5, 4.25]
     plt.rcParams["figure.autolayout"] = True
 
     # Save the plot
-    _save_plot(plt, "5 - Raw TDD Percentage")
+    _save_plot(plt, "5 - Overall TDD Percentage (Raw Data)")
 
 
 def _create_overall_tdd_percentage_pie():
     # Read data from the author_data csv
-    repo_data = file_utils.read_csv("repo_data")
+    repo_data = file_utils.read_csv("repo_data_adjusted")
 
     # Initialize Counters
     total = 0
     data = [0, 0]
 
     for repo in repo_data:
-        data[0] += int(repo['Test Before'])
-        data[1] += int(repo['Test After'])
-        total += int(repo['Test Before']) + int(repo['Test After'])
+        data[0] += int(repo['Adjusted Test Before'])
+        data[1] += int(repo['Adjusted Test After'])
+        total += int(repo['Adjusted Test Before']) + int(repo['Adjusted Test After'])
 
     # Convert the data into percentages using a lambda function and map
     percentages = list(map(lambda x: x / max(1, total) * 100, data))
@@ -249,26 +248,25 @@ def _create_overall_tdd_percentage_pie():
     # Update labels to include percentage values for each slice
     labels = ['TDD', 'Not TDD']
     for i in range(len(labels)):
-        labels[i] = labels[i] + ' - ' + str(round(percentages[i], 1)) + '%'
+        labels[i] = labels[i] + ' - ' + str(round(percentages[i], 1)) + '%, ' f"{data[i]:,}" + ' repos'
 
     # Clear any existing plot
     plt.clf()
 
     # Plot the pie
     colors = ['palegreen', 'lightblue']
-    patches, texts, x = plt.pie(percentages, colors=colors, autopct='%1.1f%%')
+    patches, texts, x = plt.pie(percentages, colors=colors, autopct='%1.1f%%', radius=2)
 
     # Plot the legend
-    plt.legend(patches, labels, loc="upper left")
+    plt.legend(patches, labels, loc='upper center', bbox_to_anchor=(0.5, -0.001), ncol=2)
 
     # Set the title and specify axis setting
     plt.axis('equal')
-    plt.title("Overall TDD Percentage")
-    plt.rcParams["figure.figsize"] = [7.5, 4.25]
+    plt.title("Overall TDD Percentage (Adjusted Data)")
     plt.rcParams["figure.autolayout"] = True
 
     # Save the plot
-    _save_plot(plt, "6 - Overall TDD Percentage")
+    _save_plot(plt, "6 - Overall TDD Percentage (Adjusted Data)")
 
 
 def _create_tdd_author_categories_pie():
@@ -300,15 +298,14 @@ def _create_tdd_author_categories_pie():
 
     # Plot the pie
     colors = ['#225ea8', '#1d91c0', '#41b6c4', '#7fcdbb', '#c7e9b4', '#71cb71']
-    patches, texts = plt.pie(percentages, colors=colors)
+    patches, texts = plt.pie(percentages, colors=colors, radius=2)
 
     # Plot the legend
-    plt.legend(patches, labels, loc="upper left")
+    plt.legend(patches, labels, loc='upper center', bbox_to_anchor=(0.5, -0.001))
 
     # Set the title and specify axis setting
     plt.axis('equal')
     plt.title("Pie chart showing levels of TDD usage by authors")
-    plt.rcParams["figure.figsize"] = [7.5, 4.25]
     plt.rcParams["figure.autolayout"] = True
 
     # Save the plot
@@ -322,37 +319,47 @@ def _create_tdd_repo_categories_pie():
     # Initialize Counters
     #10 25 50 70 90 100
     counters = [0,0,0,0,0,0]
+    total_commit_count = [0,0,0,0,0,0]
 
     for repo in repo_data:
         # Calculate the percentage of TDD of the author
         # we don't count test_during as we want TDD percentage, not before, during and after percentage
         tdd_percentage = (float(repo['Test Before']) / max(1, float(repo['Test Before']) + float(repo['Test After']))) * 100
 
-        # Update the counters array based on this result
-        counters[_get_category_index(tdd_percentage)] += 1
+        # Update the counter arrays based on this result
+        index = _get_category_index(tdd_percentage)
+        counters[index] += 1
+        total_commit_count[index] += int(repo['Commit Count'])
+
 
     # Convert the counters into percentages using a lambda function and map
     percentages = list(map(lambda x: x/max(1, len(repo_data))*100, counters))
 
+    # Average the commit count array
+    average_commit_count = []
+    for i in range(len(counters)):
+        average_commit_count.append(round(total_commit_count[i] / counters[i], 1))
+
+    print(average_commit_count)
+
     # Update labels to include percentage values for each slice
     labels = ['Non TDD', 'Rarely TDD', 'Occasionally TDD', 'Somewhat TDD', 'Mostly TDD', 'Consistently TDD']
     for i in range(len(labels)):
-        labels[i] = labels[i] + ' - ' + str(round(percentages[i], 1)) + '%'
+        labels[i] = labels[i] + ' - ' + str(round(percentages[i], 1)) + '%, Average Commit Count - ' +  f"{average_commit_count[i]:,}"
 
     # Clear any existing plot
     plt.clf()
 
     # Plot the pie
     colors = ['#225ea8', '#1d91c0', '#41b6c4', '#7fcdbb', '#c7e9b4', '#71cb71']
-    patches, texts = plt.pie(percentages, colors=colors)
+    patches, texts = plt.pie(percentages, colors=colors, radius=2)
 
     # Plot the legend
-    plt.legend(patches, labels, loc="upper left")
+    plt.legend(patches, labels, loc='upper center', bbox_to_anchor=(0.5, -0.001))
 
     # Set the title and specify axis setting
     plt.axis('equal')
     plt.title("Pie chart showing levels of TDD usage seen in repositories")
-    plt.rcParams["figure.figsize"] = [7.5, 4.25]
     plt.rcParams["figure.autolayout"] = True
 
     # Save the plot
@@ -370,3 +377,5 @@ def create_plots():
     _create_overall_tdd_percentage_pie()
     _create_tdd_author_categories_pie()
     _create_tdd_repo_categories_pie()
+
+create_plots()
