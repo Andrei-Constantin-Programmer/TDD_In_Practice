@@ -377,5 +377,3 @@ def create_plots():
     _create_overall_tdd_percentage_pie()
     _create_tdd_author_categories_pie()
     _create_tdd_repo_categories_pie()
-
-create_plots()
