@@ -340,8 +340,6 @@ def _create_tdd_repo_categories_pie():
     for i in range(len(counters)):
         average_commit_count.append(round(total_commit_count[i] / counters[i], 1))
 
-    print(average_commit_count)
-
     # Update labels to include percentage values for each slice
     labels = ['Non TDD', 'Rarely TDD', 'Occasionally TDD', 'Somewhat TDD', 'Mostly TDD', 'Consistently TDD']
     for i in range(len(labels)):
