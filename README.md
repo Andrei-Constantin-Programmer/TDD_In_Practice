@@ -12,6 +12,7 @@ Its role is to mine repositories (from the Apache Software Project) to see how m
     - [Parameters](#repo-finder-parameters)
     - [Help](#finder-help)
 - [Run Tests](#run-tests)
+- [Workflow Diagram](#workflow-diagram)
 
 ## Installing
 
@@ -93,3 +94,9 @@ To run the unit tests, simply call:
 ```bash
 pytest
 ```
+
+# Workflow Diagram
+
+This diagram illustrates the entire workflow.
+
+![TDD Analysis Workflow](docs/TDD_Analysis_Workflow.png)
