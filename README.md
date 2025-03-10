@@ -1,6 +1,6 @@
 [![Python CI](https://github.com/Andrei-Constantin-Programmer/TDD_In_Practice/actions/workflows/python-app.yml/badge.svg)](https://github.com/Andrei-Constantin-Programmer/TDD_In_Practice/actions/workflows/python-app.yml)
 [![GitHub repo size](https://img.shields.io/github/repo-size/Andrei-Constantin-Programmer/TDD_In_Practice?label=Repo%20Size)](https://shields.io/badges/git-hub-repo-size)
-[![GitHub License](https://img.shields.io/github/license/Andrei-Constantin-Programmer/TDD_In_Practice?label=License)](LICENSE)
+![GitHub License](https://img.shields.io/github/license/Andrei-Constantin-Programmer/TDD_In_Practice)
 
 This is a project created as part of the Software Development Practice (COMP0104) assignment 2 at University College London (UCL).
 Its role is to mine repositories (from the Apache Software Project) to see how much TDD is used in practice.
